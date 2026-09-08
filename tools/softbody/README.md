@@ -3,9 +3,9 @@
 This branch preserves ManiSkill 2 v0.5.3's MPM solver and adds a SAPIEN 3
 coupling adapter and `MPMBaseEnv`. The tested configuration uses one CPU PhysX
 scene with either CPU or CUDA MPM. This is an editable-checkout prototype.
-`Fill-v0`, `Excavate-v0`, `Hang-v0`, and `Pour-v0` now run with their legacy robot, material initialization, SDF contacts,
+`Fill-v0`, `Excavate-v0`, `Hang-v0`, `Pour-v0`, and `Write-v0` now run with their legacy robot, material initialization, SDF contacts,
 success/reward equations, and particle sphere visuals. Full reference parity is
-still unverified. The Pinch/Write task ports, GPU PhysX batching, and distributable
+still unverified. The Pinch task port, original Write benchmark validation, GPU PhysX batching, and distributable
 wheel packaging remain under development.
 
 The copied runtime has separate terms in
@@ -375,3 +375,70 @@ The pinned collision pack was prepared on macOS ARM64 with CoACD 1.0.14,
 NumPy 2.2.6, SciPy 1.18.1, trimesh 5.1.0 and rtree 1.4.1. Cross-platform
 bitwise reproducibility of decomposition is not established; the runtime checks
 the fixed pack checksum, and the GPU worker separately checks its cooked cavity.
+
+## Native Write task
+
+`mani_skill.envs.softbody.write.WriteEnv` uses the original Panda stick, four
+walls, plastic MPM material and sphere-cap height-map score. Supply the legacy
+URDF/assets, the separately exported numeric contact/robot pack, and explicit
+HDF5 goals. No original benchmark goals are bundled or downloaded. The current
+goal contract is an inline finite numeric `goal` dataset of shape `(19404, 3)`.
+
+```sh
+# In the pinned reference environment; /levels contains explicit diagnostic goals:
+python tools/softbody/export_write_assets.py --source /reference --levels /levels --output /export/write
+# In the native port environment, with the exported restricted data mounted:
+export MANISKILL_LEGACY_ASSET_DIR=/legacy-assets
+export MANISKILL_LEGACY_MPM_DATA=/legacy-data
+python tools/softbody/probe_write.py --output /tmp/write-probe-001
+```
+
+The probe expects `line.h5`, `elbow.h5` and `arc.h5` in `/levels`. Those authored
+diagnostic targets are available as `goals/softbody_grooves` in the sim-infra
+asset library. They are geometry goals, not states assigned to live particles.
+Original benchmark-level acquisition and validation remain incomplete.
+
+At seed 101 the native initialization exactly matches the reference's particle
+positions, velocities, deformation/affine matrices, volume correction, joint
+positions, mass and goal image: 19,404 particles totaling 7.276499748 kg. Explicit
+height-scalar widening preserves the reference NumPy 1.x top particle layer on
+NumPy 2.x. Twenty zero controls stay finite. Actual particle camera segmentation
+is checked. Dictionary, flat and rebuilt-scene checkpoints restore an earlier
+goal after loading a different one; subsequent particle errors are at most
+8.95e-8 m and joint errors zero in the initial lifecycle run.
+
+Three four-control portable cases exercise line/joint-delta (seed 101),
+elbow/Cartesian-demo (seed 17), and arc/Cartesian-target (seed 1). Fresh capture,
+independent reference replay and native replay all preserve the exact frozen
+initial-input hashes and selected filenames. Independent outcome audits agree
+with every label. All are short, unsuccessful diagnostic motions. Maximum
+native/reference particle error is 1.79e-7 m; joint error 1.642e-5 rad; one
+current-height image differs by 1 mm. These are measurements, not calibrated
+acceptance limits.
+
+The original GPU rasterizer uses approximate division and square root. The
+external host audit propagates documented arithmetic bounds, records uncertain
+pixels, rejects pixels outside those bounds, and rejects any success decision
+that could change within them. Exact per-pixel equivalence is not claimed for
+uncertain pixels. Neither the solver nor the strict IoU > 0.8 success threshold
+was changed for the audit. Goal and current height maps remain actual simulator
+readbacks in the comparison records.
+
+The first authored 200-control writing experiment uses actual TCP feedback and
+ordinary Cartesian PD commands to approach, press, stroke and withdraw. All
+three runs—reference feedback, independent reference frozen-action replay, and
+native frozen-action replay—finish at IoU 75/130 = 0.576923, below the original
+strict success threshold. Independent arithmetic-bounded outcome audits match
+every success label. The first failure is retained: the reference tool lags
+the requested stroke by about 35 mm at control 150. Matching final scores do
+not establish full physical parity; point trajectories and reference variation
+require separate checks.
+
+The expanded native probe also validates both state and state_dict observations
+against their declared spaces on the elbow goal with Cartesian demo control.
+Goal pixels match the actual raster readback. Its checkpoint replay maximum is
+1.193e-7 m in particles and zero in joints.
+
+Fill, Excavate, Hang and Pour lifecycle regression probes also pass with the
+shared reference robot-parameter helper used by Write. The Write runtime remains
+one CPU PhysX scene with CUDA MPM; GPU PhysX batching is not implemented.

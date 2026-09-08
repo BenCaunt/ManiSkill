@@ -11,6 +11,23 @@ from mani_skill.utils import sapien_utils
 from .controllers import legacy_arm_configs
 
 
+def apply_reference_robot_parameters(robot, parameters):
+    """Preserve native loader mass properties and joint frames from an export."""
+    if set(robot.links_map) != {v['name'] for v in parameters['links']}:
+        raise ValueError('Robot link names differ from the reference model')
+    for record in parameters['links']:
+        body = robot.links_map[record['name']]._objs[0]
+        body.mass = record['mass']
+        body.inertia = record['inertia']
+        com = record['com']
+        body.cmass_local_pose = sapien.Pose(com[:3], com[3:])
+    for record in parameters['joints']:
+        joint = robot.joints_map[record['name']]._objs[0]
+        parent, child = record['parent_pose'], record['child_pose']
+        joint.pose_in_parent = sapien.Pose(parent[:3], parent[3:])
+        joint.pose_in_child = sapien.Pose(child[:3], child[3:])
+
+
 class LegacyPanda(Panda):
     uid = 'legacy_mpm_panda'
 
@@ -45,20 +62,7 @@ class LegacyPanda(Panda):
         self.robot_link_names = [link.name for link in self.robot.links]
 
     def _after_loading_articulation(self):
-        parameters = self._reference_parameters
-        if set(self.robot.links_map) != {v['name'] for v in parameters['links']}:
-            raise ValueError('Legacy Panda link names differ from the reference model')
-        for record in parameters['links']:
-            body = self.robot.links_map[record['name']]._objs[0]
-            body.mass = record['mass']
-            body.inertia = record['inertia']
-            com = record['com']
-            body.cmass_local_pose = sapien.Pose(com[:3], com[3:])
-        for record in parameters['joints']:
-            joint = self.robot.joints_map[record['name']]._objs[0]
-            parent, child = record['parent_pose'], record['child_pose']
-            joint.pose_in_parent = sapien.Pose(parent[:3], parent[3:])
-            joint.pose_in_child = sapien.Pose(child[:3], child[3:])
+        apply_reference_robot_parameters(self.robot, self._reference_parameters)
 
     @property
     def _controller_configs(self):

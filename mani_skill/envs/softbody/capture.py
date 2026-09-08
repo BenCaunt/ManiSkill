@@ -10,6 +10,7 @@ from .fill import FillEnv
 from .excavate import ExcavateEnv
 from .hang import HangEnv
 from .pour import PourEnv
+from .write import WriteEnv
 from .base_env import MATERIAL_FIELDS
 
 
@@ -29,7 +30,7 @@ def numeric_tree(value, *, unbatch=False):
 
 class CaptureAdapter:
     def __init__(self, env_id, *, control_mode, env_kwargs):
-        tasks = {'Fill-v0': FillEnv, 'Excavate-v0': ExcavateEnv, 'Hang-v0': HangEnv, 'Pour-v0': PourEnv}
+        tasks = {'Fill-v0': FillEnv, 'Excavate-v0': ExcavateEnv, 'Hang-v0': HangEnv, 'Pour-v0': PourEnv, 'Write-v0': WriteEnv}
         if env_id not in tasks:
             raise NotImplementedError(f'Native task capture is not yet implemented for {env_id}')
         self.control_mode = control_mode
@@ -39,6 +40,7 @@ class CaptureAdapter:
     def _physical_actors(self):
         env = self.env
         expected = {'Fill-v0': ['ground', 'target_beaker'], 'Excavate-v0': ['ground', 'wall_0', 'wall_1', 'wall_2', 'wall_3'],
+                    'Write-v0': ['ground', 'wall_0', 'wall_1', 'wall_2', 'wall_3'],
                     'Hang-v0': ['ground', 'rod'], 'Pour-v0': ['ground', 'bottle', 'target_beaker']}[self.env_id]
         if sorted(env.scene.actors) != sorted(expected):
             raise RuntimeError('Unexpected physical actor set')
@@ -84,8 +86,10 @@ class CaptureAdapter:
             controller = batched(fixture['controller_state'])
             if controller:
                 checkpoint['controller'] = controller
-            task_key = {'Fill-v0': 'beaker_xy', 'Excavate-v0': 'target_num', 'Hang-v0': 'selected_indices', 'Pour-v0': 'fill_heights'}[self.env_id]
-            checkpoint['task'][task_key] = torch.as_tensor(state['task_state'], dtype=torch.float64)[None]
+            task_key = {'Fill-v0': 'beaker_xy', 'Excavate-v0': 'target_num', 'Hang-v0': 'selected_indices', 'Pour-v0': 'fill_heights', 'Write-v0': 'goal_points'}[self.env_id]
+            value = state['task_state'].reshape(-1,3) if self.env_id == 'Write-v0' else state['task_state']
+            dtype = torch.float32 if self.env_id == 'Write-v0' else torch.float64
+            checkpoint['task'][task_key] = torch.as_tensor(value, dtype=dtype)[None]
             env.reset(seed=seed, options={**options, 'reset_to_env_states': {'env_states': checkpoint}})
         return self.snapshot()
 
@@ -97,7 +101,7 @@ class CaptureAdapter:
         joints = robot.active_joints
         bodies = self._recorded_bodies()
         actors = self._physical_actors()
-        return {**env.mpm_coupler.particle_state(),
+        state = {**env.mpm_coupler.particle_state(),
                 'mass': model.struct.particle_mass.numpy()[:model.struct.n_particles].copy(),
                 'qpos': robot.qpos.copy(), 'qvel': robot.qvel.copy(),
                 'sim_state': env.get_state().detach().cpu().numpy().reshape(-1),
@@ -115,7 +119,12 @@ class CaptureAdapter:
                 'task_state': np.asarray([env.beaker_x, env.beaker_y] if self.env_id == 'Fill-v0'
                                          else [env.target_num] if self.env_id == 'Excavate-v0'
                                          else [env.h1, env.h2] if self.env_id == 'Pour-v0'
+                                         else env.goal_points.reshape(-1) if self.env_id == 'Write-v0'
                                          else env.selected_indices, dtype=np.float64)}
+        if self.env_id == 'Write-v0':
+            env._compute_iou()
+            state.update(goal_height_mm=env.goal_image.numpy(),current_height_mm=env.current_image.numpy())
+        return state
 
     def description(self):
         env = self.env

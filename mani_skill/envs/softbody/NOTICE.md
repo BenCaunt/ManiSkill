@@ -1,6 +1,6 @@
 # Legacy soft-body code
 
-`fill.py`, `bucket.py`, `excavate.py`, `hang.py`, `pour.py`, `legacy_base.py`, `legacy_panda.py`, `controllers.py`,
+`fill.py`, `bucket.py`, `excavate.py`, `hang.py`, `pour.py`, `write.py`, `legacy_base.py`, `legacy_panda.py`, `controllers.py`,
 and `geometry.py` adapt the task equations, initialization, and SDF
 algorithm from ManiSkill 2 v0.5.3, commit
 `493be36121a9dd06071a57172274babe617b789f`, by the ManiSkill authors:
@@ -9,6 +9,8 @@ algorithm from ManiSkill 2 v0.5.3, commit
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/excavate_env.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/hang_env.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/pour_env.py
+- https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/write_env.py
+- https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/agents/configs/panda/variants.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/agents/configs/panda/defaults.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/agents/controllers/pd_ee_pose.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/utils.py
@@ -48,3 +50,10 @@ uses an open bottle decomposition and a beaker triangle mesh in place of the
 original closed convex hulls. `prepare_pour_collision.py` records the conversion
 and original terms. This geometry change requires separate contact verification;
 the original inertia values remain explicit benchmark assumptions.
+
+Write uses an external numeric stick/hand SDF, capsule and wall pack exported by
+`tools/softbody/export_write_assets.py`, including original robot inertial and
+joint-frame parameters. That derived pack retains the source asset restrictions.
+Goal HDF5 files are separate inputs with their own provenance and licenses; the
+port does not bundle official goal data. Diagnostic targets used during porting
+were procedurally authored, and are not the original Write benchmark levels.
