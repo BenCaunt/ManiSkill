@@ -126,7 +126,9 @@ def evaluate(root, protocol):
                 ('flat-env1','warmup-2',1,'flat-restored',1,protocol['exact_checkpoint_groups'])]:
                 changes=state_changes(data[before],ai,data[after],bi,groups);exact[label]=changes
                 if changes:failures.append(name+'/'+label+': changed checkpoint fields '+','.join(changes))
-            if data['partial-count']['counts'].tolist()!=[352,704]:failures.append(name+': count-changing reset did not affect only its selected model')
+            expected_counts = data['partial-fresh']['counts'].copy()
+            expected_counts[0] = (data['warmup-2']['counts'][0] + 1) // 2
+            if not np.array_equal(data['partial-count']['counts'],expected_counts):failures.append(name+': count-changing reset did not affect only its selected model')
             for before,after,index in [('expected','partial-restored',1),('partial-stepped','partial-fresh',0),('partial-fresh','partial-count',1)]:
                 if data[before]['elapsed_steps'][index]!=data[after]['elapsed_steps'][index]:failures.append(name+': reset changed unselected elapsed-step counter')
             leaves=[value.reshape(count,-1) for key,value in data['warmup-2'].items() if key.startswith('state/')]

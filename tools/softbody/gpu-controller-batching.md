@@ -68,4 +68,4 @@ The probe is `probe_gpu_batch.py`; use the hash recorded in the protocol for a
 historical run. Asset packs and built libraries remain external under their
 original licenses. The controller checker reads numeric evidence without
 executing candidate code. Full task success, reference physics parity, batching
-of the other five task classes and distribution packaging remain incomplete.
+of the other four task classes and distribution packaging remain incomplete.

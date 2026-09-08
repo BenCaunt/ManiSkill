@@ -75,9 +75,12 @@ rejected before changing a live world.
 The v1 run found that native root poses changed slightly in environments that
 were not reset, even though their particles and controller targets stayed fixed.
 The generic reset loop reapplied every root pose and introduced extra rounding.
-The scene adapter now uses native indexed rigid/root apply calls for selected
+The v2 scene adapter used native indexed rigid/root apply calls for selected
 environments. Controller reset retains the selection mask until its target
 memory has been updated. Explicit checkpoint selection also reaches native apply.
+The later [Excavate tests](gpu-excavate-batching.md) exposed incorrect selected
+wall poses in the indexed actor path. The current adapter keeps full actor
+buffers and uses indexed updates only for articulation roots.
 
 SAPIEN 3.0.3's indexed joint-buffer methods ignore the supplied indices and use
 the internal index-buffer prefix. The adapter therefore keeps full joint-buffer
@@ -86,9 +89,10 @@ calls with untouched rows preserved. See the pinned
 The tests establish exact exposed state isolation; they do not prove that every
 internal PhysX solver cache survives a partial reset unchanged.
 
-All seven v2 checkpoint comparisons pass exactly: three untouched-environment
-checks, selected dictionary restore, selected count restore and both flat-restore
-rows. Native masses, inertias, COMs and joint frames match the separate N1 runs
+All seven v2 checkpoint comparisons pass exactly within their declared groups:
+three untouched-environment checks, selected dictionary restore, selected count
+restore and both flat-restore rows. Selected actor fields were absent from those
+groups; Excavate v7 adds them after retaining the failing v6 actor audit. Native masses, inertias, COMs and joint frames match the separate N1 runs
 and survive full reconstruction. All actual counts, padding and live masks match
 the solver. All ten camera frames pass the existing physical-particle and robot
 bounds checks, including both scene offsets and the partial count change.
@@ -130,8 +134,8 @@ including the failed v1 checks. Raw archives, built libraries and restricted
 assets remain external to Git. The latest probe is `probe_gpu_batch.py`; use the
 probe hash recorded by the chosen protocol when reproducing a historical run.
 
-Only Fill currently opts into the batched task lifecycle. Legacy end-effector
-controllers now use [independent per-environment IK and target memory](gpu-controller-batching.md);
-the other five task classes still reject multiple environments. Full episodes, reference parity, heterogeneous
+Fill and [Excavate](gpu-excavate-batching.md) opt into the batched task lifecycle.
+Legacy end-effector controllers use [independent per-environment IK and target memory](gpu-controller-batching.md);
+the other four task classes still reject multiple environments. Full episodes, reference parity, heterogeneous
 visual checkpoints, changed rigid topology, efficient rendering and distribution
 packaging remain incomplete.

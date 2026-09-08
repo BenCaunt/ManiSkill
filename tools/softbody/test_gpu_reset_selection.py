@@ -33,9 +33,10 @@ def scene(monkeypatch):
     return value
 
 
-def test_partial_reset_applies_only_selected_physical_poses(scene):
+def test_partial_reset_selects_roots_and_uses_compatible_full_actor_layout(scene):
     scene._gpu_apply_all()
-    for name, expected in [('rigid_dynamic_data', [8]), ('articulation_root_pose', [3]),
+    assert scene.px.calls['gpu_apply_rigid_dynamic_data'] == ()
+    for name, expected in [('articulation_root_pose', [3]),
                            ('articulation_root_velocity', [3])]:
         handle, = scene.px.calls['gpu_apply_' + name]
         assert handle.dtype == torch.int32 and handle.is_contiguous() and handle.tolist() == expected
@@ -50,7 +51,7 @@ def test_checkpoint_selection_overrides_restored_global_mask(scene):
     scene._reset_mask[:] = True
     scene._gpu_apply_all([2])
     assert scene.px.calls['gpu_apply_articulation_root_pose'][0].tolist() == [9]
-    assert scene.px.calls['gpu_apply_rigid_dynamic_data'][0].tolist() == [4]
+    assert scene.px.calls['gpu_apply_rigid_dynamic_data'] == ()
     assert scene._reset_mask.all()
 
 

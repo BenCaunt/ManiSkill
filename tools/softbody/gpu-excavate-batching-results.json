@@ -1,0 +1,1829 @@
+{
+  "updated_at": "2026-09-08T18:04:18.022455+00:00",
+  "full_port_complete": false,
+  "scope": "Excavate batch lifecycle and source-backed actor-reset compatibility fix; not full task success or reference physics parity.",
+  "candidate_base_commit": "d962c6bddb54d9f82aba2f39e7a5d568e256f577",
+  "upstream_source_audit": {
+    "physx_system.cu": {
+      "url": "https://github.com/haosulab/SAPIEN/blob/3.0.3/src/physx/physx_system.cu",
+      "sha256": "9bfc08b297778b4a6338ae89712a15571b380fb6693a691475a8220ea07493bb",
+      "cached_source_identical": true
+    },
+    "physx_system.cpp": {
+      "url": "https://github.com/haosulab/SAPIEN/blob/3.0.3/src/physx/physx_system.cpp",
+      "sha256": "8173ce5960fe79b3657eed60c79a13834a786b409b1eaf56264169be7d65d27b",
+      "cached_source_identical": true
+    }
+  },
+  "runs": {
+    "gpu-batch-v6": {
+      "archive_sha256": "1ad3f0a23a4529eff3ba4d43b9c4880f2720e488ae3ba8858bc80908e2b0fbc2",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T17:47:38.090219+00:00",
+        "input_sha256": "6cf7931f19bdf87b2f1ca978fc1e409b96209da8d16afde6573317d3db59b0d1",
+        "request_sha256": "9f9c39e4193d2590ab234bd877452b67b58870547edb8432f38edf44603ceb23",
+        "probe_sha256": "701a77261b560995a3626152df178913e069f4564a3eea1d2368ece12de0d049",
+        "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "cases": [
+          {
+            "name": "Excavate-single-101",
+            "task": "Excavate",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101
+            ],
+            "action_scales": [
+              1.0
+            ],
+            "controller_lifecycle": true,
+            "reward_mode": "dense"
+          },
+          {
+            "name": "Excavate-single-17",
+            "task": "Excavate",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              17
+            ],
+            "action_scales": [
+              -0.5
+            ],
+            "controller_lifecycle": true,
+            "reward_mode": "dense"
+          },
+          {
+            "name": "Excavate-batch-joint",
+            "task": "Excavate",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "capacity": 32768,
+            "controller_lifecycle": true,
+            "reward_mode": "dense"
+          },
+          {
+            "name": "Excavate-batch-ee",
+            "task": "Excavate",
+            "backend": "gpu",
+            "control_mode": "pd_ee_delta_pose_align",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "capacity": 32768,
+            "controller_lifecycle": true,
+            "reward_mode": "dense"
+          }
+        ],
+        "exact_checkpoint_groups": [
+          "mpm",
+          "mpm_material",
+          "mpm_meta",
+          "mpm_drives",
+          "controller",
+          "task"
+        ],
+        "rendering": {
+          "minimum_particle_pixels": 10,
+          "surface_distance_error_limit_m": 0.003,
+          "require_visual_pool_checks": true,
+          "require_native_buffer_checks": true,
+          "require_rigid_visual_bounds": true,
+          "minimum_rigid_pixels": 10,
+          "rigid_bound_error_limit_m": 0.003
+        },
+        "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained.",
+        "compare_batch_vs_single": false,
+        "joint_replay_limit": 0.001,
+        "target_pose_limit": 1e-06,
+        "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+        "reward_limit": 1e-06,
+        "baseline": {
+          "label": "gpu-lifecycle-v2",
+          "archive_sha256": "5e5796221a71d41170e3cd5b996281a73e245f714d22a952ff04a460cc934aa2",
+          "files": {
+            "execution.json": "6537c5ee24bd667f5efc97977ea22ff4b4e41950635c663a587a529f3f750b65",
+            "request.json": "7139aef98858eb9c6f7615b5e4b03012eb69bb12d5a098359f0136f6d1e36e82",
+            "probe.py": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+            "source/excavate.py": "2673371a834bb32e3916843d58cb9665e4893b9ab1ef0a1dc7dffa330e158371",
+            "Excavate-pd_ee_delta_pose_align-gpu/initial.npz": "52b15a70db132ac01722a8792cdaeab96ffe8367ee03dedb6fe1432c05dd5184",
+            "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz": "92e35aa79b811c30c4b5ce9ae97ff062aa46a9c4b92c9839bc3b776de52884da",
+            "Excavate-pd_ee_delta_pose_align-gpu/result.json": "984c245516cfbe8b6cc74755c0b4d283f7b0d8f30e2b3a38e22ee3e320a3ed29"
+          },
+          "snapshot": "Excavate-pd_ee_delta_pose_align-gpu/initial.npz",
+          "checkpoint": "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz",
+          "new_case": "Excavate-single-101"
+        },
+        "initial_comparisons": [
+          [
+            "Excavate-batch-joint",
+            0,
+            "Excavate-single-101"
+          ],
+          [
+            "Excavate-batch-joint",
+            1,
+            "Excavate-single-17"
+          ],
+          [
+            "Excavate-batch-ee",
+            0,
+            "Excavate-single-101"
+          ],
+          [
+            "Excavate-batch-ee",
+            1,
+            "Excavate-single-17"
+          ]
+        ]
+      },
+      "verdict": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Excavate-single-101": {
+            "task_snapshots": 6,
+            "initial_counts": [
+              11056
+            ],
+            "initial_targets": [
+              1113.0
+            ]
+          },
+          "Excavate-single-17": {
+            "task_snapshots": 6,
+            "initial_counts": [
+              11071
+            ],
+            "initial_targets": [
+              873.0
+            ]
+          },
+          "Excavate-batch-joint": {
+            "task_snapshots": 12,
+            "initial_counts": [
+              11056,
+              11071
+            ],
+            "initial_targets": [
+              1113.0,
+              873.0
+            ]
+          },
+          "Excavate-batch-ee": {
+            "task_snapshots": 12,
+            "initial_counts": [
+              11056,
+              11071
+            ],
+            "initial_targets": [
+              1113.0,
+              873.0
+            ]
+          }
+        },
+        "controller_lifecycle": {
+          "passed": true,
+          "failures": [],
+          "reports": {
+            "Excavate-single-101": {
+              "ik_requests": 0,
+              "replay_errors": {}
+            },
+            "Excavate-single-17": {
+              "ik_requests": 0,
+              "replay_errors": {}
+            },
+            "Excavate-batch-joint": {
+              "ik_requests": 0,
+              "replay_errors": {
+                "partial-stepped/env0": {
+                  "x": 0.0031532198190689087,
+                  "v": 0.14589232578873634,
+                  "F": 0.2376219779253006,
+                  "C": 12.873115420341492,
+                  "vc": 0.015712268112110905,
+                  "qpos": 1.4901161193847656e-08,
+                  "qvel": 3.166496753692627e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env0": {
+                  "x": 1.5273690223693848e-06,
+                  "v": 6.205867975950241e-05,
+                  "F": 0.0005561709403991699,
+                  "C": 0.012412786483764648,
+                  "vc": 2.60770320892334e-07,
+                  "qpos": 1.4901161193847656e-08,
+                  "qvel": 3.166496753692627e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env1": {
+                  "x": 3.4049153327941895e-06,
+                  "v": 0.0009911395609378815,
+                  "F": 0.014438271522521973,
+                  "C": 0.44860684871673584,
+                  "vc": 0.01926764566451311,
+                  "qpos": 0.0,
+                  "qvel": 2.2351741790771484e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                }
+              }
+            },
+            "Excavate-batch-ee": {
+              "ik_requests": 12,
+              "replay_errors": {
+                "partial-stepped/env0": {
+                  "x": 0.003166511654853821,
+                  "v": 0.14591547474265099,
+                  "F": 0.23766426742076874,
+                  "C": 12.877341628074646,
+                  "vc": 0.01571113904356025,
+                  "qpos": 1.1920928955078125e-07,
+                  "qvel": 4.809349775314331e-06,
+                  "drive_position": 5.960464477539062e-07,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env0": {
+                  "x": 3.3080577850341797e-06,
+                  "v": 0.0007076822221279144,
+                  "F": 0.0015001893043518066,
+                  "C": 0.24442094564437866,
+                  "vc": 3.129243850708008e-07,
+                  "qpos": 1.1920928955078125e-07,
+                  "qvel": 4.809349775314331e-06,
+                  "drive_position": 5.960464477539062e-07,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env1": {
+                  "x": 2.041459083557129e-06,
+                  "v": 0.00029782066121697426,
+                  "F": 0.0012145042419433594,
+                  "C": 0.12639710307121277,
+                  "vc": 0.00016913563013076782,
+                  "qpos": 2.384185791015625e-07,
+                  "qvel": 4.701199941337109e-06,
+                  "drive_position": 7.152557373046875e-07,
+                  "drive_velocity": 0.0
+                }
+              }
+            }
+          },
+          "lifecycle_and_rendering": {
+            "passed": true,
+            "failures": [],
+            "reports": {
+              "Excavate-single-101": {
+                "exact_checkpoints": {},
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 44139,
+                    "max_rigid_bound_violation_m": 0.001086136238528962,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 44139,
+                    "max_rigid_bound_violation_m": 0.001086136238528962,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  }
+                }
+              },
+              "Excavate-single-17": {
+                "exact_checkpoints": {},
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 42383,
+                    "max_rigid_bound_violation_m": 0.0010590954834353641,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 42383,
+                    "max_rigid_bound_violation_m": 0.0010590954834353641,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  }
+                }
+              },
+              "Excavate-batch-joint": {
+                "exact_checkpoints": {
+                  "partial-unchosen": [],
+                  "fresh-unchosen": [],
+                  "count-unchosen": [],
+                  "partial-selected": [],
+                  "count-selected": [],
+                  "flat-env0": [],
+                  "flat-env1": []
+                },
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 44140,
+                    "max_rigid_bound_violation_m": 0.0010863688006547412,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-initial-env1": {
+                    "rigid_pixels": 42384,
+                    "max_rigid_bound_violation_m": 0.001059106218912871,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  },
+                  "camera-partial-count-env0": {
+                    "rigid_pixels": 44097,
+                    "max_rigid_bound_violation_m": 0.0011115746008874203,
+                    "particle_pixels": 15652,
+                    "visible_particles": 1924,
+                    "max_surface_error_m": 0.0016406248949910238,
+                    "median_surface_error_m": 0.0005756933879123469,
+                    "failures": []
+                  },
+                  "camera-partial-count-env1": {
+                    "rigid_pixels": 39961,
+                    "max_rigid_bound_violation_m": 0.0011240419058999168,
+                    "particle_pixels": 16842,
+                    "visible_particles": 2035,
+                    "max_surface_error_m": 0.0016185428048027472,
+                    "median_surface_error_m": 0.0005696376821987812,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 44140,
+                    "max_rigid_bound_violation_m": 0.0010863688006547412,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env1": {
+                    "rigid_pixels": 42384,
+                    "max_rigid_bound_violation_m": 0.001059106218912871,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  }
+                }
+              },
+              "Excavate-batch-ee": {
+                "exact_checkpoints": {
+                  "partial-unchosen": [],
+                  "fresh-unchosen": [],
+                  "count-unchosen": [],
+                  "partial-selected": [],
+                  "count-selected": [],
+                  "flat-env0": [],
+                  "flat-env1": []
+                },
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 44140,
+                    "max_rigid_bound_violation_m": 0.0010863688006547412,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-initial-env1": {
+                    "rigid_pixels": 42384,
+                    "max_rigid_bound_violation_m": 0.001059106218912871,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  },
+                  "camera-partial-count-env0": {
+                    "rigid_pixels": 43717,
+                    "max_rigid_bound_violation_m": 0.0011389318784181673,
+                    "particle_pixels": 15652,
+                    "visible_particles": 1924,
+                    "max_surface_error_m": 0.0016405453201934826,
+                    "median_surface_error_m": 0.0005756395421630638,
+                    "failures": []
+                  },
+                  "camera-partial-count-env1": {
+                    "rigid_pixels": 39961,
+                    "max_rigid_bound_violation_m": 0.0011240419058999168,
+                    "particle_pixels": 16842,
+                    "visible_particles": 2035,
+                    "max_surface_error_m": 0.0016185428048027472,
+                    "median_surface_error_m": 0.0005696376821987812,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 44140,
+                    "max_rigid_bound_violation_m": 0.0010863688006547412,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env1": {
+                    "rigid_pixels": 42384,
+                    "max_rigid_bound_violation_m": 0.001059106218912871,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  }
+                }
+              }
+            },
+            "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained.",
+            "full_port_complete": false
+          },
+          "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained.",
+          "full_port_complete": false
+        },
+        "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained.",
+        "full_port_complete": false
+      },
+      "source_audit": {
+        "public_head": "2680f7f35a8248ea55d9870348f5c2f25c49213f",
+        "source_inventory_changes_from": "gpu-batch-v5",
+        "changed_files": {
+          "mani_skill/envs/softbody/excavate.py": "0d1e7ed2fb363470b6a312a0130a813478dfc2e2ebded1c71b5e081584048a1a"
+        },
+        "probe_sha256": "701a77261b560995a3626152df178913e069f4564a3eea1d2368ece12de0d049",
+        "runner_unchanged": true,
+        "reason": "Per-environment Excavate terrain/target/bucket reward state, all native wall placeholders, original N1 particle/material recipe preserved.11 local task tests and206 host tests+14subtests pass. Native verification pending.",
+        "inventory": "515 manifest-listed runtime files only; no credentials, local caches, unrelated thumbnail or reference outcomes in payload."
+      },
+      "accepted_for_declared_lifecycle": false,
+      "actor_audit": {
+        "protocol": {
+          "declared_at_utc": "2026-09-08T17:47:38.090219+00:00",
+          "input_sha256": "6cf7931f19bdf87b2f1ca978fc1e409b96209da8d16afde6573317d3db59b0d1",
+          "request_sha256": "9f9c39e4193d2590ab234bd877452b67b58870547edb8432f38edf44603ceb23",
+          "probe_sha256": "701a77261b560995a3626152df178913e069f4564a3eea1d2368ece12de0d049",
+          "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+          "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+          "cases": [
+            {
+              "name": "Excavate-single-101",
+              "task": "Excavate",
+              "backend": "gpu",
+              "control_mode": "pd_joint_target_delta_pos",
+              "seeds": [
+                101
+              ],
+              "action_scales": [
+                1.0
+              ],
+              "controller_lifecycle": true,
+              "reward_mode": "dense"
+            },
+            {
+              "name": "Excavate-single-17",
+              "task": "Excavate",
+              "backend": "gpu",
+              "control_mode": "pd_joint_target_delta_pos",
+              "seeds": [
+                17
+              ],
+              "action_scales": [
+                -0.5
+              ],
+              "controller_lifecycle": true,
+              "reward_mode": "dense"
+            },
+            {
+              "name": "Excavate-batch-joint",
+              "task": "Excavate",
+              "backend": "gpu",
+              "control_mode": "pd_joint_target_delta_pos",
+              "seeds": [
+                101,
+                17
+              ],
+              "action_scales": [
+                1.0,
+                -0.5
+              ],
+              "capacity": 32768,
+              "controller_lifecycle": true,
+              "reward_mode": "dense"
+            },
+            {
+              "name": "Excavate-batch-ee",
+              "task": "Excavate",
+              "backend": "gpu",
+              "control_mode": "pd_ee_delta_pose_align",
+              "seeds": [
+                101,
+                17
+              ],
+              "action_scales": [
+                1.0,
+                -0.5
+              ],
+              "capacity": 32768,
+              "controller_lifecycle": true,
+              "reward_mode": "dense"
+            }
+          ],
+          "exact_checkpoint_groups": [
+            "mpm",
+            "mpm_material",
+            "mpm_meta",
+            "mpm_drives",
+            "controller",
+            "task",
+            "actors"
+          ],
+          "rendering": {
+            "minimum_particle_pixels": 10,
+            "surface_distance_error_limit_m": 0.003,
+            "require_visual_pool_checks": true,
+            "require_native_buffer_checks": true,
+            "require_rigid_visual_bounds": true,
+            "minimum_rigid_pixels": 10,
+            "rigid_bound_error_limit_m": 0.003
+          },
+          "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained.",
+          "compare_batch_vs_single": false,
+          "joint_replay_limit": 0.001,
+          "target_pose_limit": 1e-06,
+          "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+          "reward_limit": 1e-06,
+          "baseline": {
+            "label": "gpu-lifecycle-v2",
+            "archive_sha256": "5e5796221a71d41170e3cd5b996281a73e245f714d22a952ff04a460cc934aa2",
+            "files": {
+              "execution.json": "6537c5ee24bd667f5efc97977ea22ff4b4e41950635c663a587a529f3f750b65",
+              "request.json": "7139aef98858eb9c6f7615b5e4b03012eb69bb12d5a098359f0136f6d1e36e82",
+              "probe.py": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+              "source/excavate.py": "2673371a834bb32e3916843d58cb9665e4893b9ab1ef0a1dc7dffa330e158371",
+              "Excavate-pd_ee_delta_pose_align-gpu/initial.npz": "52b15a70db132ac01722a8792cdaeab96ffe8367ee03dedb6fe1432c05dd5184",
+              "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz": "92e35aa79b811c30c4b5ce9ae97ff062aa46a9c4b92c9839bc3b776de52884da",
+              "Excavate-pd_ee_delta_pose_align-gpu/result.json": "984c245516cfbe8b6cc74755c0b4d283f7b0d8f30e2b3a38e22ee3e320a3ed29"
+            },
+            "snapshot": "Excavate-pd_ee_delta_pose_align-gpu/initial.npz",
+            "checkpoint": "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz",
+            "new_case": "Excavate-single-101"
+          },
+          "initial_comparisons": [
+            [
+              "Excavate-batch-joint",
+              0,
+              "Excavate-single-101"
+            ],
+            [
+              "Excavate-batch-joint",
+              1,
+              "Excavate-single-17"
+            ],
+            [
+              "Excavate-batch-ee",
+              0,
+              "Excavate-single-101"
+            ],
+            [
+              "Excavate-batch-ee",
+              1,
+              "Excavate-single-17"
+            ]
+          ],
+          "post_run_audit": {
+            "declared_at": "2026-09-08T17:56:30.671320+00:00",
+            "reason": "Original lifecycle protocol omitted selected actor fields. Inspecting3.17mm partial replay error exposed wall_1 moving to wall_2 pose. Add exact actors to expose the existing failure; no physical run repeated and original verdict retained."
+          }
+        },
+        "verdict": {
+          "passed": false,
+          "failures": [
+            "Excavate-batch-joint/partial-selected: changed checkpoint fields state/actors/wall_1",
+            "Excavate-batch-joint/count-selected: changed checkpoint fields state/actors/wall_1",
+            "Excavate-batch-ee/partial-selected: changed checkpoint fields state/actors/wall_1",
+            "Excavate-batch-ee/count-selected: changed checkpoint fields state/actors/wall_1"
+          ],
+          "reports": {
+            "Excavate-single-101": {
+              "task_snapshots": 6,
+              "initial_counts": [
+                11056
+              ],
+              "initial_targets": [
+                1113.0
+              ]
+            },
+            "Excavate-single-17": {
+              "task_snapshots": 6,
+              "initial_counts": [
+                11071
+              ],
+              "initial_targets": [
+                873.0
+              ]
+            },
+            "Excavate-batch-joint": {
+              "task_snapshots": 12,
+              "initial_counts": [
+                11056,
+                11071
+              ],
+              "initial_targets": [
+                1113.0,
+                873.0
+              ]
+            },
+            "Excavate-batch-ee": {
+              "task_snapshots": 12,
+              "initial_counts": [
+                11056,
+                11071
+              ],
+              "initial_targets": [
+                1113.0,
+                873.0
+              ]
+            }
+          },
+          "controller_lifecycle": {
+            "passed": false,
+            "failures": [
+              "Excavate-batch-joint/partial-selected: changed checkpoint fields state/actors/wall_1",
+              "Excavate-batch-joint/count-selected: changed checkpoint fields state/actors/wall_1",
+              "Excavate-batch-ee/partial-selected: changed checkpoint fields state/actors/wall_1",
+              "Excavate-batch-ee/count-selected: changed checkpoint fields state/actors/wall_1"
+            ],
+            "reports": {
+              "Excavate-single-101": {
+                "ik_requests": 0,
+                "replay_errors": {}
+              },
+              "Excavate-single-17": {
+                "ik_requests": 0,
+                "replay_errors": {}
+              },
+              "Excavate-batch-joint": {
+                "ik_requests": 0,
+                "replay_errors": {
+                  "partial-stepped/env0": {
+                    "x": 0.0031532198190689087,
+                    "v": 0.14589232578873634,
+                    "F": 0.2376219779253006,
+                    "C": 12.873115420341492,
+                    "vc": 0.015712268112110905,
+                    "qpos": 1.4901161193847656e-08,
+                    "qvel": 3.166496753692627e-08,
+                    "drive_position": 0.0,
+                    "drive_velocity": 0.0
+                  },
+                  "flat-stepped/env0": {
+                    "x": 1.5273690223693848e-06,
+                    "v": 6.205867975950241e-05,
+                    "F": 0.0005561709403991699,
+                    "C": 0.012412786483764648,
+                    "vc": 2.60770320892334e-07,
+                    "qpos": 1.4901161193847656e-08,
+                    "qvel": 3.166496753692627e-08,
+                    "drive_position": 0.0,
+                    "drive_velocity": 0.0
+                  },
+                  "flat-stepped/env1": {
+                    "x": 3.4049153327941895e-06,
+                    "v": 0.0009911395609378815,
+                    "F": 0.014438271522521973,
+                    "C": 0.44860684871673584,
+                    "vc": 0.01926764566451311,
+                    "qpos": 0.0,
+                    "qvel": 2.2351741790771484e-08,
+                    "drive_position": 0.0,
+                    "drive_velocity": 0.0
+                  }
+                }
+              },
+              "Excavate-batch-ee": {
+                "ik_requests": 12,
+                "replay_errors": {
+                  "partial-stepped/env0": {
+                    "x": 0.003166511654853821,
+                    "v": 0.14591547474265099,
+                    "F": 0.23766426742076874,
+                    "C": 12.877341628074646,
+                    "vc": 0.01571113904356025,
+                    "qpos": 1.1920928955078125e-07,
+                    "qvel": 4.809349775314331e-06,
+                    "drive_position": 5.960464477539062e-07,
+                    "drive_velocity": 0.0
+                  },
+                  "flat-stepped/env0": {
+                    "x": 3.3080577850341797e-06,
+                    "v": 0.0007076822221279144,
+                    "F": 0.0015001893043518066,
+                    "C": 0.24442094564437866,
+                    "vc": 3.129243850708008e-07,
+                    "qpos": 1.1920928955078125e-07,
+                    "qvel": 4.809349775314331e-06,
+                    "drive_position": 5.960464477539062e-07,
+                    "drive_velocity": 0.0
+                  },
+                  "flat-stepped/env1": {
+                    "x": 2.041459083557129e-06,
+                    "v": 0.00029782066121697426,
+                    "F": 0.0012145042419433594,
+                    "C": 0.12639710307121277,
+                    "vc": 0.00016913563013076782,
+                    "qpos": 2.384185791015625e-07,
+                    "qvel": 4.701199941337109e-06,
+                    "drive_position": 7.152557373046875e-07,
+                    "drive_velocity": 0.0
+                  }
+                }
+              }
+            },
+            "lifecycle_and_rendering": {
+              "passed": false,
+              "failures": [
+                "Excavate-batch-joint/partial-selected: changed checkpoint fields state/actors/wall_1",
+                "Excavate-batch-joint/count-selected: changed checkpoint fields state/actors/wall_1",
+                "Excavate-batch-ee/partial-selected: changed checkpoint fields state/actors/wall_1",
+                "Excavate-batch-ee/count-selected: changed checkpoint fields state/actors/wall_1"
+              ],
+              "reports": {
+                "Excavate-single-101": {
+                  "exact_checkpoints": {},
+                  "cameras": {
+                    "camera-initial-env0": {
+                      "rigid_pixels": 44139,
+                      "max_rigid_bound_violation_m": 0.001086136238528962,
+                      "particle_pixels": 16821,
+                      "visible_particles": 2031,
+                      "max_surface_error_m": 0.0015809763569507277,
+                      "median_surface_error_m": 0.0005842781037719564,
+                      "failures": []
+                    },
+                    "camera-reconfigured-env0": {
+                      "rigid_pixels": 44139,
+                      "max_rigid_bound_violation_m": 0.001086136238528962,
+                      "particle_pixels": 16821,
+                      "visible_particles": 2031,
+                      "max_surface_error_m": 0.0015809763569507277,
+                      "median_surface_error_m": 0.0005842781037719564,
+                      "failures": []
+                    }
+                  }
+                },
+                "Excavate-single-17": {
+                  "exact_checkpoints": {},
+                  "cameras": {
+                    "camera-initial-env0": {
+                      "rigid_pixels": 42383,
+                      "max_rigid_bound_violation_m": 0.0010590954834353641,
+                      "particle_pixels": 16205,
+                      "visible_particles": 1941,
+                      "max_surface_error_m": 0.001590443312767057,
+                      "median_surface_error_m": 0.0005854509973434265,
+                      "failures": []
+                    },
+                    "camera-reconfigured-env0": {
+                      "rigid_pixels": 42383,
+                      "max_rigid_bound_violation_m": 0.0010590954834353641,
+                      "particle_pixels": 16205,
+                      "visible_particles": 1941,
+                      "max_surface_error_m": 0.001590443312767057,
+                      "median_surface_error_m": 0.0005854509973434265,
+                      "failures": []
+                    }
+                  }
+                },
+                "Excavate-batch-joint": {
+                  "exact_checkpoints": {
+                    "partial-unchosen": [],
+                    "fresh-unchosen": [],
+                    "count-unchosen": [],
+                    "partial-selected": [
+                      "state/actors/wall_1"
+                    ],
+                    "count-selected": [
+                      "state/actors/wall_1"
+                    ],
+                    "flat-env0": [],
+                    "flat-env1": []
+                  },
+                  "cameras": {
+                    "camera-initial-env0": {
+                      "rigid_pixels": 44140,
+                      "max_rigid_bound_violation_m": 0.0010863688006547412,
+                      "particle_pixels": 16821,
+                      "visible_particles": 2031,
+                      "max_surface_error_m": 0.0015809763569507277,
+                      "median_surface_error_m": 0.0005842781037719564,
+                      "failures": []
+                    },
+                    "camera-initial-env1": {
+                      "rigid_pixels": 42384,
+                      "max_rigid_bound_violation_m": 0.001059106218912871,
+                      "particle_pixels": 16205,
+                      "visible_particles": 1941,
+                      "max_surface_error_m": 0.001590443312767057,
+                      "median_surface_error_m": 0.0005854509973434265,
+                      "failures": []
+                    },
+                    "camera-partial-count-env0": {
+                      "rigid_pixels": 44097,
+                      "max_rigid_bound_violation_m": 0.0011115746008874203,
+                      "particle_pixels": 15652,
+                      "visible_particles": 1924,
+                      "max_surface_error_m": 0.0016406248949910238,
+                      "median_surface_error_m": 0.0005756933879123469,
+                      "failures": []
+                    },
+                    "camera-partial-count-env1": {
+                      "rigid_pixels": 39961,
+                      "max_rigid_bound_violation_m": 0.0011240419058999168,
+                      "particle_pixels": 16842,
+                      "visible_particles": 2035,
+                      "max_surface_error_m": 0.0016185428048027472,
+                      "median_surface_error_m": 0.0005696376821987812,
+                      "failures": []
+                    },
+                    "camera-reconfigured-env0": {
+                      "rigid_pixels": 44140,
+                      "max_rigid_bound_violation_m": 0.0010863688006547412,
+                      "particle_pixels": 16821,
+                      "visible_particles": 2031,
+                      "max_surface_error_m": 0.0015809763569507277,
+                      "median_surface_error_m": 0.0005842781037719564,
+                      "failures": []
+                    },
+                    "camera-reconfigured-env1": {
+                      "rigid_pixels": 42384,
+                      "max_rigid_bound_violation_m": 0.001059106218912871,
+                      "particle_pixels": 16205,
+                      "visible_particles": 1941,
+                      "max_surface_error_m": 0.001590443312767057,
+                      "median_surface_error_m": 0.0005854509973434265,
+                      "failures": []
+                    }
+                  }
+                },
+                "Excavate-batch-ee": {
+                  "exact_checkpoints": {
+                    "partial-unchosen": [],
+                    "fresh-unchosen": [],
+                    "count-unchosen": [],
+                    "partial-selected": [
+                      "state/actors/wall_1"
+                    ],
+                    "count-selected": [
+                      "state/actors/wall_1"
+                    ],
+                    "flat-env0": [],
+                    "flat-env1": []
+                  },
+                  "cameras": {
+                    "camera-initial-env0": {
+                      "rigid_pixels": 44140,
+                      "max_rigid_bound_violation_m": 0.0010863688006547412,
+                      "particle_pixels": 16821,
+                      "visible_particles": 2031,
+                      "max_surface_error_m": 0.0015809763569507277,
+                      "median_surface_error_m": 0.0005842781037719564,
+                      "failures": []
+                    },
+                    "camera-initial-env1": {
+                      "rigid_pixels": 42384,
+                      "max_rigid_bound_violation_m": 0.001059106218912871,
+                      "particle_pixels": 16205,
+                      "visible_particles": 1941,
+                      "max_surface_error_m": 0.001590443312767057,
+                      "median_surface_error_m": 0.0005854509973434265,
+                      "failures": []
+                    },
+                    "camera-partial-count-env0": {
+                      "rigid_pixels": 43717,
+                      "max_rigid_bound_violation_m": 0.0011389318784181673,
+                      "particle_pixels": 15652,
+                      "visible_particles": 1924,
+                      "max_surface_error_m": 0.0016405453201934826,
+                      "median_surface_error_m": 0.0005756395421630638,
+                      "failures": []
+                    },
+                    "camera-partial-count-env1": {
+                      "rigid_pixels": 39961,
+                      "max_rigid_bound_violation_m": 0.0011240419058999168,
+                      "particle_pixels": 16842,
+                      "visible_particles": 2035,
+                      "max_surface_error_m": 0.0016185428048027472,
+                      "median_surface_error_m": 0.0005696376821987812,
+                      "failures": []
+                    },
+                    "camera-reconfigured-env0": {
+                      "rigid_pixels": 44140,
+                      "max_rigid_bound_violation_m": 0.0010863688006547412,
+                      "particle_pixels": 16821,
+                      "visible_particles": 2031,
+                      "max_surface_error_m": 0.0015809763569507277,
+                      "median_surface_error_m": 0.0005842781037719564,
+                      "failures": []
+                    },
+                    "camera-reconfigured-env1": {
+                      "rigid_pixels": 42384,
+                      "max_rigid_bound_violation_m": 0.001059106218912871,
+                      "particle_pixels": 16205,
+                      "visible_particles": 1941,
+                      "max_surface_error_m": 0.001590443312767057,
+                      "median_surface_error_m": 0.0005854509973434265,
+                      "failures": []
+                    }
+                  }
+                }
+              },
+              "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained.",
+              "full_port_complete": false
+            },
+            "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained.",
+            "full_port_complete": false
+          },
+          "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained.",
+          "full_port_complete": false
+        },
+        "reason": "Original protocol omitted selected actor state; original subset PASS is insufficient and v6 is rejected by exact actor restoration."
+      }
+    },
+    "gpu-batch-v7": {
+      "archive_sha256": "cebfe9732a0718b2724a537517daaf8b3a75f4775443d2dc798af5eb6f952c92",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T17:56:58.325740+00:00",
+        "input_sha256": "a8d55b383ccfdef415d725798f8c929ff8fecf6df21e9ad034afbfe8e13f5ccb",
+        "request_sha256": "e776d3bc0af079db0a947b970ca5a22818709e335af44b8b05c00ca633c6a610",
+        "probe_sha256": "701a77261b560995a3626152df178913e069f4564a3eea1d2368ece12de0d049",
+        "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "cases": [
+          {
+            "name": "Excavate-single-101",
+            "task": "Excavate",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101
+            ],
+            "action_scales": [
+              1.0
+            ],
+            "controller_lifecycle": true,
+            "reward_mode": "dense"
+          },
+          {
+            "name": "Excavate-single-17",
+            "task": "Excavate",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              17
+            ],
+            "action_scales": [
+              -0.5
+            ],
+            "controller_lifecycle": true,
+            "reward_mode": "dense"
+          },
+          {
+            "name": "Excavate-batch-joint",
+            "task": "Excavate",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "capacity": 32768,
+            "controller_lifecycle": true,
+            "reward_mode": "dense"
+          },
+          {
+            "name": "Excavate-batch-ee",
+            "task": "Excavate",
+            "backend": "gpu",
+            "control_mode": "pd_ee_delta_pose_align",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "capacity": 32768,
+            "controller_lifecycle": true,
+            "reward_mode": "dense"
+          },
+          {
+            "name": "Fill-reset-regression-joint",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "capacity": 2048,
+            "controller_lifecycle": true
+          },
+          {
+            "name": "Fill-reset-regression-ee",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_ee_target_delta_pose",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "capacity": 2048,
+            "controller_lifecycle": true
+          }
+        ],
+        "exact_checkpoint_groups": [
+          "mpm",
+          "mpm_material",
+          "mpm_meta",
+          "mpm_drives",
+          "controller",
+          "task",
+          "actors"
+        ],
+        "rendering": {
+          "minimum_particle_pixels": 10,
+          "surface_distance_error_limit_m": 0.003,
+          "require_visual_pool_checks": true,
+          "require_native_buffer_checks": true,
+          "require_rigid_visual_bounds": true,
+          "minimum_rigid_pixels": 10,
+          "rigid_bound_error_limit_m": 0.003
+        },
+        "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained. Adds exact selected actor checkpoint restoration and two N2 Fill reset regressions. v6 wall-pose corruption is retained as a failed post-run actor audit.",
+        "compare_batch_vs_single": false,
+        "joint_replay_limit": 0.001,
+        "target_pose_limit": 1e-06,
+        "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+        "reward_limit": 1e-06,
+        "baseline": {
+          "label": "gpu-lifecycle-v2",
+          "archive_sha256": "5e5796221a71d41170e3cd5b996281a73e245f714d22a952ff04a460cc934aa2",
+          "files": {
+            "execution.json": "6537c5ee24bd667f5efc97977ea22ff4b4e41950635c663a587a529f3f750b65",
+            "request.json": "7139aef98858eb9c6f7615b5e4b03012eb69bb12d5a098359f0136f6d1e36e82",
+            "probe.py": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+            "source/excavate.py": "2673371a834bb32e3916843d58cb9665e4893b9ab1ef0a1dc7dffa330e158371",
+            "Excavate-pd_ee_delta_pose_align-gpu/initial.npz": "52b15a70db132ac01722a8792cdaeab96ffe8367ee03dedb6fe1432c05dd5184",
+            "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz": "92e35aa79b811c30c4b5ce9ae97ff062aa46a9c4b92c9839bc3b776de52884da",
+            "Excavate-pd_ee_delta_pose_align-gpu/result.json": "984c245516cfbe8b6cc74755c0b4d283f7b0d8f30e2b3a38e22ee3e320a3ed29"
+          },
+          "snapshot": "Excavate-pd_ee_delta_pose_align-gpu/initial.npz",
+          "checkpoint": "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz",
+          "new_case": "Excavate-single-101"
+        },
+        "initial_comparisons": [
+          [
+            "Excavate-batch-joint",
+            0,
+            "Excavate-single-101"
+          ],
+          [
+            "Excavate-batch-joint",
+            1,
+            "Excavate-single-17"
+          ],
+          [
+            "Excavate-batch-ee",
+            0,
+            "Excavate-single-101"
+          ],
+          [
+            "Excavate-batch-ee",
+            1,
+            "Excavate-single-17"
+          ]
+        ]
+      },
+      "verdict": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Excavate-single-101": {
+            "task_snapshots": 6,
+            "initial_counts": [
+              11056
+            ],
+            "initial_targets": [
+              1113.0
+            ]
+          },
+          "Excavate-single-17": {
+            "task_snapshots": 6,
+            "initial_counts": [
+              11071
+            ],
+            "initial_targets": [
+              873.0
+            ]
+          },
+          "Excavate-batch-joint": {
+            "task_snapshots": 12,
+            "initial_counts": [
+              11056,
+              11071
+            ],
+            "initial_targets": [
+              1113.0,
+              873.0
+            ]
+          },
+          "Excavate-batch-ee": {
+            "task_snapshots": 12,
+            "initial_counts": [
+              11056,
+              11071
+            ],
+            "initial_targets": [
+              1113.0,
+              873.0
+            ]
+          }
+        },
+        "controller_lifecycle": {
+          "passed": true,
+          "failures": [],
+          "reports": {
+            "Excavate-single-101": {
+              "ik_requests": 0,
+              "replay_errors": {}
+            },
+            "Excavate-single-17": {
+              "ik_requests": 0,
+              "replay_errors": {}
+            },
+            "Excavate-batch-joint": {
+              "ik_requests": 0,
+              "replay_errors": {
+                "partial-stepped/env0": {
+                  "x": 5.811452865600586e-07,
+                  "v": 0.00012993812561035156,
+                  "F": 0.0006062984466552734,
+                  "C": 0.03182840347290039,
+                  "vc": 2.5331974029541016e-07,
+                  "qpos": 1.4901161193847656e-08,
+                  "qvel": 3.166496753692627e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env0": {
+                  "x": 6.109476089477539e-07,
+                  "v": 0.00013245642185211182,
+                  "F": 0.0006067752838134766,
+                  "C": 0.03201103210449219,
+                  "vc": 2.086162567138672e-07,
+                  "qpos": 1.4901161193847656e-08,
+                  "qvel": 3.166496753692627e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env1": {
+                  "x": 3.2261013984680176e-06,
+                  "v": 0.0005350317806005478,
+                  "F": 0.0021073324605822563,
+                  "C": 0.1848461627960205,
+                  "vc": 0.00016988255083560944,
+                  "qpos": 0.0,
+                  "qvel": 2.2351741790771484e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                }
+              }
+            },
+            "Excavate-batch-ee": {
+              "ik_requests": 12,
+              "replay_errors": {
+                "partial-stepped/env0": {
+                  "x": 7.897615432739258e-07,
+                  "v": 4.470348358154297e-06,
+                  "F": 0.00033893296495079994,
+                  "C": 0.0015998929738998413,
+                  "vc": 2.682209014892578e-07,
+                  "qpos": 1.1920928955078125e-07,
+                  "qvel": 4.809349775314331e-06,
+                  "drive_position": 5.960464477539062e-07,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env0": {
+                  "x": 3.0741095542907715e-05,
+                  "v": 0.0004269629716873169,
+                  "F": 0.015425503253936768,
+                  "C": 0.14789485931396484,
+                  "vc": 2.682209014892578e-07,
+                  "qpos": 1.1920928955078125e-07,
+                  "qvel": 4.809349775314331e-06,
+                  "drive_position": 5.960464477539062e-07,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env1": {
+                  "x": 2.9385089874267578e-05,
+                  "v": 0.001570055028423667,
+                  "F": 0.025352895259857178,
+                  "C": 1.3090690299868584,
+                  "vc": 0.019279655069112778,
+                  "qpos": 2.384185791015625e-07,
+                  "qvel": 4.701199941337109e-06,
+                  "drive_position": 7.152557373046875e-07,
+                  "drive_velocity": 0.0
+                }
+              }
+            },
+            "Fill-reset-regression-joint": {
+              "ik_requests": 0,
+              "replay_errors": {
+                "partial-stepped/env0": {
+                  "x": 1.4901161193847656e-06,
+                  "v": 0.00027578696608543396,
+                  "F": 0.001015160873066634,
+                  "C": 0.13467144966125488,
+                  "vc": 4.9591064453125e-05,
+                  "qpos": 0.0,
+                  "qvel": 1.341104507446289e-07,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env0": {
+                  "x": 1.475214958190918e-06,
+                  "v": 0.0002756193280220032,
+                  "F": 0.001013916393276304,
+                  "C": 0.1349029541015625,
+                  "vc": 3.8996338844299316e-05,
+                  "qpos": 0.0,
+                  "qvel": 1.5366822481155396e-07,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env1": {
+                  "x": 1.043081283569336e-06,
+                  "v": 0.00016826018691062927,
+                  "F": 0.001391589641571045,
+                  "C": 0.042676448822021484,
+                  "vc": 4.908442497253418e-05,
+                  "qpos": 0.0,
+                  "qvel": 2.253800630569458e-07,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                }
+              }
+            },
+            "Fill-reset-regression-ee": {
+              "ik_requests": 12,
+              "replay_errors": {
+                "partial-stepped/env0": {
+                  "x": 1.8030405044555664e-06,
+                  "v": 0.0003024376928806305,
+                  "F": 0.0011100172996520996,
+                  "C": 0.20713269710540771,
+                  "vc": 3.602728247642517e-05,
+                  "qpos": 0.0,
+                  "qvel": 2.3795291781425476e-07,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env0": {
+                  "x": 2.5704503059387207e-07,
+                  "v": 0.00020525045692920685,
+                  "F": 3.5375356674194336e-05,
+                  "C": 0.04389035701751709,
+                  "vc": 3.282725811004639e-05,
+                  "qpos": 0.0,
+                  "qvel": 2.062879502773285e-07,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env1": {
+                  "x": 2.980232238769531e-07,
+                  "v": 2.2005289793014526e-05,
+                  "F": 2.8073787689208984e-05,
+                  "C": 0.003382086753845215,
+                  "vc": 2.4430453777313232e-05,
+                  "qpos": 0.0,
+                  "qvel": 3.166496753692627e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                }
+              }
+            }
+          },
+          "lifecycle_and_rendering": {
+            "passed": true,
+            "failures": [],
+            "reports": {
+              "Excavate-single-101": {
+                "exact_checkpoints": {},
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 44139,
+                    "max_rigid_bound_violation_m": 0.001086136238528962,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 44139,
+                    "max_rigid_bound_violation_m": 0.001086136238528962,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  }
+                }
+              },
+              "Excavate-single-17": {
+                "exact_checkpoints": {},
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 42383,
+                    "max_rigid_bound_violation_m": 0.0010590954834353641,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 42383,
+                    "max_rigid_bound_violation_m": 0.0010590954834353641,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  }
+                }
+              },
+              "Excavate-batch-joint": {
+                "exact_checkpoints": {
+                  "partial-unchosen": [],
+                  "fresh-unchosen": [],
+                  "count-unchosen": [],
+                  "partial-selected": [],
+                  "count-selected": [],
+                  "flat-env0": [],
+                  "flat-env1": []
+                },
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 44140,
+                    "max_rigid_bound_violation_m": 0.0010863688006547412,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-initial-env1": {
+                    "rigid_pixels": 42384,
+                    "max_rigid_bound_violation_m": 0.001059106218912871,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  },
+                  "camera-partial-count-env0": {
+                    "rigid_pixels": 44097,
+                    "max_rigid_bound_violation_m": 0.0011115746008874203,
+                    "particle_pixels": 15652,
+                    "visible_particles": 1924,
+                    "max_surface_error_m": 0.0016405688306619808,
+                    "median_surface_error_m": 0.0005756932448536859,
+                    "failures": []
+                  },
+                  "camera-partial-count-env1": {
+                    "rigid_pixels": 39961,
+                    "max_rigid_bound_violation_m": 0.0011240419058999168,
+                    "particle_pixels": 16842,
+                    "visible_particles": 2035,
+                    "max_surface_error_m": 0.0016185428048027472,
+                    "median_surface_error_m": 0.0005696376821987812,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 44140,
+                    "max_rigid_bound_violation_m": 0.0010863688006547412,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env1": {
+                    "rigid_pixels": 42384,
+                    "max_rigid_bound_violation_m": 0.001059106218912871,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  }
+                }
+              },
+              "Excavate-batch-ee": {
+                "exact_checkpoints": {
+                  "partial-unchosen": [],
+                  "fresh-unchosen": [],
+                  "count-unchosen": [],
+                  "partial-selected": [],
+                  "count-selected": [],
+                  "flat-env0": [],
+                  "flat-env1": []
+                },
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 44140,
+                    "max_rigid_bound_violation_m": 0.0010863688006547412,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-initial-env1": {
+                    "rigid_pixels": 42384,
+                    "max_rigid_bound_violation_m": 0.001059106218912871,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  },
+                  "camera-partial-count-env0": {
+                    "rigid_pixels": 43717,
+                    "max_rigid_bound_violation_m": 0.0011389318784181673,
+                    "particle_pixels": 15652,
+                    "visible_particles": 1924,
+                    "max_surface_error_m": 0.0016405131255559174,
+                    "median_surface_error_m": 0.000575682937882571,
+                    "failures": []
+                  },
+                  "camera-partial-count-env1": {
+                    "rigid_pixels": 39961,
+                    "max_rigid_bound_violation_m": 0.0011240419058999168,
+                    "particle_pixels": 16842,
+                    "visible_particles": 2035,
+                    "max_surface_error_m": 0.0016185428048027472,
+                    "median_surface_error_m": 0.0005696376821987812,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 44140,
+                    "max_rigid_bound_violation_m": 0.0010863688006547412,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env1": {
+                    "rigid_pixels": 42384,
+                    "max_rigid_bound_violation_m": 0.001059106218912871,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  }
+                }
+              },
+              "Fill-reset-regression-joint": {
+                "exact_checkpoints": {
+                  "partial-unchosen": [],
+                  "fresh-unchosen": [],
+                  "count-unchosen": [],
+                  "partial-selected": [],
+                  "count-selected": [],
+                  "flat-env0": [],
+                  "flat-env1": []
+                },
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 35410,
+                    "max_rigid_bound_violation_m": 0.0014656652884353916,
+                    "particle_pixels": 1262,
+                    "visible_particles": 226,
+                    "max_surface_error_m": 0.0015480025122622735,
+                    "median_surface_error_m": 0.0004848182231410921,
+                    "failures": []
+                  },
+                  "camera-initial-env1": {
+                    "rigid_pixels": 35398,
+                    "max_rigid_bound_violation_m": 0.001347999887893983,
+                    "particle_pixels": 1280,
+                    "visible_particles": 234,
+                    "max_surface_error_m": 0.0015049038963031564,
+                    "median_surface_error_m": 0.0005229196131294495,
+                    "failures": []
+                  },
+                  "camera-partial-count-env0": {
+                    "rigid_pixels": 35787,
+                    "max_rigid_bound_violation_m": 0.0014993132022008276,
+                    "particle_pixels": 898,
+                    "visible_particles": 148,
+                    "max_surface_error_m": 0.0015034347987587233,
+                    "median_surface_error_m": 0.0005277485973343404,
+                    "failures": []
+                  },
+                  "camera-partial-count-env1": {
+                    "rigid_pixels": 35352,
+                    "max_rigid_bound_violation_m": 0.0014116438505610354,
+                    "particle_pixels": 1301,
+                    "visible_particles": 218,
+                    "max_surface_error_m": 0.0015248591910106374,
+                    "median_surface_error_m": 0.00048500101862220327,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 35410,
+                    "max_rigid_bound_violation_m": 0.0014656652884353916,
+                    "particle_pixels": 1262,
+                    "visible_particles": 226,
+                    "max_surface_error_m": 0.0015480025122622735,
+                    "median_surface_error_m": 0.0004848182231410921,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env1": {
+                    "rigid_pixels": 35398,
+                    "max_rigid_bound_violation_m": 0.001347999887893983,
+                    "particle_pixels": 1280,
+                    "visible_particles": 234,
+                    "max_surface_error_m": 0.0015049038963031564,
+                    "median_surface_error_m": 0.0005229196131294495,
+                    "failures": []
+                  }
+                }
+              },
+              "Fill-reset-regression-ee": {
+                "exact_checkpoints": {
+                  "partial-unchosen": [],
+                  "fresh-unchosen": [],
+                  "count-unchosen": [],
+                  "partial-selected": [],
+                  "count-selected": [],
+                  "flat-env0": [],
+                  "flat-env1": []
+                },
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 35410,
+                    "max_rigid_bound_violation_m": 0.0014656652884353916,
+                    "particle_pixels": 1262,
+                    "visible_particles": 226,
+                    "max_surface_error_m": 0.0015480025122622735,
+                    "median_surface_error_m": 0.0004848182231410921,
+                    "failures": []
+                  },
+                  "camera-initial-env1": {
+                    "rigid_pixels": 35398,
+                    "max_rigid_bound_violation_m": 0.001347999887893983,
+                    "particle_pixels": 1280,
+                    "visible_particles": 234,
+                    "max_surface_error_m": 0.0015049038963031564,
+                    "median_surface_error_m": 0.0005229196131294495,
+                    "failures": []
+                  },
+                  "camera-partial-count-env0": {
+                    "rigid_pixels": 36121,
+                    "max_rigid_bound_violation_m": 0.0014048820837600715,
+                    "particle_pixels": 927,
+                    "visible_particles": 155,
+                    "max_surface_error_m": 0.001548435445292182,
+                    "median_surface_error_m": 0.0005203313943602096,
+                    "failures": []
+                  },
+                  "camera-partial-count-env1": {
+                    "rigid_pixels": 35352,
+                    "max_rigid_bound_violation_m": 0.0014116438505610354,
+                    "particle_pixels": 1301,
+                    "visible_particles": 218,
+                    "max_surface_error_m": 0.0015248591910106374,
+                    "median_surface_error_m": 0.00048500101862220327,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 35410,
+                    "max_rigid_bound_violation_m": 0.0014656652884353916,
+                    "particle_pixels": 1262,
+                    "visible_particles": 226,
+                    "max_surface_error_m": 0.0015480025122622735,
+                    "median_surface_error_m": 0.0004848182231410921,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env1": {
+                    "rigid_pixels": 35398,
+                    "max_rigid_bound_violation_m": 0.001347999887893983,
+                    "particle_pixels": 1280,
+                    "visible_particles": 234,
+                    "max_surface_error_m": 0.0015049038963031564,
+                    "median_surface_error_m": 0.0005229196131294495,
+                    "failures": []
+                  }
+                }
+              }
+            },
+            "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained. Adds exact selected actor checkpoint restoration and two N2 Fill reset regressions. v6 wall-pose corruption is retained as a failed post-run actor audit.",
+            "full_port_complete": false
+          },
+          "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained. Adds exact selected actor checkpoint restoration and two N2 Fill reset regressions. v6 wall-pose corruption is retained as a failed post-run actor audit.",
+          "full_port_complete": false
+        },
+        "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained. Adds exact selected actor checkpoint restoration and two N2 Fill reset regressions. v6 wall-pose corruption is retained as a failed post-run actor audit.",
+        "full_port_complete": false
+      },
+      "source_audit": {
+        "public_head": "d962c6bddb54d9f82aba2f39e7a5d568e256f577",
+        "source_inventory_changes_from": "gpu-batch-v6",
+        "changed_files": {
+          "mani_skill/envs/scene.py": "3c0dac0cf83fd4a1e823b59c233cafc1231c0f8815082a715fee43801420d0ca"
+        },
+        "probe_identical": true,
+        "runner_identical": true,
+        "reason": "Pinned SAPIEN3.0.3 indexed rigid apply compacts body data but retains old PxGpuActorPair.srcIndex. Full actor layout fallback avoids assigning another wall pose; selected articulation root calls unchanged.23 local reset/task contracts pass. New actor gate makes retained v6 evidence fail4selected-wall comparisons; v7 native verification pending."
+      },
+      "accepted_for_declared_lifecycle": true
+    }
+  },
+  "local_tests": {
+    "host": 206,
+    "host_subtests": 14,
+    "fork_contract_and_verifier_tests": 98
+  },
+  "visual_qa": "Viewed v7 Excavate batch EE partial-count env0 and initial env1; terrain, complete surrounding walls and bucket visible.",
+  "n1_regression": {
+    "archive_sha256": "daf46c93246e0555936b784e2c49fb430445d68aecebb46bce75349d9de64e37",
+    "protocol": {
+      "declared_at_utc": "2026-09-08T17:59:02.315868+00:00",
+      "input_sha256": "6b443012ea79860d3f52640ef8a349ba6757a1b406eee3c5c16ec26e04e550ef",
+      "request_sha256": "61fe78bcb71232e9940a4539cd8eaeda8061746d61a1febeb3213ccea07c7258",
+      "probe_sha256": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+      "runner_sha256": "956f4962a88127da06b4ba1e02f8af7bbe3a8289dae64696835813bb846b198d",
+      "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+      "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+      "cases": [
+        {
+          "name": "Excavate-pd_ee_delta_pose_align-gpu",
+          "task": "Excavate",
+          "backend": "gpu",
+          "control_mode": "pd_ee_delta_pose_align"
+        },
+        {
+          "name": "Excavate-pd_ee_delta_pose_align-cpu",
+          "task": "Excavate",
+          "backend": "cpu",
+          "control_mode": "pd_ee_delta_pose_align"
+        }
+      ],
+      "checkpoint_exact_groups": [
+        "mpm",
+        "mpm_material",
+        "mpm_drives",
+        "controller",
+        "task",
+        "task_particles"
+      ],
+      "joint_replay_limit": 0.001,
+      "scope": "Native N1 Excavate CPU/GPU controller and dictionary/flat/rebuilt checkpoint regression after batching refactor and selected-actor GPU compatibility fix. Same probe/limits as23case lifecyclev2; full reference parity remains incomplete.",
+      "regression_reason": "Rerun identical23case/69restore CPU/GPU lifecycle matrix across all6tasks after batched controller support. Same probe, case recipes and acceptance gates asv1; latest runtime includes published shared-world/reset/render fixes and per-env native IK changes. Strict reference/particle parity failures elsewhere remain retained."
+    },
+    "verdict": {
+      "passed": true,
+      "failures": [],
+      "reports": {
+        "Excavate-pd_ee_delta_pose_align-gpu": {
+          "exact_checkpoints": {
+            "dict": true,
+            "flat": true,
+            "reconfigure": true
+          },
+          "replay_errors": {
+            "dict": {
+              "x": 7.040798664093018e-07,
+              "qpos": 2.384185791015625e-07,
+              "qvel": 2.343207597732544e-06,
+              "drive_position": 3.5762786865234375e-07,
+              "drive_velocity": 0.0
+            },
+            "flat": {
+              "x": 9.126961231231689e-07,
+              "qpos": 2.384185791015625e-07,
+              "qvel": 2.343207597732544e-06,
+              "drive_position": 3.5762786865234375e-07,
+              "drive_velocity": 0.0
+            },
+            "reconfigure": {
+              "x": 9.909272193908691e-07,
+              "qpos": 2.384185791015625e-07,
+              "qvel": 2.343207597732544e-06,
+              "drive_position": 3.5762786865234375e-07,
+              "drive_velocity": 0.0
+            }
+          },
+          "robot_motion_max_abs": 0.004632830619812012,
+          "particle_count": 11056,
+          "changed_particle_count": true
+        },
+        "Excavate-pd_ee_delta_pose_align-cpu": {
+          "exact_checkpoints": {
+            "dict": true,
+            "flat": true,
+            "reconfigure": true
+          },
+          "replay_errors": {
+            "dict": {
+              "x": 3.079324960708618e-05,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "flat": {
+              "x": 1.1920928955078125e-07,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "reconfigure": {
+              "x": 3.0741095542907715e-05,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            }
+          },
+          "robot_motion_max_abs": 0.004633069038391113,
+          "particle_count": 11056,
+          "changed_particle_count": true
+        }
+      },
+      "scope": "Native N1 Excavate CPU/GPU controller and dictionary/flat/rebuilt checkpoint regression after batching refactor and selected-actor GPU compatibility fix. Same probe/limits as23case lifecyclev2; full reference parity remains incomplete.",
+      "full_port_complete": false
+    },
+    "source_audit": {
+      "source_identical_to": "gpu-batch-v7",
+      "probe_identical_to": "gpu-lifecycle-v2",
+      "gates_unchanged": true,
+      "reason": "N1 CPU/GPU Excavate compatibility after per-env task refactor and shared actor-reset fix"
+    }
+  }
+}

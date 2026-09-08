@@ -1,4 +1,4 @@
-"""Record real shared-world Fill tasks and partial-reset isolation."""
+"""Record real shared-world bucket tasks and partial-reset isolation."""
 import argparse
 import hashlib
 import json
@@ -53,14 +53,16 @@ def run(args):
         sapien.physx.enable_gpu()
         sys.path.insert(0, str(args.source))
         from mani_skill.envs.softbody.fill import FillEnv
-        from mani_skill.envs.softbody.geometry import visual_meshes
+        from mani_skill.envs.softbody.excavate import ExcavateEnv
+        from mani_skill.envs.softbody.geometry import visual_meshes, convex_collision_meshes
+        task_class = {'Fill': FillEnv, 'Excavate': ExcavateEnv}[case['task']]
         count = len(case['seeds'])
         offsets = case.get('scene_offsets')
         if offsets is not None:
             offsets = np.asarray(offsets, dtype=np.float32)
             if offsets.shape != (count, 3) or not np.isfinite(offsets).all():
                 raise ValueError('Invalid diagnostic native scene offsets')
-        class DiagnosticFillEnv(FillEnv):
+        class DiagnosticTaskEnv(task_class):
             def _setup_scene(self):
                 super()._setup_scene()
                 if offsets is not None:
@@ -70,9 +72,11 @@ def run(args):
                     for scene, offset in zip(self.scene.sub_scenes, offsets):
                         self.scene.px.set_scene_offset(scene, offset)
         kwargs = dict(num_envs=count, sim_backend='physx_cuda', obs_mode='state_dict', control_mode=case['control_mode'])
+        if 'reward_mode' in case:
+            kwargs['reward_mode'] = case['reward_mode']
         if count > 1:
             kwargs['mpm_batch_particle_capacity'] = case['capacity']
-        env = DiagnosticFillEnv(**kwargs)
+        env = DiagnosticTaskEnv(**kwargs)
         env.reset(seed=case['seeds'])
         original_system = env.scene.px
         arm = env.agent.controller.controllers['arm']
@@ -93,6 +97,7 @@ def run(args):
                     return result
             arm.pmodels = [RecordedIK(model, i) for i, model in enumerate(original_models)]
         report.update(num_envs=env.num_envs, physics_system=type(env.scene.px).__name__,
+                      reward_mode=env.reward_mode,
                       scene_offsets=[env.scene.px.get_scene_offset(s).tolist() for s in env.scene.sub_scenes],
                       shared_native_system=all(s.physx_system is env.scene.px for s in env.scene.sub_scenes),
                       world_couplers=len(env.mpm_gpu_world.couplers),
@@ -115,6 +120,14 @@ def run(args):
             report['files'][path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
         def dump(label):
             state = flatten(env.get_state_dict(), 'state/')
+            if case['task'] == 'Excavate':
+                info = env.evaluate()
+                state.update(flatten(info, 'reported/'))
+                state['reported/reward'] = env.compute_dense_reward(None, None, info).cpu().numpy().copy()
+                state['reported/target'] = env._get_obs_extra(info)['target'].cpu().numpy().copy()
+                state['bucket_pose'] = np.array([env.rigid_pose(b).to_transformation_matrix() for b in env.buckets])
+                for i in range(count):
+                    state[f'reported/inside_bucket/{i}'] = env.particles_inside_bucket(i)
             if case.get('controller_lifecycle') and 'ee' in case['control_mode']:
                 current_arm = env.agent.controller.controllers['arm']
                 state.update(ee_pose_at_base=current_arm.ee_pose_at_base.raw_pose.cpu().numpy().copy(),
@@ -134,11 +147,20 @@ def run(args):
             robots = env.agent.robot._objs
             def pose(p):
                 return np.r_[p.p, p.q]
-            save(label, dict(robot_mass=np.array([[b.mass for b in r.links] for r in robots]),
+            model = dict(robot_mass=np.array([[b.mass for b in r.links] for r in robots]),
                              robot_inertia=np.array([[b.inertia for b in r.links] for r in robots]),
                              robot_com=np.array([[pose(b.cmass_local_pose) for b in r.links] for r in robots]),
                              joint_parent_pose=np.array([[pose(j.pose_in_parent) for j in r.joints] for r in robots]),
-                             joint_child_pose=np.array([[pose(j.pose_in_child) for j in r.joints] for r in robots])))
+                             joint_child_pose=np.array([[pose(j.pose_in_child) for j in r.joints] for r in robots]))
+            if case['task'] == 'Excavate':
+                bodies = [[wall._bodies[i] for wall in env.walls] for i in range(count)]
+                model.update(wall_mass=np.array([[b.mass for b in row] for row in bodies]),
+                    wall_inertia=np.array([[b.inertia for b in row] for row in bodies]),
+                    wall_com=np.array([[pose(b.cmass_local_pose) for b in row] for row in bodies]),
+                    wall_half_size=np.array([[b.collision_shapes[0].half_size for b in row] for row in bodies]),
+                    bucket_reward_hull=np.array([convex_collision_meshes(b)[0].vertices for b in env.buckets]),
+                    stored_reward_hull=np.array([v[:, :3] for v in env.vertices_mats]))
+            save(label, model)
         def render(label):
             before = flatten(env.get_state_dict(), 'checkpoint/')
             before_rigid = env.scene.px.cuda_rigid_body_data.torch().cpu().numpy().copy()

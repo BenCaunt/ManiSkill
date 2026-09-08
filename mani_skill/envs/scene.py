@@ -1004,11 +1004,13 @@ class ManiSkillScene:
 
     def _gpu_apply_all(self, env_idx=None):
         """
-        Apply simulation buffers, restricting physical poses to selected scenes.
+        Apply simulation buffers, restricting articulation roots to selected scenes.
 
         Reapplying an untouched root pose can change its rounded native pose.
-        Joint buffers keep the full apply path: SAPIEN 3.0.3's indexed joint
-        methods ignore the supplied indices and apply a prefix instead.
+        Other buffers keep the full apply path for SAPIEN 3.0.3 compatibility.
+        Its indexed joint methods ignore indices, while indexed actor updates
+        compact the pose data but retain original PxGpuActorPair.srcIndex values.
+        That mismatch can assign one selected actor another actor's pose.
         """
         assert (
             not self._needs_fetch
@@ -1035,7 +1037,9 @@ class ManiSkillScene:
             # CudaArray borrows these pointers; retain their storage through fetch.
             self._gpu_reset_index_buffers = (rigid, articulation)
             if rigid.numel():
-                self.px.gpu_apply_rigid_dynamic_data(sapien.CudaArray(rigid))
+                # Keep native actor data and srcIndex in the same full layout.
+                # Unselected rows already contain their unchanged fetched state.
+                self.px.gpu_apply_rigid_dynamic_data()
         else:
             self.px.gpu_apply_rigid_dynamic_data()
         self.px.gpu_apply_articulation_qpos()

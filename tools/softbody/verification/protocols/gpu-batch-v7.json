@@ -1,0 +1,166 @@
+{
+  "declared_at_utc": "2026-09-08T17:56:58.325740+00:00",
+  "input_sha256": "a8d55b383ccfdef415d725798f8c929ff8fecf6df21e9ad034afbfe8e13f5ccb",
+  "request_sha256": "e776d3bc0af079db0a947b970ca5a22818709e335af44b8b05c00ca633c6a610",
+  "probe_sha256": "701a77261b560995a3626152df178913e069f4564a3eea1d2368ece12de0d049",
+  "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "cases": [
+    {
+      "name": "Excavate-single-101",
+      "task": "Excavate",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        101
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense"
+    },
+    {
+      "name": "Excavate-single-17",
+      "task": "Excavate",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        17
+      ],
+      "action_scales": [
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense"
+    },
+    {
+      "name": "Excavate-batch-joint",
+      "task": "Excavate",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 32768,
+      "controller_lifecycle": true,
+      "reward_mode": "dense"
+    },
+    {
+      "name": "Excavate-batch-ee",
+      "task": "Excavate",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_align",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 32768,
+      "controller_lifecycle": true,
+      "reward_mode": "dense"
+    },
+    {
+      "name": "Fill-reset-regression-joint",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Fill-reset-regression-ee",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    }
+  ],
+  "exact_checkpoint_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_meta",
+    "mpm_drives",
+    "controller",
+    "task",
+    "actors"
+  ],
+  "rendering": {
+    "minimum_particle_pixels": 10,
+    "surface_distance_error_limit_m": 0.003,
+    "require_visual_pool_checks": true,
+    "require_native_buffer_checks": true,
+    "require_rigid_visual_bounds": true,
+    "minimum_rigid_pixels": 10,
+    "rigid_bound_error_limit_m": 0.003
+  },
+  "scope": "Native Excavate N2 shared-world lifecycle with differing seeded terrain/counts and targets, original task geometry/materials, independent native bucket-hull membership/outcomes/rewards, exact selected/untouched checkpoint isolation and count/flat/reconfigure resets, independent EE IK models, original camera gates. Initial particle/material/target/robot recipe must equal independent N1 seeds and N1 seed101 old frozen source. Joint replay retains existing1e-3 lifecycle limit; particle replay errors descriptive. No full episode, success demonstration or reference parity claim; all prior strict failures retained. Adds exact selected actor checkpoint restoration and two N2 Fill reset regressions. v6 wall-pose corruption is retained as a failed post-run actor audit.",
+  "compare_batch_vs_single": false,
+  "joint_replay_limit": 0.001,
+  "target_pose_limit": 1e-06,
+  "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+  "reward_limit": 1e-06,
+  "baseline": {
+    "label": "gpu-lifecycle-v2",
+    "archive_sha256": "5e5796221a71d41170e3cd5b996281a73e245f714d22a952ff04a460cc934aa2",
+    "files": {
+      "execution.json": "6537c5ee24bd667f5efc97977ea22ff4b4e41950635c663a587a529f3f750b65",
+      "request.json": "7139aef98858eb9c6f7615b5e4b03012eb69bb12d5a098359f0136f6d1e36e82",
+      "probe.py": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+      "source/excavate.py": "2673371a834bb32e3916843d58cb9665e4893b9ab1ef0a1dc7dffa330e158371",
+      "Excavate-pd_ee_delta_pose_align-gpu/initial.npz": "52b15a70db132ac01722a8792cdaeab96ffe8367ee03dedb6fe1432c05dd5184",
+      "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz": "92e35aa79b811c30c4b5ce9ae97ff062aa46a9c4b92c9839bc3b776de52884da",
+      "Excavate-pd_ee_delta_pose_align-gpu/result.json": "984c245516cfbe8b6cc74755c0b4d283f7b0d8f30e2b3a38e22ee3e320a3ed29"
+    },
+    "snapshot": "Excavate-pd_ee_delta_pose_align-gpu/initial.npz",
+    "checkpoint": "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz",
+    "new_case": "Excavate-single-101"
+  },
+  "initial_comparisons": [
+    [
+      "Excavate-batch-joint",
+      0,
+      "Excavate-single-101"
+    ],
+    [
+      "Excavate-batch-joint",
+      1,
+      "Excavate-single-17"
+    ],
+    [
+      "Excavate-batch-ee",
+      0,
+      "Excavate-single-101"
+    ],
+    [
+      "Excavate-batch-ee",
+      1,
+      "Excavate-single-17"
+    ]
+  ]
+}
