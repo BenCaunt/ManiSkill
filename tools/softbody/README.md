@@ -442,3 +442,21 @@ Goal pixels match the actual raster readback. Its checkpoint replay maximum is
 Fill, Excavate, Hang and Pour lifecycle regression probes also pass with the
 shared reference robot-parameter helper used by Write. The Write runtime remains
 one CPU PhysX scene with CUDA MPM; GPU PhysX batching is not implemented.
+
+The first full stroke has maximum native/reference particle displacement
+difference 1.579 mm, COM difference 3.717 micrometers and joint difference
+0.000842 rad. Fresh-reference versus frozen-reference replay differs by up to
+0.131 mm in particle position and 0.443 micrometers in COM. Their maximum
+height-pixel differences are 22 mm and 20 mm respectively; sphere-edge inclusion
+can amplify very small coordinate changes. Matching IoU does not remove those
+trajectory differences.
+
+A second reference-only controller experiment increases its maximum Cartesian
+translation command from 4 mm to 12 mm, selected from reference tracking lag
+before inspecting the port result. Robot drive parameters, material, goal,
+200-control schedule and success threshold remain unchanged. The reference
+feedback run finishes at IoU 92/137 = 0.671533; the independent reference and
+port frozen-action replays both finish at 93/137 = 0.678832. Every recorded
+success label and rounded IoU passes the external audit. All three remain
+unsuccessful. Both experiments are retained; neither is a benchmark success
+or calibrated physics parity result.
