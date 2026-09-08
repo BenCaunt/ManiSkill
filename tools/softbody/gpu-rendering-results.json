@@ -1,0 +1,1235 @@
+{
+  "updated_at": "2026-09-08T16:14:53.000289+00:00",
+  "scope": "Single-environment rendering correctness and reset lifecycle; not full port acceptance",
+  "full_port_complete": false,
+  "reference_commit": "493be36121a9dd06071a57172274babe617b789f",
+  "candidate_base_commit": "103f06a17eea9b8f9500bc8bd0d859ad8f6a1f8a",
+  "runs": {
+    "gpu-rendering-v2": {
+      "archive_sha256": "e20066a128bec2323832c110da9a16984454ea7b21a9a8ecee140e0157f13bdf",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T15:37:51.247503+00:00",
+        "input_sha256": "f6bad2314b8934306b3fa4af25ad5063afd1620dd7a9f4c6416979294a10416c",
+        "request_sha256": "cb99dc555de7e07d2f31744f9c9c73c0f096a528c3127b3ff7e5c75b47a0521b",
+        "probe_sha256": "db58227ed9dba0a90a7c173dbec0651107b9610dc073643d0486a1d045d65657",
+        "runner_sha256": "42149549e2c750f04f3293554411afafeca50a3fe51ef1c747fbbdbd2db1bcfa",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "cases": [
+          {
+            "name": "Fill-cpu",
+            "task": "Fill",
+            "backend": "cpu",
+            "control_mode": "pd_joint_target_delta_pos"
+          },
+          {
+            "name": "Fill-gpu",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos"
+          },
+          {
+            "name": "Write-cpu",
+            "task": "Write",
+            "backend": "cpu",
+            "control_mode": "pd_joint_target_delta_pos"
+          },
+          {
+            "name": "Write-gpu",
+            "task": "Write",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos"
+          }
+        ],
+        "frames": [
+          "initial",
+          "stepped",
+          "restored",
+          "reconfigured"
+        ],
+        "minimum_particle_pixels": 10,
+        "surface_distance_error_limit_m": 0.003,
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching."
+      },
+      "verdict": {
+        "passed": false,
+        "failures": [
+          "Worker failed; retained case errors follow",
+          "Fill-gpu: RuntimeError: Modifying a scene (add/remove object/camera) is not allowed after creating the batched render system.",
+          "Fill-gpu/stepped: Particle pixels do not match physical spheres: surface error 0.026215528210325013 m",
+          "Write-cpu/initial: Particle scene IDs exceed the segmentation texture range",
+          "Write-cpu/stepped: Particle scene IDs exceed the segmentation texture range",
+          "Write-cpu/restored: Particle scene IDs exceed the segmentation texture range",
+          "Write-gpu: RuntimeError: Modifying a scene (add/remove object/camera) is not allowed after creating the batched render system.",
+          "Write-gpu/initial: Particle scene IDs exceed the segmentation texture range",
+          "Write-gpu/stepped: Particle scene IDs exceed the segmentation texture range"
+        ],
+        "reports": {
+          "Fill-cpu": {
+            "initial": {
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "stepped": {
+              "particle_pixels": 1005,
+              "visible_particles": 184,
+              "max_surface_error_m": 0.0014246992275105843,
+              "median_surface_error_m": 0.0005559281082711822,
+              "failures": []
+            },
+            "restored": {
+              "particle_pixels": 986,
+              "visible_particles": 186,
+              "max_surface_error_m": 0.0014750777504724884,
+              "median_surface_error_m": 0.0005432589530336839,
+              "failures": []
+            },
+            "reconfigured": {
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            }
+          },
+          "Fill-gpu": {
+            "initial": {
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "stepped": {
+              "particle_pixels": 1216,
+              "visible_particles": 219,
+              "max_surface_error_m": 0.026215528210325013,
+              "median_surface_error_m": 0.019562740246611338,
+              "failures": [
+                "Particle pixels do not match physical spheres: surface error 0.026215528210325013 m"
+              ]
+            }
+          },
+          "Write-cpu": {
+            "initial": {
+              "particle_pixels": null,
+              "maximum_particle_id": 38828,
+              "maximum_texture_id": 32767,
+              "failures": [
+                "Particle scene IDs exceed the segmentation texture range"
+              ]
+            },
+            "stepped": {
+              "particle_pixels": null,
+              "maximum_particle_id": 38828,
+              "maximum_texture_id": 32767,
+              "failures": [
+                "Particle scene IDs exceed the segmentation texture range"
+              ]
+            },
+            "restored": {
+              "particle_pixels": null,
+              "maximum_particle_id": 58232,
+              "maximum_texture_id": 32767,
+              "failures": [
+                "Particle scene IDs exceed the segmentation texture range"
+              ]
+            },
+            "reconfigured": {
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            }
+          },
+          "Write-gpu": {
+            "initial": {
+              "particle_pixels": null,
+              "maximum_particle_id": 38828,
+              "maximum_texture_id": 32767,
+              "failures": [
+                "Particle scene IDs exceed the segmentation texture range"
+              ]
+            },
+            "stepped": {
+              "particle_pixels": null,
+              "maximum_particle_id": 38828,
+              "maximum_texture_id": 32767,
+              "failures": [
+                "Particle scene IDs exceed the segmentation texture range"
+              ]
+            }
+          }
+        },
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching.",
+        "full_port_complete": false
+      },
+      "preliminary_verdict_retained": true
+    },
+    "gpu-rendering-v3": {
+      "archive_sha256": "a36672140b0d8c83a31274b7bc46d141f36b5939c5013a11d5545fdea12d0ad1",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T15:45:42.363792+00:00",
+        "input_sha256": "3e8238e4e003c73b721e158787be9c85386e9f3dd89105b7daab35542750da2b",
+        "request_sha256": "fd3e5dd1a2b8f698e9ba3bdb95d4c7746c870efdee7ef3dade4d2d429c47ef60",
+        "probe_sha256": "db58227ed9dba0a90a7c173dbec0651107b9610dc073643d0486a1d045d65657",
+        "runner_sha256": "42149549e2c750f04f3293554411afafeca50a3fe51ef1c747fbbdbd2db1bcfa",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "cases": [
+          {
+            "name": "Fill-cpu",
+            "task": "Fill",
+            "backend": "cpu",
+            "control_mode": "pd_joint_target_delta_pos"
+          },
+          {
+            "name": "Fill-gpu",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos"
+          },
+          {
+            "name": "Write-cpu",
+            "task": "Write",
+            "backend": "cpu",
+            "control_mode": "pd_joint_target_delta_pos"
+          },
+          {
+            "name": "Write-gpu",
+            "task": "Write",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos"
+          }
+        ],
+        "frames": [
+          "initial",
+          "stepped",
+          "restored",
+          "reconfigured"
+        ],
+        "minimum_particle_pixels": 10,
+        "surface_distance_error_limit_m": 0.003,
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching."
+      },
+      "verdict": {
+        "passed": false,
+        "failures": [
+          "Fill-gpu/stepped: Particle pixels do not match physical spheres: surface error 0.026227184538826998 m",
+          "Fill-gpu/restored: Particle pixels do not match physical spheres: surface error 0.02627824608853123 m"
+        ],
+        "reports": {
+          "Fill-cpu": {
+            "initial": {
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "stepped": {
+              "particle_pixels": 1005,
+              "visible_particles": 184,
+              "max_surface_error_m": 0.0014205601103410436,
+              "median_surface_error_m": 0.0005514521198019188,
+              "failures": []
+            },
+            "restored": {
+              "particle_pixels": 986,
+              "visible_particles": 186,
+              "max_surface_error_m": 0.0014741376384570007,
+              "median_surface_error_m": 0.0005424137650853057,
+              "failures": []
+            },
+            "reconfigured": {
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            }
+          },
+          "Fill-gpu": {
+            "initial": {
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "stepped": {
+              "particle_pixels": 1216,
+              "visible_particles": 219,
+              "max_surface_error_m": 0.026227184538826998,
+              "median_surface_error_m": 0.019558113924238237,
+              "failures": [
+                "Particle pixels do not match physical spheres: surface error 0.026227184538826998 m"
+              ]
+            },
+            "restored": {
+              "particle_pixels": 1253,
+              "visible_particles": 224,
+              "max_surface_error_m": 0.02627824608853123,
+              "median_surface_error_m": 0.018863994400381896,
+              "failures": [
+                "Particle pixels do not match physical spheres: surface error 0.02627824608853123 m"
+              ]
+            },
+            "reconfigured": {
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            }
+          },
+          "Write-cpu": {
+            "initial": {
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            },
+            "stepped": {
+              "particle_pixels": 38009,
+              "visible_particles": 1532,
+              "max_surface_error_m": 0.0016062380489143937,
+              "median_surface_error_m": 0.0006137878835851089,
+              "failures": []
+            },
+            "restored": {
+              "particle_pixels": 38011,
+              "visible_particles": 1533,
+              "max_surface_error_m": 0.0016080461521953944,
+              "median_surface_error_m": 0.0006146670992317306,
+              "failures": []
+            },
+            "reconfigured": {
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            }
+          },
+          "Write-gpu": {
+            "initial": {
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            },
+            "stepped": {
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.001758132674973988,
+              "median_surface_error_m": 0.0007758845100474614,
+              "failures": []
+            },
+            "restored": {
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0017623033838817283,
+              "median_surface_error_m": 0.0007821688352766523,
+              "failures": []
+            },
+            "reconfigured": {
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            }
+          }
+        },
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching.",
+        "full_port_complete": false
+      }
+    },
+    "gpu-rendering-v4": {
+      "archive_sha256": "ca26f5cb590485f88e7f29a3770b145b5229aa38bfdd7fada410a9e3d6819ad4",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T15:56:06.390455+00:00",
+        "input_sha256": "edd822419ac6c87f33788363373f19559d385bc72ec41375e6cdc6fe5cc8963b",
+        "request_sha256": "f48e2b0adf7d185ed65f8fd49460fbd44bda321f2c583b9b2ca68b52f18c05b7",
+        "probe_sha256": "df16ba5699d235dfc9a1ee8152fec957ca682f5c19c65a7a7593e6997fdf93a2",
+        "runner_sha256": "3b91d240ecbc0f992a210a367d1c397dc6e94b104d9ee2a977944d63099d33b2",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "cases": [
+          {
+            "name": "Fill-cpu",
+            "task": "Fill",
+            "backend": "cpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "resize": true
+          },
+          {
+            "name": "Fill-gpu",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "resize": true
+          }
+        ],
+        "frames": [
+          "initial",
+          "stepped",
+          "shrunk",
+          "regrown",
+          "expanded",
+          "reconfigured"
+        ],
+        "minimum_particle_pixels": 10,
+        "surface_distance_error_limit_m": 0.003,
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching. Pool shrink/regrow/expansion is an explicit reset-only diagnostic, not a benchmark episode.",
+        "particle_counts": {
+          "initial": 704,
+          "stepped": 704,
+          "shrunk": 352,
+          "regrown": 704,
+          "expanded": 1056,
+          "reconfigured": 704
+        },
+        "require_scene_source": true,
+        "require_visual_pool_checks": true,
+        "require_native_buffer_checks": true
+      },
+      "verdict": {
+        "passed": false,
+        "failures": [
+          "Worker failed; retained case errors follow",
+          "Fill-gpu: ValueError: Expected contiguous float32 render poses on the scene CUDA device"
+        ],
+        "reports": {
+          "Fill-cpu": {
+            "initial": {
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "stepped": {
+              "particle_pixels": 1004,
+              "visible_particles": 185,
+              "max_surface_error_m": 0.0015329063277632637,
+              "median_surface_error_m": 0.0005542180011680851,
+              "failures": []
+            },
+            "shrunk": {
+              "particle_pixels": 925,
+              "visible_particles": 158,
+              "max_surface_error_m": 0.0014753021458656624,
+              "median_surface_error_m": 0.000524688411259357,
+              "failures": []
+            },
+            "regrown": {
+              "particle_pixels": 986,
+              "visible_particles": 186,
+              "max_surface_error_m": 0.0014753021458656624,
+              "median_surface_error_m": 0.000543294555387821,
+              "failures": []
+            },
+            "expanded": {
+              "particle_pixels": 1058,
+              "visible_particles": 198,
+              "max_surface_error_m": 0.0014753021458656624,
+              "median_surface_error_m": 0.000534774197155115,
+              "failures": []
+            },
+            "reconfigured": {
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            }
+          }
+        },
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching. Pool shrink/regrow/expansion is an explicit reset-only diagnostic, not a benchmark episode.",
+        "full_port_complete": false
+      }
+    },
+    "gpu-rendering-v5": {
+      "archive_sha256": "980b028c27b1985c5b8a38d88ac85aa24e793d0b6c71ca3fa030352b9fd2b7c0",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T15:58:52.428759+00:00",
+        "input_sha256": "5e0f7fac417f3696c1a21857bad2bd3e56b36c218371505172fc9c2deef6d127",
+        "request_sha256": "b2d798bcf0c27e6a5cf6e48500d0f991b631e793d62af6f53d00db3a8263d50e",
+        "probe_sha256": "df16ba5699d235dfc9a1ee8152fec957ca682f5c19c65a7a7593e6997fdf93a2",
+        "runner_sha256": "3b91d240ecbc0f992a210a367d1c397dc6e94b104d9ee2a977944d63099d33b2",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "cases": [
+          {
+            "name": "Fill-gpu",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "resize": true
+          }
+        ],
+        "frames": [
+          "initial",
+          "stepped",
+          "shrunk",
+          "regrown",
+          "expanded",
+          "reconfigured"
+        ],
+        "minimum_particle_pixels": 10,
+        "surface_distance_error_limit_m": 0.003,
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching. Pool shrink/regrow/expansion is an explicit reset-only diagnostic, not a benchmark episode.",
+        "particle_counts": {
+          "initial": 704,
+          "stepped": 704,
+          "shrunk": 352,
+          "regrown": 704,
+          "expanded": 1056,
+          "reconfigured": 704
+        },
+        "require_scene_source": true,
+        "require_visual_pool_checks": true,
+        "require_native_buffer_checks": true
+      },
+      "verdict": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Fill-gpu": {
+            "initial": {
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "stepped": {
+              "particle_pixels": 1004,
+              "visible_particles": 185,
+              "max_surface_error_m": 0.0014240448545112202,
+              "median_surface_error_m": 0.0005531631770877524,
+              "failures": []
+            },
+            "shrunk": {
+              "particle_pixels": 1175,
+              "visible_particles": 189,
+              "max_surface_error_m": 0.001474245057605216,
+              "median_surface_error_m": 0.0005163195724571194,
+              "failures": []
+            },
+            "regrown": {
+              "particle_pixels": 1303,
+              "visible_particles": 236,
+              "max_surface_error_m": 0.0015451842677826097,
+              "median_surface_error_m": 0.0005077282937270998,
+              "failures": []
+            },
+            "expanded": {
+              "particle_pixels": 2359,
+              "visible_particles": 420,
+              "max_surface_error_m": 0.0015451842677826097,
+              "median_surface_error_m": 0.0005236483764484885,
+              "failures": []
+            },
+            "reconfigured": {
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            }
+          }
+        },
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching. Pool shrink/regrow/expansion is an explicit reset-only diagnostic, not a benchmark episode.",
+        "full_port_complete": false
+      },
+      "visual_qa": {
+        "particle_gate_pass": true,
+        "full_visual_gate_pass": false,
+        "images": [
+          "evidence-gpu-rendering-v5/Fill-gpu/stepped.png",
+          "evidence-gpu-rendering-v5/Fill-gpu/expanded.png"
+        ],
+        "finding": "Robot rendered in different pose after count-changing reset; native rigid pose rows differ from initial by at most0.003456 while rendered robot changes substantially. New bound-based verifier and repeated-capture diagnostic added; earlier particle-only PASS does not validate rigid visuals."
+      }
+    },
+    "gpu-rendering-v6": {
+      "archive_sha256": "15b56c67d1fb7a277c4b3007e1864ac77872cfac55f3abfc438157600fef43e2",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T16:05:19.258895+00:00",
+        "input_sha256": "c1d2b1aac99d35d8672f77eb07b0b5952f6ef768809e0e4bafa586f808daf918",
+        "request_sha256": "d18be87f9c689363634b4dd1756687b36d83a5d1d6197864b5a189510d898c32",
+        "probe_sha256": "c1c3004c498653f3463542f3513201093efd9ec2d81892ccbb37c5e0ead0e77b",
+        "runner_sha256": "3b91d240ecbc0f992a210a367d1c397dc6e94b104d9ee2a977944d63099d33b2",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "cases": [
+          {
+            "name": "Fill-gpu",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "resize": true,
+            "rigid_bounds": true,
+            "repeat_frames": true
+          }
+        ],
+        "frames": [
+          "initial",
+          "initial-repeat",
+          "stepped",
+          "stepped-repeat",
+          "shrunk",
+          "shrunk-repeat",
+          "regrown",
+          "regrown-repeat",
+          "expanded",
+          "expanded-repeat",
+          "reconfigured",
+          "reconfigured-repeat"
+        ],
+        "minimum_particle_pixels": 10,
+        "surface_distance_error_limit_m": 0.003,
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching. Pool shrink/regrow/expansion is an explicit reset-only diagnostic, not a benchmark episode. Also check robot pixels against local visual-mesh bounds transformed by actual native rigid poses, and repeat captures without stepping.",
+        "particle_counts": {
+          "initial": 704,
+          "initial-repeat": 704,
+          "stepped": 704,
+          "stepped-repeat": 704,
+          "shrunk": 352,
+          "shrunk-repeat": 352,
+          "regrown": 704,
+          "regrown-repeat": 704,
+          "expanded": 1056,
+          "expanded-repeat": 1056,
+          "reconfigured": 704,
+          "reconfigured-repeat": 704
+        },
+        "require_scene_source": true,
+        "require_visual_pool_checks": true,
+        "require_native_buffer_checks": true,
+        "require_rigid_visual_bounds": true,
+        "minimum_rigid_pixels": 10,
+        "rigid_bound_error_limit_m": 0.003
+      },
+      "verdict": {
+        "passed": false,
+        "failures": [
+          "Fill-gpu/shrunk: Robot pixels fall outside physical-pose visual bounds: 0.6829469685350993 m",
+          "Fill-gpu/regrown: Robot pixels fall outside physical-pose visual bounds: 0.6829469685350993 m",
+          "Fill-gpu/expanded: Robot pixels fall outside physical-pose visual bounds: 0.6829469685350993 m"
+        ],
+        "reports": {
+          "Fill-gpu": {
+            "initial": {
+              "rigid_pixels": 35410,
+              "max_rigid_bound_violation_m": 0.0014653322067091912,
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "initial-repeat": {
+              "rigid_pixels": 35410,
+              "max_rigid_bound_violation_m": 0.0014653322067091912,
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "stepped": {
+              "rigid_pixels": 33931,
+              "max_rigid_bound_violation_m": 0.0014265921732930231,
+              "particle_pixels": 1004,
+              "visible_particles": 181,
+              "max_surface_error_m": 0.0014391203393612135,
+              "median_surface_error_m": 0.0005488199370772898,
+              "failures": []
+            },
+            "stepped-repeat": {
+              "rigid_pixels": 33931,
+              "max_rigid_bound_violation_m": 0.0014265921732930231,
+              "particle_pixels": 1004,
+              "visible_particles": 181,
+              "max_surface_error_m": 0.0014391203393612135,
+              "median_surface_error_m": 0.0005488199370772898,
+              "failures": []
+            },
+            "shrunk": {
+              "rigid_pixels": 23468,
+              "max_rigid_bound_violation_m": 0.6829469685350993,
+              "particle_pixels": 1175,
+              "visible_particles": 189,
+              "max_surface_error_m": 0.0014746132617202827,
+              "median_surface_error_m": 0.0005165391757806568,
+              "failures": [
+                "Robot pixels fall outside physical-pose visual bounds: 0.6829469685350993 m"
+              ]
+            },
+            "shrunk-repeat": {
+              "rigid_pixels": 35337,
+              "max_rigid_bound_violation_m": 0.001418024872272959,
+              "particle_pixels": 925,
+              "visible_particles": 158,
+              "max_surface_error_m": 0.0014746132617202827,
+              "median_surface_error_m": 0.0005261562493939858,
+              "failures": []
+            },
+            "regrown": {
+              "rigid_pixels": 23468,
+              "max_rigid_bound_violation_m": 0.6829469685350993,
+              "particle_pixels": 1303,
+              "visible_particles": 236,
+              "max_surface_error_m": 0.0015450740271246454,
+              "median_surface_error_m": 0.0005081176935040907,
+              "failures": [
+                "Robot pixels fall outside physical-pose visual bounds: 0.6829469685350993 m"
+              ]
+            },
+            "regrown-repeat": {
+              "rigid_pixels": 35276,
+              "max_rigid_bound_violation_m": 0.001418024872272959,
+              "particle_pixels": 986,
+              "visible_particles": 186,
+              "max_surface_error_m": 0.0014746132617202827,
+              "median_surface_error_m": 0.0005432521800698524,
+              "failures": []
+            },
+            "expanded": {
+              "rigid_pixels": 23468,
+              "max_rigid_bound_violation_m": 0.6829469685350993,
+              "particle_pixels": 2359,
+              "visible_particles": 420,
+              "max_surface_error_m": 0.0015450740271246454,
+              "median_surface_error_m": 0.0005236200035657235,
+              "failures": [
+                "Robot pixels fall outside physical-pose visual bounds: 0.6829469685350993 m"
+              ]
+            },
+            "expanded-repeat": {
+              "rigid_pixels": 35248,
+              "max_rigid_bound_violation_m": 0.001418024872272959,
+              "particle_pixels": 1058,
+              "visible_particles": 198,
+              "max_surface_error_m": 0.0014746132617202827,
+              "median_surface_error_m": 0.0005366174402602901,
+              "failures": []
+            },
+            "reconfigured": {
+              "rigid_pixels": 35410,
+              "max_rigid_bound_violation_m": 0.0014653322067091912,
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "reconfigured-repeat": {
+              "rigid_pixels": 35410,
+              "max_rigid_bound_violation_m": 0.0014653322067091912,
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            }
+          }
+        },
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching. Pool shrink/regrow/expansion is an explicit reset-only diagnostic, not a benchmark episode. Also check robot pixels against local visual-mesh bounds transformed by actual native rigid poses, and repeat captures without stepping.",
+        "full_port_complete": false
+      }
+    },
+    "gpu-rendering-v7": {
+      "archive_sha256": "9b0958c8b8749dff56c84cc96cde5eb7f080a9082758275fb679ae9d907f62b2",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T16:07:35.636004+00:00",
+        "input_sha256": "e7dc93516b91dc9d9d6ae46a02290fd21cfefdd8f6b8bbcdcf74f757136d8ffb",
+        "request_sha256": "26bb1a9b096c4d67e75bc15bef7af9323624a85dabacf7d2ff76149669aebd72",
+        "probe_sha256": "c1c3004c498653f3463542f3513201093efd9ec2d81892ccbb37c5e0ead0e77b",
+        "runner_sha256": "3b91d240ecbc0f992a210a367d1c397dc6e94b104d9ee2a977944d63099d33b2",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "cases": [
+          {
+            "name": "Fill-gpu",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "resize": true,
+            "rigid_bounds": true,
+            "repeat_frames": true
+          }
+        ],
+        "frames": [
+          "initial",
+          "initial-repeat",
+          "stepped",
+          "stepped-repeat",
+          "shrunk",
+          "shrunk-repeat",
+          "regrown",
+          "regrown-repeat",
+          "expanded",
+          "expanded-repeat",
+          "reconfigured",
+          "reconfigured-repeat"
+        ],
+        "minimum_particle_pixels": 10,
+        "surface_distance_error_limit_m": 0.003,
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching. Pool shrink/regrow/expansion is an explicit reset-only diagnostic, not a benchmark episode. Also check robot pixels against local visual-mesh bounds transformed by actual native rigid poses, and repeat captures without stepping.",
+        "particle_counts": {
+          "initial": 704,
+          "initial-repeat": 704,
+          "stepped": 704,
+          "stepped-repeat": 704,
+          "shrunk": 352,
+          "shrunk-repeat": 352,
+          "regrown": 704,
+          "regrown-repeat": 704,
+          "expanded": 1056,
+          "expanded-repeat": 1056,
+          "reconfigured": 704,
+          "reconfigured-repeat": 704
+        },
+        "require_scene_source": true,
+        "require_visual_pool_checks": true,
+        "require_native_buffer_checks": true,
+        "require_rigid_visual_bounds": true,
+        "minimum_rigid_pixels": 10,
+        "rigid_bound_error_limit_m": 0.003
+      },
+      "verdict": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Fill-gpu": {
+            "initial": {
+              "rigid_pixels": 35410,
+              "max_rigid_bound_violation_m": 0.0014653322067091912,
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "initial-repeat": {
+              "rigid_pixels": 35410,
+              "max_rigid_bound_violation_m": 0.0014653322067091912,
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "stepped": {
+              "rigid_pixels": 33930,
+              "max_rigid_bound_violation_m": 0.0014265226989656765,
+              "particle_pixels": 1005,
+              "visible_particles": 182,
+              "max_surface_error_m": 0.0014232160418269934,
+              "median_surface_error_m": 0.0005601207214240571,
+              "failures": []
+            },
+            "stepped-repeat": {
+              "rigid_pixels": 33930,
+              "max_rigid_bound_violation_m": 0.0014265226989656765,
+              "particle_pixels": 1005,
+              "visible_particles": 182,
+              "max_surface_error_m": 0.0014232160418269934,
+              "median_surface_error_m": 0.0005601207214240571,
+              "failures": []
+            },
+            "shrunk": {
+              "rigid_pixels": 35337,
+              "max_rigid_bound_violation_m": 0.001418024872272959,
+              "particle_pixels": 925,
+              "visible_particles": 158,
+              "max_surface_error_m": 0.0014752842355149937,
+              "median_surface_error_m": 0.0005261028635727798,
+              "failures": []
+            },
+            "shrunk-repeat": {
+              "rigid_pixels": 35337,
+              "max_rigid_bound_violation_m": 0.001418024872272959,
+              "particle_pixels": 925,
+              "visible_particles": 158,
+              "max_surface_error_m": 0.0014752842355149937,
+              "median_surface_error_m": 0.0005261028635727798,
+              "failures": []
+            },
+            "regrown": {
+              "rigid_pixels": 35276,
+              "max_rigid_bound_violation_m": 0.001418024872272959,
+              "particle_pixels": 986,
+              "visible_particles": 186,
+              "max_surface_error_m": 0.0014752842355149937,
+              "median_surface_error_m": 0.0005431468952201775,
+              "failures": []
+            },
+            "regrown-repeat": {
+              "rigid_pixels": 35276,
+              "max_rigid_bound_violation_m": 0.001418024872272959,
+              "particle_pixels": 986,
+              "visible_particles": 186,
+              "max_surface_error_m": 0.0014752842355149937,
+              "median_surface_error_m": 0.0005431468952201775,
+              "failures": []
+            },
+            "expanded": {
+              "rigid_pixels": 35248,
+              "max_rigid_bound_violation_m": 0.001418024872272959,
+              "particle_pixels": 1058,
+              "visible_particles": 198,
+              "max_surface_error_m": 0.0014752842355149937,
+              "median_surface_error_m": 0.0005347841733367178,
+              "failures": []
+            },
+            "expanded-repeat": {
+              "rigid_pixels": 35248,
+              "max_rigid_bound_violation_m": 0.001418024872272959,
+              "particle_pixels": 1058,
+              "visible_particles": 198,
+              "max_surface_error_m": 0.0014752842355149937,
+              "median_surface_error_m": 0.0005347841733367178,
+              "failures": []
+            },
+            "reconfigured": {
+              "rigid_pixels": 35410,
+              "max_rigid_bound_violation_m": 0.0014653322067091912,
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            },
+            "reconfigured-repeat": {
+              "rigid_pixels": 35410,
+              "max_rigid_bound_violation_m": 0.0014653322067091912,
+              "particle_pixels": 1262,
+              "visible_particles": 226,
+              "max_surface_error_m": 0.0015480025122622735,
+              "median_surface_error_m": 0.0004848182231410921,
+              "failures": []
+            }
+          }
+        },
+        "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching. Pool shrink/regrow/expansion is an explicit reset-only diagnostic, not a benchmark episode. Also check robot pixels against local visual-mesh bounds transformed by actual native rigid poses, and repeat captures without stepping.",
+        "full_port_complete": false
+      }
+    },
+    "gpu-rendering-v8": {
+      "archive_sha256": "fdb5f5e713001afad3ce32626090854eea7f6d34ccba65783c35b4578bc3f889",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T16:09:59.531758+00:00",
+        "input_sha256": "52ddfdb4340df24734baaef21a2f473ab4c0a442dc672eca374b7767b6ab5938",
+        "request_sha256": "9392e0778e3a32e7168f3852c0c997e95320a0d6d01c72fc37e4716d0069dfb9",
+        "probe_sha256": "20d430f5b03b48ccedafa1b76d6069a2f98e8c666fb3cbade69830689e3d9250",
+        "runner_sha256": "3b91d240ecbc0f992a210a367d1c397dc6e94b104d9ee2a977944d63099d33b2",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "cases": [
+          {
+            "name": "Fill-cpu-sensor",
+            "task": "Fill",
+            "backend": "cpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "resize": true,
+            "rigid_bounds": true,
+            "camera": "base_camera",
+            "obs_mode": "rgb+depth+segmentation"
+          },
+          {
+            "name": "Fill-gpu-sensor",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "resize": true,
+            "rigid_bounds": true,
+            "camera": "base_camera",
+            "obs_mode": "rgb+depth+segmentation"
+          }
+        ],
+        "frames": [
+          "initial",
+          "stepped",
+          "shrunk",
+          "regrown",
+          "expanded",
+          "reconfigured"
+        ],
+        "minimum_particle_pixels": 10,
+        "surface_distance_error_limit_m": 0.003,
+        "scope": "Actual native sensor observation RGB/depth/segmentation, particle sphere surfaces and robot visual bounds at physical poses; exact before/after physics and native CUDA buffer; count-changing reset and reconfigure. Same3mm quantization allowance. Not full geometry, reference parity, manipulation or batching.",
+        "particle_counts": {
+          "initial": 704,
+          "stepped": 704,
+          "shrunk": 352,
+          "regrown": 704,
+          "expanded": 1056,
+          "reconfigured": 704
+        },
+        "require_scene_source": true,
+        "require_visual_pool_checks": true,
+        "require_native_buffer_checks": true,
+        "require_rigid_visual_bounds": true,
+        "minimum_rigid_pixels": 10,
+        "rigid_bound_error_limit_m": 0.003,
+        "require_observation_pixels": true
+      },
+      "verdict": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Fill-cpu-sensor": {
+            "initial": {
+              "rigid_pixels": 2470,
+              "max_rigid_bound_violation_m": 0.0011455510799262686,
+              "particle_pixels": 159,
+              "visible_particles": 119,
+              "max_surface_error_m": 0.0012756186194686722,
+              "median_surface_error_m": 0.00045642026200056396,
+              "failures": []
+            },
+            "stepped": {
+              "rigid_pixels": 2529,
+              "max_rigid_bound_violation_m": 0.0012409620957376105,
+              "particle_pixels": 150,
+              "visible_particles": 127,
+              "max_surface_error_m": 0.0014126271269456702,
+              "median_surface_error_m": 0.00048441949137078286,
+              "failures": []
+            },
+            "shrunk": {
+              "rigid_pixels": 2520,
+              "max_rigid_bound_violation_m": 0.001210720290065588,
+              "particle_pixels": 132,
+              "visible_particles": 109,
+              "max_surface_error_m": 0.0014740550565140536,
+              "median_surface_error_m": 0.0004733888442988907,
+              "failures": []
+            },
+            "regrown": {
+              "rigid_pixels": 2512,
+              "max_rigid_bound_violation_m": 0.001210720290065588,
+              "particle_pixels": 140,
+              "visible_particles": 122,
+              "max_surface_error_m": 0.001377686909473366,
+              "median_surface_error_m": 0.0005128079188868309,
+              "failures": []
+            },
+            "expanded": {
+              "rigid_pixels": 2512,
+              "max_rigid_bound_violation_m": 0.001210720290065588,
+              "particle_pixels": 140,
+              "visible_particles": 122,
+              "max_surface_error_m": 0.001377686909473366,
+              "median_surface_error_m": 0.0005128079188868309,
+              "failures": []
+            },
+            "reconfigured": {
+              "rigid_pixels": 2470,
+              "max_rigid_bound_violation_m": 0.0011455510799262686,
+              "particle_pixels": 159,
+              "visible_particles": 119,
+              "max_surface_error_m": 0.0012756186194686722,
+              "median_surface_error_m": 0.00045642026200056396,
+              "failures": []
+            }
+          },
+          "Fill-gpu-sensor": {
+            "initial": {
+              "rigid_pixels": 2470,
+              "max_rigid_bound_violation_m": 0.0011454578330922227,
+              "particle_pixels": 159,
+              "visible_particles": 119,
+              "max_surface_error_m": 0.0012756326201289392,
+              "median_surface_error_m": 0.00045641760213240316,
+              "failures": []
+            },
+            "stepped": {
+              "rigid_pixels": 2528,
+              "max_rigid_bound_violation_m": 0.0012409998407923312,
+              "particle_pixels": 151,
+              "visible_particles": 128,
+              "max_surface_error_m": 0.0014831814659261272,
+              "median_surface_error_m": 0.00047362727642996,
+              "failures": []
+            },
+            "shrunk": {
+              "rigid_pixels": 2520,
+              "max_rigid_bound_violation_m": 0.0012106136651364799,
+              "particle_pixels": 132,
+              "visible_particles": 109,
+              "max_surface_error_m": 0.0014740426064037975,
+              "median_surface_error_m": 0.0004730856977757027,
+              "failures": []
+            },
+            "regrown": {
+              "rigid_pixels": 2512,
+              "max_rigid_bound_violation_m": 0.0012106136651364799,
+              "particle_pixels": 140,
+              "visible_particles": 122,
+              "max_surface_error_m": 0.0013768097876690594,
+              "median_surface_error_m": 0.00051316957879513,
+              "failures": []
+            },
+            "expanded": {
+              "rigid_pixels": 2512,
+              "max_rigid_bound_violation_m": 0.0012106136651364799,
+              "particle_pixels": 140,
+              "visible_particles": 122,
+              "max_surface_error_m": 0.0013768097876690594,
+              "median_surface_error_m": 0.00051316957879513,
+              "failures": []
+            },
+            "reconfigured": {
+              "rigid_pixels": 2470,
+              "max_rigid_bound_violation_m": 0.0011454578330922227,
+              "particle_pixels": 159,
+              "visible_particles": 119,
+              "max_surface_error_m": 0.0012756326201289392,
+              "median_surface_error_m": 0.00045641760213240316,
+              "failures": []
+            }
+          }
+        },
+        "scope": "Actual native sensor observation RGB/depth/segmentation, particle sphere surfaces and robot visual bounds at physical poses; exact before/after physics and native CUDA buffer; count-changing reset and reconfigure. Same3mm quantization allowance. Not full geometry, reference parity, manipulation or batching.",
+        "full_port_complete": false
+      }
+    },
+    "gpu-rendering-v9": {
+      "archive_sha256": "75f182fd6cb23f216bb753df800f9ca92d90c22111ea6fb7cfad0d831b4bc805",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T16:10:34.850797+00:00",
+        "input_sha256": "81713f41b0ae9f0d6ed4db6b8b3b8e9b8742833abac6a2d58775a7ef6cc853b1",
+        "request_sha256": "c4182b213787b7d1b91e4d50646d03245ee6a8a5cf352b5dc9d1cacf46894d07",
+        "probe_sha256": "20d430f5b03b48ccedafa1b76d6069a2f98e8c666fb3cbade69830689e3d9250",
+        "runner_sha256": "3b91d240ecbc0f992a210a367d1c397dc6e94b104d9ee2a977944d63099d33b2",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "cases": [
+          {
+            "name": "Write-cpu",
+            "task": "Write",
+            "backend": "cpu",
+            "control_mode": "pd_joint_target_delta_pos"
+          },
+          {
+            "name": "Write-gpu",
+            "task": "Write",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos"
+          }
+        ],
+        "frames": [
+          "initial",
+          "stepped",
+          "restored",
+          "reconfigured"
+        ],
+        "minimum_particle_pixels": 10,
+        "surface_distance_error_limit_m": 0.003,
+        "scope": "CPU/GPU Write19404-particle camera sphere surface geometry and reset IDs, exact before/after checkpoint and native CUDA buffer. Original3mm surface allowance. Not rigid-mesh validation, manipulation success, benchmark/reference parity or batching.",
+        "particle_counts": {
+          "initial": 19404,
+          "stepped": 19404,
+          "restored": 19404,
+          "reconfigured": 19404
+        },
+        "require_scene_source": true,
+        "require_visual_pool_checks": true,
+        "require_native_buffer_checks": true,
+        "require_rigid_visual_bounds": false,
+        "minimum_rigid_pixels": 10,
+        "rigid_bound_error_limit_m": 0.003,
+        "require_observation_pixels": false
+      },
+      "verdict": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Write-cpu": {
+            "initial": {
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            },
+            "stepped": {
+              "particle_pixels": 38009,
+              "visible_particles": 1531,
+              "max_surface_error_m": 0.001606242296411044,
+              "median_surface_error_m": 0.0006138102977250523,
+              "failures": []
+            },
+            "restored": {
+              "particle_pixels": 38011,
+              "visible_particles": 1534,
+              "max_surface_error_m": 0.0016080621628939097,
+              "median_surface_error_m": 0.0006146630735029057,
+              "failures": []
+            },
+            "reconfigured": {
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            }
+          },
+          "Write-gpu": {
+            "initial": {
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            },
+            "stepped": {
+              "particle_pixels": 38009,
+              "visible_particles": 1531,
+              "max_surface_error_m": 0.001606269607710836,
+              "median_surface_error_m": 0.000613862115043824,
+              "failures": []
+            },
+            "restored": {
+              "particle_pixels": 38011,
+              "visible_particles": 1534,
+              "max_surface_error_m": 0.001608060003002434,
+              "median_surface_error_m": 0.0006146639900668337,
+              "failures": []
+            },
+            "reconfigured": {
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            }
+          }
+        },
+        "scope": "CPU/GPU Write19404-particle camera sphere surface geometry and reset IDs, exact before/after checkpoint and native CUDA buffer. Original3mm surface allowance. Not rigid-mesh validation, manipulation success, benchmark/reference parity or batching.",
+        "full_port_complete": false
+      }
+    }
+  },
+  "source_changes": {
+    "mani_skill/envs/scene.py": "06f089286f02bb664e9e3c3566d737f8ae1cfe1751bccb1cb8ef5079ef404445",
+    "mani_skill/envs/softbody/base_env.py": "72f80d3297979e9bb47abbf282493653a516620d0c5505fc3b756995261adaf6"
+  },
+  "not_executed": {
+    "status": "Staged but never run; superseded by v2 to fix shell log reporting",
+    "replacement": "gpu-rendering-v2"
+  }
+}

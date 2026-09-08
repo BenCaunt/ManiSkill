@@ -1,0 +1,159 @@
+{
+  "declared_at_utc": "2026-09-08T15:21:11.680540+00:00",
+  "input_sha256": "6f492fbf15e6c630d1e7e3ddff070a3ebd86b55b2d10dab609befea79ea00525",
+  "request_sha256": "b284fd7a7cc2b26523a641b4f87b63cad9ea7e6f111fbc6ae76dbef0007de79e",
+  "probe_sha256": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+  "runner_sha256": "f459f2fb67416220d126198c944158d264b3cae95b34c73deff19d39c7ebefa0",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+  "cases": [
+    {
+      "name": "Fill-pd_ee_target_delta_pose-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose"
+    },
+    {
+      "name": "Fill-pd_ee_delta_pos-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pos"
+    },
+    {
+      "name": "Fill-pd_ee_delta_pose-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose"
+    },
+    {
+      "name": "Fill-pd_ee_delta_pose_align-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_align"
+    },
+    {
+      "name": "Fill-pd_ee_target_delta_pos-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pos"
+    },
+    {
+      "name": "Fill-pd_joint_delta_pos-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_delta_pos"
+    },
+    {
+      "name": "Fill-pd_joint_pos-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_pos"
+    },
+    {
+      "name": "Fill-pd_joint_target_delta_pos-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos"
+    },
+    {
+      "name": "Fill-pd_joint_vel-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_vel"
+    },
+    {
+      "name": "Fill-pd_joint_pos_vel-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_pos_vel"
+    },
+    {
+      "name": "Fill-pd_joint_delta_pos_vel-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_delta_pos_vel"
+    },
+    {
+      "name": "Excavate-pd_ee_delta_pose_align-gpu",
+      "task": "Excavate",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_align"
+    },
+    {
+      "name": "Hang-pd_ee_delta_pose_align-gpu",
+      "task": "Hang",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_align"
+    },
+    {
+      "name": "Hang-pd_ee_target_delta_pose-gpu",
+      "task": "Hang",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose"
+    },
+    {
+      "name": "Pour-pd_ee_pose-gpu",
+      "task": "Pour",
+      "backend": "gpu",
+      "control_mode": "pd_ee_pose"
+    },
+    {
+      "name": "Write-pd_ee_delta_pose_demo-gpu",
+      "task": "Write",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_demo"
+    },
+    {
+      "name": "Pinch-pd_ee_target_delta_pos-gpu",
+      "task": "Pinch",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pos"
+    },
+    {
+      "name": "Fill-pd_ee_target_delta_pose-cpu",
+      "task": "Fill",
+      "backend": "cpu",
+      "control_mode": "pd_ee_target_delta_pose"
+    },
+    {
+      "name": "Excavate-pd_ee_delta_pose_align-cpu",
+      "task": "Excavate",
+      "backend": "cpu",
+      "control_mode": "pd_ee_delta_pose_align"
+    },
+    {
+      "name": "Hang-pd_ee_target_delta_pose-cpu",
+      "task": "Hang",
+      "backend": "cpu",
+      "control_mode": "pd_ee_target_delta_pose"
+    },
+    {
+      "name": "Pour-pd_ee_pose-cpu",
+      "task": "Pour",
+      "backend": "cpu",
+      "control_mode": "pd_ee_pose"
+    },
+    {
+      "name": "Write-pd_ee_delta_pose_demo-cpu",
+      "task": "Write",
+      "backend": "cpu",
+      "control_mode": "pd_ee_delta_pose_demo"
+    },
+    {
+      "name": "Pinch-pd_ee_target_delta_pos-cpu",
+      "task": "Pinch",
+      "backend": "cpu",
+      "control_mode": "pd_ee_target_delta_pos"
+    }
+  ],
+  "checkpoint_exact_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_drives",
+    "controller",
+    "task",
+    "task_particles"
+  ],
+  "joint_replay_limit": 0.001,
+  "scope": "All 11 legacy arm modes and task-specific controls; actual dictionary/flat/rebuilt-scene reset lifecycle from nontrivial state. Joint replay gate preserved from prior CPU controller lifecycle probe. Particle replay descriptive; original gpu-tasks strict failures remain. Not full task success/reference parity/batching."
+}

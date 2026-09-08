@@ -44,6 +44,10 @@ class MPMBaseEnv(BaseEnv):
         self._mpm_reset_active = False
         self.last_coupling_step = None
         self._particle_entities = []
+        self._particle_visual_pool = []
+        self._particle_visual_components = []
+        self._particle_visual_specs = []
+        self._particle_render_poses = None
         self._mpm_initial_checkpoint = None
         if sim_backend.split(':')[0] in ('gpu', 'cuda', 'physx_cuda') and not sapien.physx.is_gpu_enabled():
             sapien.physx.enable_gpu()
@@ -108,36 +112,74 @@ class MPMBaseEnv(BaseEnv):
         if not self.scene.can_render():
             return
         scene = self.scene.sub_scenes[0]
-        for entity in self._particle_entities:
-            scene.remove_entity(entity)
-        self._particle_entities = []
         count = self.mpm_coupler.model.struct.n_particles
         # Minimal shaders omit PointCloudComponent. Sphere visuals populate
         # normal camera color/depth/segmentation. They have no physics component
         # and do not enter the simulation state registry. Separate entities are
         # required because attached render-shape local poses are immutable.
-        # CPU pose updates are the initial single-scene correctness path.
+        # Keep identities across resets. Recreating every visual monotonically
+        # consumes scene IDs, overflowing minimal shaders' signed-16-bit labels
+        # even for the 19,404-particle Write task after only one reset.
         colors = np.asarray(self.mpm_coupler.model.mpm_particle_colors[:count], dtype=np.float32)
         radius = self.mpm_coupler.model.struct.particle_radius
+        specs = [(radius, *color) for color in colors]
+        changed = count != len(self._particle_entities) or any(
+            previous != current for previous, current in zip(self._particle_visual_specs, specs))
+        if changed and self.gpu_sim_enabled:
+            self._invalidate_particle_render_groups()
         prototypes = {}
         for i, color in enumerate(colors):
+            if i < len(self._particle_visual_pool) and self._particle_visual_specs[i] == specs[i]:
+                self._particle_visual_components[i].visibility = 1.
+                continue
             key = tuple(color)
             if key not in prototypes:
                 material = sapien.render.RenderMaterial(base_color=[*key, 1.], roughness=.8)
                 prototypes[key] = sapien.render.RenderShapeSphere(radius, material)
             component = sapien.render.RenderBodyComponent()
             component.attach(prototypes[key].clone())
-            entity = sapien.Entity()
-            entity.name = f'mpm_particle_visual_only_{i}'
-            entity.add_component(component)
-            scene.add_entity(entity)
-            self._particle_entities.append(entity)
+            if i < len(self._particle_visual_pool):
+                entity = self._particle_visual_pool[i]
+                entity.remove_component(self._particle_visual_components[i])
+                entity.add_component(component)
+                self._particle_visual_components[i] = component
+                self._particle_visual_specs[i] = specs[i]
+            else:
+                entity = sapien.Entity()
+                entity.name = f'mpm_particle_visual_only_{i}'
+                entity.add_component(component)
+                scene.add_entity(entity)
+                self._particle_visual_pool.append(entity)
+                self._particle_visual_components.append(component)
+                self._particle_visual_specs.append(specs[i])
+        for component in self._particle_visual_components[count:]:
+            component.visibility = 0.
+        self._particle_entities = self._particle_visual_pool[:count]
+        if self.gpu_sim_enabled and (changed or self._particle_render_poses is None):
+            self._particle_render_poses = torch.zeros((len(self._particle_visual_pool), 7),
+                                                      dtype=torch.float32, device=self.device)
+            self._particle_render_poses[:, 3] = 1.
+            self.scene.set_gpu_render_only_bodies(self._particle_visual_components, self._particle_render_poses)
         self._update_particle_rendering()
+
+    def _invalidate_particle_render_groups(self):
+        """Release groups before changing their render-object membership."""
+        for sensor in (*self.scene.sensors.values(), *self.scene.human_render_cameras.values()):
+            camera = getattr(sensor, 'camera', None)
+            if camera is not None:
+                camera.camera_group = None
+        self.scene.camera_groups.clear()
+        self.scene.render_system_group = None
+        self.scene._sensors_initialized = False
+        self.scene._human_render_cameras_initialized = False
 
     def _update_particle_rendering(self):
         if self._particle_entities:
-            for entity, position in zip(self._particle_entities, self.mpm_coupler.particle_state()['x']):
+            positions = self.mpm_coupler.states[0].struct.particle_q.numpy()[:len(self._particle_entities)]
+            for entity, position in zip(self._particle_entities, positions):
                 entity.pose = sapien.Pose(position)
+            if self._particle_render_poses is not None:
+                self._particle_render_poses[:len(positions), :3] = torch.as_tensor(positions, device=self.device)
 
     def _after_control_step(self):
         self._update_particle_rendering()
@@ -404,7 +446,11 @@ class MPMBaseEnv(BaseEnv):
         self.set_state_dict(restored, env_idx)
 
     def _clear(self):
+        self._particle_render_poses = None
         self._particle_entities = []
+        self._particle_visual_pool = []
+        self._particle_visual_components = []
+        self._particle_visual_specs = []
         self.mpm_coupler = None
         self.mpm_gpu_world = None
         self._mpm_builder = None

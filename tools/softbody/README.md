@@ -57,8 +57,11 @@ drive targets; they do not assign physical poses.
 Target-relative modes save their target pose in checkpoints. Hang initializes
 nominal controller memory before restoring its recorded rope grasp, matching
 the original reset sequence. The current IK adapter explicitly requires one
-PhysX scene. GPU end-effector controller execution still needs dedicated
-runtime coverage; the GPU task suite currently uses joint-target deltas.
+PhysX scene. The [native GPU lifecycle suite](gpu-lifecycle.md) now covers all
+eleven original arm modes on Fill and additional end-effector modes across the
+other five tasks. Its 23 CPU/GPU cases pass 69 exact checkpoint restore trials,
+including dictionary, flat and rebuilt-scene states. The separate GPU task
+suite uses joint-target deltas and retains its stricter replay failures.
 The original controller's decoding
 and this adapter agree exactly in action values and quaternions across 21 cases,
 with target-position differences at most 2.99e-8 m. This checks conventions,
@@ -110,7 +113,10 @@ rollouts. The full reference task demonstrations use Linux, CUDA MPM, and CPU
 PhysX; the GPU task suite is a separate short-run experiment. Cameras use
 visual-only sphere entities at actual particle positions, with no physics or
 state-registry component. This supports color/depth/segmentation but has per-particle
-CPU update overhead; it is not yet a batched rendering implementation.
+CPU update overhead. GPU camera captures use a separate CUDA visual-pose buffer
+and preserve particle identities across resets. The [rendering suite](gpu-rendering.md)
+checks particle surfaces, robot visual bounds, native sensor observations and
+count-changing reset behavior. Multi-environment task rendering remains unproven.
 
 The Fill probe checks particle count/mass, outward ground normal, finite state,
 and broad robot stability bounds. It records every state for external comparison

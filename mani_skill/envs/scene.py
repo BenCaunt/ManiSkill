@@ -80,6 +80,9 @@ class ManiSkillScene:
         self.render_system_group: sapien.render.RenderSystemGroup = (
             None  # pyright: ignore[reportAttributeAccessIssue]
         )
+        self._gpu_render_only_bodies = []
+        self._gpu_render_only_poses = None
+        self._gpu_render_pose_buffer = None
 
         self.actors: dict[str, Actor] = dict()
         self.articulations: dict[str, Articulation] = dict()
@@ -428,6 +431,9 @@ class ManiSkillScene:
                 ):
                     self._gpu_setup_sensors(self.human_render_cameras)
                     self._human_render_cameras_initialized = True
+                if self._gpu_render_only_bodies:
+                    self.render_system_group.set_cuda_poses(self._get_cuda_render_poses())
+                    self.render_system_group.set_cuda_stream(torch.cuda.current_stream(self.device).cuda_stream)
                 self.render_system_group.update_render()
             else:
                 assert isinstance(self.px, physx.PhysxGpuSystem)
@@ -1039,6 +1045,46 @@ class ManiSkillScene:
     # ---------------------------------------------------------------------------- #
     # CPU/GPU sim Rendering Code
     # ---------------------------------------------------------------------------- #
+    def set_gpu_render_only_bodies(self, bodies, poses):
+        """Register visual-only bodies with borrowed scene-local CUDA poses.
+
+        ``poses`` is float32 (N, 7): XYZ then scalar-first quaternion. The caller
+        retains and updates it. These rows never enter PhysX or its state registry.
+        Release camera/render groups before changing membership or visibility.
+        Currently supported by the SAPIEN 3.0 batched renderer.
+        """
+        if not self.gpu_sim_enabled or SAPIEN_RENDER_SYSTEM != "3.0":
+            raise NotImplementedError("Render-only CUDA poses require SAPIEN 3.0 GPU rendering")
+        if self.render_system_group is not None:
+            raise RuntimeError("Release render groups before registering visual bodies")
+        device = torch.device(self.device)
+        if device.index is None:
+            device = torch.device(device.type, torch.cuda.current_device())
+        if (poses.shape != (len(bodies), 7) or poses.dtype != torch.float32
+                or poses.device != device or not poses.is_contiguous()):
+            raise ValueError("Expected contiguous float32 render poses on the scene CUDA device")
+        if len({id(body) for body in bodies}) != len(bodies):
+            raise ValueError("Duplicate render-only body")
+        for body in bodies:
+            if body.entity.find_component_by_type(physx.PhysxRigidBodyComponent) is not None:
+                raise ValueError("Render-only registration cannot override physical bodies")
+        self._gpu_render_only_bodies = list(bodies)
+        self._gpu_render_only_poses = poses
+        self._gpu_render_pose_buffer = None
+
+    def _get_cuda_render_poses(self):
+        if not self._gpu_render_only_bodies:
+            return self.px.cuda_rigid_body_data
+        rigid = self.px.cuda_rigid_body_data.torch()
+        shape = (len(rigid) + len(self._gpu_render_only_bodies), rigid.shape[1])
+        if self._gpu_render_pose_buffer is None:
+            self._gpu_render_pose_buffer = torch.zeros(shape, dtype=rigid.dtype, device=rigid.device)
+        elif self._gpu_render_pose_buffer.shape != shape:
+            raise RuntimeError("Rigid topology changed; rebuild render-only registration")
+        self._gpu_render_pose_buffer[:len(rigid)].copy_(rigid)
+        self._gpu_render_pose_buffer[len(rigid):, :7].copy_(self._gpu_render_only_poses)
+        return sapien.CudaArray(self._gpu_render_pose_buffer)
+
     def _get_all_render_bodies(
         self,
     ) -> list[Tuple[sapien.render.RenderBodyComponent, int]]:
@@ -1067,6 +1113,9 @@ class ManiSkillScene:
                 for link in articulation.links
                 for px_link in link._objs
             ]
+        if self._gpu_render_only_bodies:
+            offset = self.px.cuda_rigid_body_data.shape[0]
+            all_render_bodies += [(body, offset + i) for i, body in enumerate(self._gpu_render_only_bodies)]
         return all_render_bodies
 
     def _setup_gpu_rendering(self):
@@ -1087,7 +1136,7 @@ class ManiSkillScene:
         self.render_system_group = sapien.render.RenderSystemGroup(
             [s.render_system for s in self.sub_scenes]
         )
-        self.render_system_group.set_cuda_poses(self.px.cuda_rigid_body_data)
+        self.render_system_group.set_cuda_poses(self._get_cuda_render_poses())
 
     def _sapien_31_setup_gpu_rendering(self):
         """
@@ -1165,6 +1214,12 @@ class ManiSkillScene:
                     ) from e
                 sensor.camera.camera_group = camera_group
                 self.camera_groups[name] = camera_group
+                if self._gpu_render_only_bodies:
+                    # After visual membership/visibility changes, SAPIEN 3.0's
+                    # first draw can upload CPU transforms while rebuilding the
+                    # scene. Finish that draw before update_render publishes the
+                    # current CUDA poses for the image returned to the caller.
+                    camera_group.take_picture()
             else:
                 raise NotImplementedError(
                     f"This sensor {sensor} of type {sensor.__class__} has not been implemented yet on the GPU"

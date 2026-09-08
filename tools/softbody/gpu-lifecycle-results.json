@@ -1,0 +1,963 @@
+{
+  "scope": "Native single-scene GPU controls and checkpoint lifecycle, not reference physics parity or batching",
+  "protocol": {
+    "declared_at_utc": "2026-09-08T15:21:11.680540+00:00",
+    "input_sha256": "6f492fbf15e6c630d1e7e3ddff070a3ebd86b55b2d10dab609befea79ea00525",
+    "request_sha256": "b284fd7a7cc2b26523a641b4f87b63cad9ea7e6f111fbc6ae76dbef0007de79e",
+    "probe_sha256": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+    "runner_sha256": "f459f2fb67416220d126198c944158d264b3cae95b34c73deff19d39c7ebefa0",
+    "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+    "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+    "cases": [
+      {
+        "name": "Fill-pd_ee_target_delta_pose-gpu",
+        "task": "Fill",
+        "backend": "gpu",
+        "control_mode": "pd_ee_target_delta_pose"
+      },
+      {
+        "name": "Fill-pd_ee_delta_pos-gpu",
+        "task": "Fill",
+        "backend": "gpu",
+        "control_mode": "pd_ee_delta_pos"
+      },
+      {
+        "name": "Fill-pd_ee_delta_pose-gpu",
+        "task": "Fill",
+        "backend": "gpu",
+        "control_mode": "pd_ee_delta_pose"
+      },
+      {
+        "name": "Fill-pd_ee_delta_pose_align-gpu",
+        "task": "Fill",
+        "backend": "gpu",
+        "control_mode": "pd_ee_delta_pose_align"
+      },
+      {
+        "name": "Fill-pd_ee_target_delta_pos-gpu",
+        "task": "Fill",
+        "backend": "gpu",
+        "control_mode": "pd_ee_target_delta_pos"
+      },
+      {
+        "name": "Fill-pd_joint_delta_pos-gpu",
+        "task": "Fill",
+        "backend": "gpu",
+        "control_mode": "pd_joint_delta_pos"
+      },
+      {
+        "name": "Fill-pd_joint_pos-gpu",
+        "task": "Fill",
+        "backend": "gpu",
+        "control_mode": "pd_joint_pos"
+      },
+      {
+        "name": "Fill-pd_joint_target_delta_pos-gpu",
+        "task": "Fill",
+        "backend": "gpu",
+        "control_mode": "pd_joint_target_delta_pos"
+      },
+      {
+        "name": "Fill-pd_joint_vel-gpu",
+        "task": "Fill",
+        "backend": "gpu",
+        "control_mode": "pd_joint_vel"
+      },
+      {
+        "name": "Fill-pd_joint_pos_vel-gpu",
+        "task": "Fill",
+        "backend": "gpu",
+        "control_mode": "pd_joint_pos_vel"
+      },
+      {
+        "name": "Fill-pd_joint_delta_pos_vel-gpu",
+        "task": "Fill",
+        "backend": "gpu",
+        "control_mode": "pd_joint_delta_pos_vel"
+      },
+      {
+        "name": "Excavate-pd_ee_delta_pose_align-gpu",
+        "task": "Excavate",
+        "backend": "gpu",
+        "control_mode": "pd_ee_delta_pose_align"
+      },
+      {
+        "name": "Hang-pd_ee_delta_pose_align-gpu",
+        "task": "Hang",
+        "backend": "gpu",
+        "control_mode": "pd_ee_delta_pose_align"
+      },
+      {
+        "name": "Hang-pd_ee_target_delta_pose-gpu",
+        "task": "Hang",
+        "backend": "gpu",
+        "control_mode": "pd_ee_target_delta_pose"
+      },
+      {
+        "name": "Pour-pd_ee_pose-gpu",
+        "task": "Pour",
+        "backend": "gpu",
+        "control_mode": "pd_ee_pose"
+      },
+      {
+        "name": "Write-pd_ee_delta_pose_demo-gpu",
+        "task": "Write",
+        "backend": "gpu",
+        "control_mode": "pd_ee_delta_pose_demo"
+      },
+      {
+        "name": "Pinch-pd_ee_target_delta_pos-gpu",
+        "task": "Pinch",
+        "backend": "gpu",
+        "control_mode": "pd_ee_target_delta_pos"
+      },
+      {
+        "name": "Fill-pd_ee_target_delta_pose-cpu",
+        "task": "Fill",
+        "backend": "cpu",
+        "control_mode": "pd_ee_target_delta_pose"
+      },
+      {
+        "name": "Excavate-pd_ee_delta_pose_align-cpu",
+        "task": "Excavate",
+        "backend": "cpu",
+        "control_mode": "pd_ee_delta_pose_align"
+      },
+      {
+        "name": "Hang-pd_ee_target_delta_pose-cpu",
+        "task": "Hang",
+        "backend": "cpu",
+        "control_mode": "pd_ee_target_delta_pose"
+      },
+      {
+        "name": "Pour-pd_ee_pose-cpu",
+        "task": "Pour",
+        "backend": "cpu",
+        "control_mode": "pd_ee_pose"
+      },
+      {
+        "name": "Write-pd_ee_delta_pose_demo-cpu",
+        "task": "Write",
+        "backend": "cpu",
+        "control_mode": "pd_ee_delta_pose_demo"
+      },
+      {
+        "name": "Pinch-pd_ee_target_delta_pos-cpu",
+        "task": "Pinch",
+        "backend": "cpu",
+        "control_mode": "pd_ee_target_delta_pos"
+      }
+    ],
+    "checkpoint_exact_groups": [
+      "mpm",
+      "mpm_material",
+      "mpm_drives",
+      "controller",
+      "task",
+      "task_particles"
+    ],
+    "joint_replay_limit": 0.001,
+    "scope": "All 11 legacy arm modes and task-specific controls; actual dictionary/flat/rebuilt-scene reset lifecycle from nontrivial state. Joint replay gate preserved from prior CPU controller lifecycle probe. Particle replay descriptive; original gpu-tasks strict failures remain. Not full task success/reference parity/batching."
+  },
+  "verdict": {
+    "passed": true,
+    "failures": [],
+    "reports": {
+      "Fill-pd_ee_target_delta_pose-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 2.8312206268310547e-07,
+            "qpos": 0.0,
+            "qvel": 4.470348358154297e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 2.7686357498168945e-05,
+            "qpos": 4.470348358154297e-08,
+            "qvel": 2.9765069484710693e-06,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 3.129243850708008e-07,
+            "qpos": 0.0,
+            "qvel": 4.470348358154297e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.007820844650268555,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Fill-pd_ee_delta_pos-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 2.7418136596679688e-06,
+            "qpos": 1.1920928955078125e-07,
+            "qvel": 4.403525963425636e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 4.470348358154297e-07,
+            "qpos": 1.1920928955078125e-07,
+            "qvel": 4.567205905914307e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 4.470348358154297e-07,
+            "qpos": 1.1920928955078125e-07,
+            "qvel": 4.563247784972191e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.003481760621070862,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Fill-pd_ee_delta_pose-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 3.2782554626464844e-07,
+            "qpos": 4.470348358154297e-08,
+            "qvel": 4.562549293041229e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 2.314150333404541e-05,
+            "qpos": 4.470348358154297e-08,
+            "qvel": 4.573725163936615e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 3.2782554626464844e-07,
+            "qpos": 4.470348358154297e-08,
+            "qvel": 4.569999873638153e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.005961775779724121,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Fill-pd_ee_delta_pose_align-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 2.682209014892578e-07,
+            "qpos": 1.1920928955078125e-07,
+            "qvel": 4.500150680541992e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 2.2351741790771484e-07,
+            "qpos": 1.1920928955078125e-07,
+            "qvel": 4.503875970840454e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 2.384185791015625e-07,
+            "qpos": 1.1920928955078125e-07,
+            "qvel": 4.498288035392761e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.004596352577209473,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Fill-pd_ee_target_delta_pos-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 2.086162567138672e-07,
+            "qpos": 0.0,
+            "qvel": 8.35862010717392e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 2.086162567138672e-07,
+            "qpos": 0.0,
+            "qvel": 7.729977369308472e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 2.086162567138672e-07,
+            "qpos": 0.0,
+            "qvel": 8.195638656616211e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.0045354366302490234,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Fill-pd_joint_delta_pos-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 3.454089164733887e-05,
+            "qpos": 2.384185791015625e-07,
+            "qvel": 3.61492857336998e-06,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 3.454089164733887e-05,
+            "qpos": 2.384185791015625e-07,
+            "qvel": 3.6512501537799835e-06,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 3.457069396972656e-05,
+            "qpos": 2.384185791015625e-07,
+            "qvel": 3.6205165088176727e-06,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.001112625002861023,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Fill-pd_joint_pos-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 4.06801700592041e-06,
+            "qpos": 0.0,
+            "qvel": 9.173527359962463e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 3.4421682357788086e-06,
+            "qpos": 0.0,
+            "qvel": 1.2433156371116638e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 5.21540641784668e-07,
+            "qpos": 0.0,
+            "qvel": 5.727633833885193e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.0015480518341064453,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Fill-pd_joint_target_delta_pos-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 2.0563602447509766e-06,
+            "qpos": 0.0,
+            "qvel": 2.1141022443771362e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 1.5795230865478516e-05,
+            "qpos": 0.0,
+            "qvel": 1.0523945093154907e-06,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 1.4007091522216797e-06,
+            "qpos": 0.0,
+            "qvel": 1.0989606380462646e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.001340523362159729,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Fill-pd_joint_vel-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 2.4139881134033203e-06,
+            "qpos": 0.0,
+            "qvel": 1.555308699607849e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 2.473592758178711e-06,
+            "qpos": 0.0,
+            "qvel": 2.7567148208618164e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 2.473592758178711e-06,
+            "qpos": 0.0,
+            "qvel": 2.1047890186309814e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.001309812068939209,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Fill-pd_joint_pos_vel-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 3.2782554626464844e-06,
+            "qpos": 0.0,
+            "qvel": 2.0582228899002075e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 3.248453140258789e-06,
+            "qpos": 0.0,
+            "qvel": 3.0081719160079956e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 2.682209014892578e-07,
+            "qpos": 0.0,
+            "qvel": 2.1141022443771362e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.0028524398803710938,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Fill-pd_joint_delta_pos_vel-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 2.7418136596679688e-06,
+            "qpos": 0.0,
+            "qvel": 1.9371509552001953e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 2.7418136596679688e-06,
+            "qpos": 1.4901161193847656e-08,
+            "qvel": 2.905726432800293e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 3.5762786865234375e-07,
+            "qpos": 0.0,
+            "qvel": 5.029141902923584e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.0026113390922546387,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Excavate-pd_ee_delta_pose_align-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 9.5367431640625e-07,
+            "qpos": 2.384185791015625e-07,
+            "qvel": 2.343207597732544e-06,
+            "drive_position": 3.5762786865234375e-07,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 9.387731552124023e-07,
+            "qpos": 2.384185791015625e-07,
+            "qvel": 2.343207597732544e-06,
+            "drive_position": 3.5762786865234375e-07,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 9.5367431640625e-07,
+            "qpos": 2.384185791015625e-07,
+            "qvel": 2.343207597732544e-06,
+            "drive_position": 3.5762786865234375e-07,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.004632830619812012,
+        "particle_count": 11056,
+        "changed_particle_count": true
+      },
+      "Hang-pd_ee_delta_pose_align-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 2.086162567138672e-07,
+            "qpos": 8.940696716308594e-08,
+            "qvel": 4.654284566640854e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 2.086162567138672e-07,
+            "qpos": 8.940696716308594e-08,
+            "qvel": 4.6514905989170074e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 2.086162567138672e-07,
+            "qpos": 8.940696716308594e-08,
+            "qvel": 4.653818905353546e-06,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.013644099235534668,
+        "particle_count": 3636,
+        "changed_particle_count": false
+      },
+      "Hang-pd_ee_target_delta_pose-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 1.6391277313232422e-07,
+            "qpos": 1.862645149230957e-09,
+            "qvel": 7.82310962677002e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 1.6391277313232422e-07,
+            "qpos": 1.862645149230957e-09,
+            "qvel": 7.82310962677002e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 1.6391277313232422e-07,
+            "qpos": 1.862645149230957e-09,
+            "qvel": 8.940696716308594e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.01370692253112793,
+        "particle_count": 3636,
+        "changed_particle_count": false
+      },
+      "Pour-pd_ee_pose-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 0.00012545660138130188,
+            "qpos": 4.302710294723511e-07,
+            "qvel": 5.630671512335539e-05,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 0.00010675191879272461,
+            "qpos": 4.544854164123535e-07,
+            "qvel": 7.72437451814767e-05,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 0.0004907846450805664,
+            "qpos": 2.0662322640419006e-05,
+            "qvel": 0.0007343298821069766,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.012442262843251228,
+        "particle_count": 8534,
+        "changed_particle_count": true
+      },
+      "Write-pd_ee_delta_pose_demo-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 8.940696716308594e-08,
+            "qpos": 2.384185791015625e-07,
+            "qvel": 4.76837158203125e-06,
+            "drive_position": 7.152557373046875e-07,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 8.940696716308594e-08,
+            "qpos": 2.384185791015625e-07,
+            "qvel": 4.76837158203125e-06,
+            "drive_position": 7.152557373046875e-07,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 1.1920928955078125e-07,
+            "qpos": 2.384185791015625e-07,
+            "qvel": 4.76837158203125e-06,
+            "drive_position": 7.152557373046875e-07,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.06510621309280396,
+        "particle_count": 19404,
+        "changed_particle_count": false
+      },
+      "Pinch-pd_ee_target_delta_pos-gpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 8.940696716308594e-08,
+            "qpos": 0.0,
+            "qvel": 2.2351741790771484e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 5.960464477539063e-08,
+            "qpos": 0.0,
+            "qvel": 2.2351741790771484e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 8.940696716308594e-08,
+            "qpos": 0.0,
+            "qvel": 2.2351741790771484e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.02199789136648178,
+        "particle_count": 3072,
+        "changed_particle_count": false
+      },
+      "Fill-pd_ee_target_delta_pose-cpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 4.693865776062012e-06,
+            "qpos": 7.450580596923828e-09,
+            "qvel": 1.19674950838089e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 4.693865776062012e-06,
+            "qpos": 7.450580596923828e-09,
+            "qvel": 1.1920928955078125e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 2.384185791015625e-07,
+            "qpos": 0.0,
+            "qvel": 1.0826624929904938e-07,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.007820606231689453,
+        "particle_count": 704,
+        "changed_particle_count": false
+      },
+      "Excavate-pd_ee_delta_pose_align-cpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 2.0734965801239014e-05,
+            "qpos": 0.0,
+            "qvel": 0.0,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 9.685754776000977e-07,
+            "qpos": 0.0,
+            "qvel": 0.0,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 1.866370439529419e-05,
+            "qpos": 0.0,
+            "qvel": 0.0,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.004633069038391113,
+        "particle_count": 11056,
+        "changed_particle_count": true
+      },
+      "Hang-pd_ee_target_delta_pose-cpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 8.940696716308594e-08,
+            "qpos": 2.7939677238464355e-09,
+            "qvel": 1.2889504432678223e-06,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 8.940696716308594e-08,
+            "qpos": 2.7939677238464355e-09,
+            "qvel": 1.2889504432678223e-06,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 8.940696716308594e-08,
+            "qpos": 2.7939677238464355e-09,
+            "qvel": 1.2889504432678223e-06,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.03413495421409607,
+        "particle_count": 3636,
+        "changed_particle_count": false
+      },
+      "Pour-pd_ee_pose-cpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 0.0003409087657928467,
+            "qpos": 7.636845111846924e-05,
+            "qvel": 0.0034744807053357363,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 0.0003070831298828125,
+            "qpos": 7.695704698562622e-05,
+            "qvel": 0.003415471932385117,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 0.0003236532211303711,
+            "qpos": 7.290393114089966e-05,
+            "qvel": 0.003257552976720035,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.010767418891191483,
+        "particle_count": 8534,
+        "changed_particle_count": true
+      },
+      "Write-pd_ee_delta_pose_demo-cpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 8.940696716308594e-08,
+            "qpos": 0.0,
+            "qvel": 2.9802322387695312e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 8.940696716308594e-08,
+            "qpos": 0.0,
+            "qvel": 2.9802322387695312e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 8.940696716308594e-08,
+            "qpos": 0.0,
+            "qvel": 2.9802322387695312e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.0651063323020935,
+        "particle_count": 19404,
+        "changed_particle_count": false
+      },
+      "Pinch-pd_ee_target_delta_pos-cpu": {
+        "exact_checkpoints": {
+          "dict": true,
+          "flat": true,
+          "reconfigure": true
+        },
+        "replay_errors": {
+          "dict": {
+            "x": 5.960464477539063e-08,
+            "qpos": 0.0,
+            "qvel": 0.0,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat": {
+            "x": 1.1920928955078125e-07,
+            "qpos": 0.0,
+            "qvel": 0.0,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "reconfigure": {
+            "x": 8.940696716308594e-08,
+            "qpos": 0.0,
+            "qvel": 0.0,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        },
+        "robot_motion_max_abs": 0.02199789136648178,
+        "particle_count": 3072,
+        "changed_particle_count": false
+      }
+    },
+    "scope": "All 11 legacy arm modes and task-specific controls; actual dictionary/flat/rebuilt-scene reset lifecycle from nontrivial state. Joint replay gate preserved from prior CPU controller lifecycle probe. Particle replay descriptive; original gpu-tasks strict failures remain. Not full task success/reference parity/batching.",
+    "full_port_complete": false
+  },
+  "archive_sha256": "8c3e4673bc70ca7bdd9fa1fccf8e3940ebcf8b12230bff2eebb8e21b112d3c85",
+  "wrapper_reporting_failure": {
+    "wrapper_exit_code": 1,
+    "case_exit_codes": {
+      "Fill-pd_ee_target_delta_pose-gpu": 0,
+      "Fill-pd_ee_delta_pos-gpu": 0,
+      "Fill-pd_ee_delta_pose-gpu": 0,
+      "Fill-pd_ee_delta_pose_align-gpu": 0,
+      "Fill-pd_ee_target_delta_pos-gpu": 0,
+      "Fill-pd_joint_delta_pos-gpu": 0,
+      "Fill-pd_joint_pos-gpu": 0,
+      "Fill-pd_joint_target_delta_pos-gpu": 0,
+      "Fill-pd_joint_vel-gpu": 0,
+      "Fill-pd_joint_pos_vel-gpu": 0,
+      "Fill-pd_joint_delta_pos_vel-gpu": 0,
+      "Excavate-pd_ee_delta_pose_align-gpu": 0,
+      "Hang-pd_ee_delta_pose_align-gpu": 0,
+      "Hang-pd_ee_target_delta_pose-gpu": 0,
+      "Pour-pd_ee_pose-gpu": 0,
+      "Write-pd_ee_delta_pose_demo-gpu": 0,
+      "Pinch-pd_ee_target_delta_pos-gpu": 0,
+      "Fill-pd_ee_target_delta_pose-cpu": 0,
+      "Excavate-pd_ee_delta_pose_align-cpu": 0,
+      "Hang-pd_ee_target_delta_pose-cpu": 0,
+      "Pour-pd_ee_pose-cpu": 0,
+      "Write-pd_ee_delta_pose_demo-cpu": 0,
+      "Pinch-pd_ee_target_delta_pos-cpu": 0
+    },
+    "archive_verified": true,
+    "archive_sha256": "8c3e4673bc70ca7bdd9fa1fccf8e3940ebcf8b12230bff2eebb8e21b112d3c85",
+    "error": "After all cases and archive creation, trailing tail command used case_name cleared by read at EOF; log-only failure, no case rerun.",
+    "fix": "Save last_log within the read loop; render v2 uses fixed runner."
+  },
+  "full_port_complete": false
+}

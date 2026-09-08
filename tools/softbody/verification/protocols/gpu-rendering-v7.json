@@ -1,0 +1,57 @@
+{
+  "declared_at_utc": "2026-09-08T16:07:35.636004+00:00",
+  "input_sha256": "e7dc93516b91dc9d9d6ae46a02290fd21cfefdd8f6b8bbcdcf74f757136d8ffb",
+  "request_sha256": "26bb1a9b096c4d67e75bc15bef7af9323624a85dabacf7d2ff76149669aebd72",
+  "probe_sha256": "c1c3004c498653f3463542f3513201093efd9ec2d81892ccbb37c5e0ead0e77b",
+  "runner_sha256": "3b91d240ecbc0f992a210a367d1c397dc6e94b104d9ee2a977944d63099d33b2",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+  "cases": [
+    {
+      "name": "Fill-gpu",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "resize": true,
+      "rigid_bounds": true,
+      "repeat_frames": true
+    }
+  ],
+  "frames": [
+    "initial",
+    "initial-repeat",
+    "stepped",
+    "stepped-repeat",
+    "shrunk",
+    "shrunk-repeat",
+    "regrown",
+    "regrown-repeat",
+    "expanded",
+    "expanded-repeat",
+    "reconfigured",
+    "reconfigured-repeat"
+  ],
+  "minimum_particle_pixels": 10,
+  "surface_distance_error_limit_m": 0.003,
+  "scope": "Actual camera pixels must lie on the corresponding physical particle sphere within3mm allowance for millimetre-quantized XYZ; exact physical state before/after rendering; reset/rebuild rendering lifecycle. Not full visual realism, manipulation success, reference dynamics parity or batching. Pool shrink/regrow/expansion is an explicit reset-only diagnostic, not a benchmark episode. Also check robot pixels against local visual-mesh bounds transformed by actual native rigid poses, and repeat captures without stepping.",
+  "particle_counts": {
+    "initial": 704,
+    "initial-repeat": 704,
+    "stepped": 704,
+    "stepped-repeat": 704,
+    "shrunk": 352,
+    "shrunk-repeat": 352,
+    "regrown": 704,
+    "regrown-repeat": 704,
+    "expanded": 1056,
+    "expanded-repeat": 1056,
+    "reconfigured": 704,
+    "reconfigured-repeat": 704
+  },
+  "require_scene_source": true,
+  "require_visual_pool_checks": true,
+  "require_native_buffer_checks": true,
+  "require_rigid_visual_bounds": true,
+  "minimum_rigid_pixels": 10,
+  "rigid_bound_error_limit_m": 0.003
+}

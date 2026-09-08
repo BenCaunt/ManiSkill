@@ -1,0 +1,45 @@
+{
+  "declared_at_utc": "2026-09-08T16:10:34.850797+00:00",
+  "input_sha256": "81713f41b0ae9f0d6ed4db6b8b3b8e9b8742833abac6a2d58775a7ef6cc853b1",
+  "request_sha256": "c4182b213787b7d1b91e4d50646d03245ee6a8a5cf352b5dc9d1cacf46894d07",
+  "probe_sha256": "20d430f5b03b48ccedafa1b76d6069a2f98e8c666fb3cbade69830689e3d9250",
+  "runner_sha256": "3b91d240ecbc0f992a210a367d1c397dc6e94b104d9ee2a977944d63099d33b2",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+  "cases": [
+    {
+      "name": "Write-cpu",
+      "task": "Write",
+      "backend": "cpu",
+      "control_mode": "pd_joint_target_delta_pos"
+    },
+    {
+      "name": "Write-gpu",
+      "task": "Write",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos"
+    }
+  ],
+  "frames": [
+    "initial",
+    "stepped",
+    "restored",
+    "reconfigured"
+  ],
+  "minimum_particle_pixels": 10,
+  "surface_distance_error_limit_m": 0.003,
+  "scope": "CPU/GPU Write19404-particle camera sphere surface geometry and reset IDs, exact before/after checkpoint and native CUDA buffer. Original3mm surface allowance. Not rigid-mesh validation, manipulation success, benchmark/reference parity or batching.",
+  "particle_counts": {
+    "initial": 19404,
+    "stepped": 19404,
+    "restored": 19404,
+    "reconfigured": 19404
+  },
+  "require_scene_source": true,
+  "require_visual_pool_checks": true,
+  "require_native_buffer_checks": true,
+  "require_rigid_visual_bounds": false,
+  "minimum_rigid_pixels": 10,
+  "rigid_bound_error_limit_m": 0.003,
+  "require_observation_pixels": false
+}
