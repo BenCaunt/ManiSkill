@@ -37,13 +37,13 @@ def load_numeric_pack_file(directory, name, digest):
     return arrays
 
 
-def register_reference_collision_body(builder, body, record, arrays):
+def register_reference_collision_body(builder, body, record, arrays, *, validate_shape_count=True):
     """Use exported legacy collision SDFs/primitives with native body dynamics.
 
     These are model inputs, not target poses or expected rollout outputs. Native
     PhysX owns each real body; the coupler supplies its actual moving pose.
     """
-    if len(body.get_collision_shapes()) != record['mesh_count'] + len(record['primitives']):
+    if validate_shape_count and len(body.get_collision_shapes()) != record['mesh_count'] + len(record['primitives']):
         raise ValueError('Native collision shape count differs from the exported model')
     index = builder.add_body(origin=wp.transform_identity())
     if record['has_sdf']:

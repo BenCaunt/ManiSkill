@@ -9,6 +9,7 @@ import torch
 from .fill import FillEnv
 from .excavate import ExcavateEnv
 from .hang import HangEnv
+from .pour import PourEnv
 from .base_env import MATERIAL_FIELDS
 
 
@@ -28,7 +29,7 @@ def numeric_tree(value, *, unbatch=False):
 
 class CaptureAdapter:
     def __init__(self, env_id, *, control_mode, env_kwargs):
-        tasks = {'Fill-v0': FillEnv, 'Excavate-v0': ExcavateEnv, 'Hang-v0': HangEnv}
+        tasks = {'Fill-v0': FillEnv, 'Excavate-v0': ExcavateEnv, 'Hang-v0': HangEnv, 'Pour-v0': PourEnv}
         if env_id not in tasks:
             raise NotImplementedError(f'Native task capture is not yet implemented for {env_id}')
         self.control_mode = control_mode
@@ -38,8 +39,8 @@ class CaptureAdapter:
     def _physical_actors(self):
         env = self.env
         expected = {'Fill-v0': ['ground', 'target_beaker'], 'Excavate-v0': ['ground', 'wall_0', 'wall_1', 'wall_2', 'wall_3'],
-                    'Hang-v0': ['ground', 'rod']}[self.env_id]
-        if sorted(env.scene.actors) != expected:
+                    'Hang-v0': ['ground', 'rod'], 'Pour-v0': ['ground', 'bottle', 'target_beaker']}[self.env_id]
+        if sorted(env.scene.actors) != sorted(expected):
             raise RuntimeError('Unexpected physical actor set')
         if env.agent.robot._objs[0].root.joint.type != 'fixed':
             raise RuntimeError('Portable tasks require a fixed-base robot')
@@ -83,7 +84,7 @@ class CaptureAdapter:
             controller = batched(fixture['controller_state'])
             if controller:
                 checkpoint['controller'] = controller
-            task_key = {'Fill-v0': 'beaker_xy', 'Excavate-v0': 'target_num', 'Hang-v0': 'selected_indices'}[self.env_id]
+            task_key = {'Fill-v0': 'beaker_xy', 'Excavate-v0': 'target_num', 'Hang-v0': 'selected_indices', 'Pour-v0': 'fill_heights'}[self.env_id]
             checkpoint['task'][task_key] = torch.as_tensor(state['task_state'], dtype=torch.float64)[None]
             env.reset(seed=seed, options={**options, 'reset_to_env_states': {'env_states': checkpoint}})
         return self.snapshot()
@@ -113,6 +114,7 @@ class CaptureAdapter:
                                                     *[np.r_[a.linear_velocity, a.angular_velocity] for a in actors[1:]]]),
                 'task_state': np.asarray([env.beaker_x, env.beaker_y] if self.env_id == 'Fill-v0'
                                          else [env.target_num] if self.env_id == 'Excavate-v0'
+                                         else [env.h1, env.h2] if self.env_id == 'Pour-v0'
                                          else env.selected_indices, dtype=np.float64)}
 
     def description(self):
@@ -122,10 +124,10 @@ class CaptureAdapter:
         keys = ('dx', 'inv_dx', 'grid_dim_x', 'grid_dim_y', 'grid_dim_z', 'particle_radius',
                 'body_ke', 'body_kd', 'body_mu', 'body_ka', 'body_sticky', 'ground_sticky',
                 'static_ke', 'static_kd', 'static_mu', 'static_ka')
-        return {'additional_state_fields': [],
-                'initial_state_contract': dict(version=2, derived_rigid_indices=list(range(13)) if self.env_id == 'Hang-v0' else [0], root_kind='fixed',
+        return {'additional_state_fields': ['vol'] if self.env_id == 'Pour-v0' else [],
+                'initial_state_contract': dict(version=2, derived_rigid_indices=list(range(13)) if self.env_id == 'Hang-v0' else [] if self.env_id == 'Pour-v0' else [0], root_kind='fixed',
                     scene_actor_names=[a.name for a in self._physical_actors()],
-                    scene_actor_types=['static'] + ['kinematic']*(len(self._physical_actors())-1)),
+                    scene_actor_types=['static', 'dynamic', 'kinematic'] if self.env_id == 'Pour-v0' else ['static'] + ['kinematic']*(len(self._physical_actors())-1)),
                 'controller_state': numeric_tree(env.agent.get_controller_state(), unbatch=True),
                 'control_mode': self.control_mode, 'control_dt': float(env.control_timestep),
                 'rigid_dt': float(env.scene.px.timestep), 'mpm_dt': float(env.mpm_dt),

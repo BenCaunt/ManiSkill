@@ -212,6 +212,7 @@ between actions. These are recorded reference controls, not a vision policy.
 | --- | ---: | ---: | --- |
 | Fill / 1 | 176 | 156 / 161 | Both successful; reference contains 701/704 particles, port 637/704 |
 | Hang / 3 | 338 | 237 / 237 | Both successful with released fingers and rope supported above ground |
+| Pour / 1 | 299 | 297 / 297 | Both successful; reference contains 3,842 particles with 20 spilled, port 3,957 with 1 spilled |
 
 An external NumPy evaluator recomputed the legacy outcome predicates from every
 recorded state and matched all reference and candidate labels. Counts and masses
@@ -224,3 +225,83 @@ No full-episode parity protocol has been calibrated. Maximum particle-identity
 position differences over these episodes are 0.1573 m for Fill and 0.0920 m for
 Hang; maximum COM distances are 0.0132 m and 0.0171 m. Both successful actions
 and these substantial trajectory differences remain part of the evidence.
+
+## Native Pour prototype
+
+Import `mani_skill.envs.softbody.pour` to register `Pour-v0`. The task keeps the
+original fluid recipe, contact parameters, sampled viscosity/density, rewards,
+success predicates and IK draw order. Linux SAPIEN 3.0.3 supplies the tested
+Pinocchio runtime. Fresh seed-101 particles match the reference exactly (8,534
+particles, 0.245670289 kg); fresh IK joint positions differ by up to 1.92e-5 rad.
+Portable replay restores the explicitly recorded independent robot inputs.
+
+The trusted SAPIEN 2.2.2 reference exporter and optional local preparation tool
+produce restricted external model data. Neither is a runtime dependency:
+
+```sh
+# Inside the pinned reference environment; its SDF cache must be writable.
+python tools/softbody/export_pour_assets.py --source /path/to/ManiSkill2 --output /tmp/pour-pack
+# In a separate preparation environment with coacd==1.0.14, trimesh, scipy, rtree.
+python tools/softbody/prepare_pour_collision.py --pack /tmp/pour-pack --output /tmp/pour-pack/collision
+# Inside the native ManiSkill 3 environment.
+export MANISKILL_LEGACY_MPM_DATA=/tmp/pour-pack
+export MANISKILL_LEGACY_ASSET_DIR=/path/to/ManiSkill2/mani_skill2/assets
+python tools/softbody/probe_pour.py --output /tmp/pour-native-001
+```
+
+The model manifest SHA256 is
+`54d4c40bdfe3184788d5e1f1841c8806611cff1249f0aad8b5c9a150ab982710`;
+the bottle collision NPZ SHA256 is
+`6f2f689d65dcbb036e407b2350a4aad10d5ce47f8f17f24551628d4bf9fc593e`.
+Candidate runs receive only `export.json`, the two `body-*.npz` files, the
+collision pack and original notices/provenance, plus original mesh assets.
+Separate initial-readback diagnostics stay with the verifier.
+
+Both containers retain the original open fluid SDFs. Their rigid collisions use
+an open bottle decomposition and an open beaker triangle mesh instead of the
+original closed hulls. Bottle mass, COM and inertia remain the original explicit
+simulation inputs. All 128 native cooked bottle components pass a 6 mm radius
+clearance probe through the cavity. CoACD hit its hull limit and warned that the
+requested 0.5 mm concavity threshold was not attained. This is a documented
+geometry approximation, not verified exterior-contact equivalence. The reward's
+geometric targets retain the exported reference bounds.
+
+The 20-control native diagnostic stays finite. Dictionary, flat and rebuilt-scene
+checkpoints restore current fluid volume separately from rest volume, including
+the actual volume-correction buffer and both target heights. Negative current
+volumes are rejected. Subsequent replay differences reach 0.000272 m in particle
+position and 1.91e-10 m3 in volume; these are lifecycle measurements, not reference
+parity limits. The legacy native serializer omitted the second fill height; the
+portable contract records both actual heights explicitly.
+
+Three independent reference replays match the exact portable reset inputs after
+reset-only compensation for a SAPIEN 2 body/COM translation roundoff. The original
+15-nanometer reset failure remains recorded. Calibration still fails: reference
+affine-velocity variability reaches 1.05245 versus the predeclared ceiling 1.0.
+No Pour parity protocol was promoted. Candidate one-control differences include
+0.0001583 m particle position, 5.57e-10 m3 current volume and 0.002069 rigid
+velocity. Full-episode aggregate behavior needs separate calibration.
+
+The official seed-1 Pour demonstration completes physically in both engines and
+passes every original success predicate from control 297 through 299. An external
+NumPy evaluator recomputes the predicates from every frame and matches all labels.
+Final contained mass is 0.0737596 kg in the port versus 0.0716159 kg in the
+reference. Counts and masses remain constant and all recorded values are finite.
+Maximum full-episode particle-identity separation is 0.6659 m, COM separation
+0.003425 m, current-volume difference 9.72e-7 m3, joint position difference
+0.004738 rad and joint velocity difference 0.1154 rad/s. Success in this one
+recorded demonstration does not establish trajectory or real-fluid fidelity.
+
+Pour's state observations pad particle arrays to 16,384 entries and expose the
+live `particle_count`, so changing the sampled fluid height does not change the
+observation space. Padded rows are inactive zeros and never become physical
+particles. Checkpoints retain only actual particles and both fill heights at
+their original precision; observations follow native float32 conventions. Dictionary
+and flat observation spaces were checked at seeds 1 and 101 with 8,032 and 8,534
+live particles respectively. Existing Fill, Excavate and Hang lifecycle probes
+also pass after the shared fluid-state changes.
+
+The pinned collision pack was prepared on macOS ARM64 with CoACD 1.0.14,
+NumPy 2.2.6, SciPy 1.18.1, trimesh 5.1.0 and rtree 1.4.1. Cross-platform
+bitwise reproducibility of decomposition is not established; the runtime checks
+the fixed pack checksum, and the GPU worker separately checks its cooked cavity.

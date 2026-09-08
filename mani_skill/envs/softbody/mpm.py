@@ -102,6 +102,7 @@ class MPMCoupler:
         if len({id(body) for body in self.bodies}) != len(self.bodies):
             raise ValueError("A rigid body cannot be coupled twice")
         self.simulator = Simulator(device=model.device)
+        self.has_fluid_particles = bool(np.any(model.struct.particle_type.numpy()[:model.struct.n_particles] == 2))
         self.failed = False
         self.pending_step = None
 
@@ -139,6 +140,10 @@ class MPMCoupler:
             for field in ("particle_q", "particle_qd", "particle_F", "particle_C", "particle_volume_correction"):
                 if not np.isfinite(getattr(self.states[-1].struct, field).numpy()[:n]).all():
                     raise RuntimeError(f"MPM produced non-finite {field}")
+            if self.has_fluid_particles:
+                volume = self.states[-1].struct.particle_vol.numpy()[:n]
+                if not np.isfinite(volume).all() or np.any(volume <= 0):
+                    raise RuntimeError('MPM produced invalid current particle volume')
             mean = wrenches.mean(axis=0)
             if before_physx is not None:
                 before_physx()
@@ -172,6 +177,11 @@ class MPMCoupler:
     def particle_state(self):
         n = self.model.struct.n_particles
         state = self.states[0].struct
-        return {k: getattr(state, field).numpy()[:n].copy() for k, field in (
+        result = {k: getattr(state, field).numpy()[:n].copy() for k, field in (
             ("x", "particle_q"), ("v", "particle_qd"), ("F", "particle_F"),
             ("C", "particle_C"), ("vc", "particle_volume_correction"))}
+        if self.has_fluid_particles:
+            # Current fluid volume evolves independently of model rest volume.
+            # Keep the real volume-correction buffer separately for diagnostics.
+            result['vol'] = state.particle_vol.numpy()[:n].copy()
+        return result

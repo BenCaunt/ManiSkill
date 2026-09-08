@@ -199,12 +199,14 @@ class MPMBaseEnv(BaseEnv):
             raise ValueError("Only the single environment index [0] is supported")
         expected = self.mpm_coupler.particle_state()
         if set(state.get("mpm", {})) != set(expected):
-            raise ValueError("Restored state must contain x, v, F, C, and vc")
+            raise ValueError(f"Restored MPM fields must match {sorted(expected)}")
         values = {}
         for key, initial in expected.items():
             value = torch.as_tensor(state["mpm"][key]).detach().cpu().numpy()
             if value.shape != (1, *initial.shape) or not np.isfinite(value).all():
                 raise ValueError(f"Invalid MPM state field: {key}")
+            if key == 'vol' and np.any(value <= 0):
+                raise ValueError('Current fluid particle volumes must be positive')
             values[key] = value[0]
         template = self._mpm_material_tensors()
         if set(state.get('mpm_material', {})) != set(template):
@@ -219,6 +221,8 @@ class MPMBaseEnv(BaseEnv):
             if key == 'particle_type' and np.any(value != np.floor(value)):
                 raise ValueError('MPM particle types must be integral')
             materials[key] = value[0]
+        if bool(np.any(materials['particle_type'] == 2)) != self.mpm_coupler.has_fluid_particles:
+            raise ValueError('Restored material changes the fluid state layout')
         drives = None
         if self.agent is not None:
             joints = self.agent.robot._objs[0].active_joints
@@ -255,7 +259,8 @@ class MPMBaseEnv(BaseEnv):
                 full[:len(values[key])] = values[key]
                 target.assign(full)
             target = buffer.struct.particle_vol
-            full = target.numpy(); full[:len(materials['particle_vol'])] = materials['particle_vol']; target.assign(full)
+            volume = values.get('vol', materials['particle_vol'])
+            full = target.numpy(); full[:len(volume)] = volume; target.assign(full)
             buffer.struct.error.zero_()
         self.mpm_coupler.failed = False
         self.mpm_coupler.pending_step = None

@@ -1,6 +1,6 @@
 # Legacy soft-body code
 
-`fill.py`, `bucket.py`, `excavate.py`, `hang.py`, `legacy_base.py`, `legacy_panda.py`,
+`fill.py`, `bucket.py`, `excavate.py`, `hang.py`, `pour.py`, `legacy_base.py`, `legacy_panda.py`,
 and `geometry.py` adapt the task equations, initialization, and SDF
 algorithm from ManiSkill 2 v0.5.3, commit
 `493be36121a9dd06071a57172274babe617b789f`, by the ManiSkill authors:
@@ -8,6 +8,7 @@ algorithm from ManiSkill 2 v0.5.3, commit
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/fill_env.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/excavate_env.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/hang_env.py
+- https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/pour_env.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/agents/configs/panda/defaults.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/utils.py
 
@@ -38,3 +39,11 @@ collision SDFs/primitives, and reference robot loader parameters. The reference-
 source URLs, checksums, coordinate conventions, changes, and license notices.
 The native task never loads pickle. Converting an asset to NPZ does not change
 its license; this pack is excluded from the redistributable shared asset catalog.
+
+Pour similarly uses a restricted external numeric SDF/robot/inertia pack exported
+by `tools/softbody/export_pour_assets.py`. Its bottle and beaker visuals keep the
+original scales. Fluid contact retains the original visual SDFs; rigid contact
+uses an open bottle decomposition and a beaker triangle mesh in place of the
+original closed convex hulls. `prepare_pour_collision.py` records the conversion
+and original terms. This geometry change requires separate contact verification;
+the original inertia values remain explicit benchmark assumptions.
