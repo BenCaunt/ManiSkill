@@ -36,20 +36,22 @@ class MPMBaseEnv(BaseEnv):
         self._mpm_reset_active = False
         self.last_coupling_step = None
         self._particle_entities = []
+        self._mpm_initial_checkpoint = None
         wp.init()
         super().__init__(*args, num_envs=1, sim_backend="physx_cpu", **kwargs)
 
     def reset(self, *, seed=None, options=None):
         options = dict(options or {})
         restore = options.pop('reset_to_env_states', None)
+        self._mpm_initial_checkpoint = None
         self._mpm_reset_active = True
         try:
             # The base reset-to-state path skips _initialize_episode. MPM must
             # first build fresh topology/material buffers, including after a
             # scene reconfiguration, then restore the checkpoint during reset.
             obs, info = super().reset(seed=seed, options=options)
-            if restore is not None:
-                state = restore['env_states']
+            state = restore['env_states'] if restore is not None else self._mpm_initial_checkpoint
+            if state is not None:
                 if isinstance(state, dict):
                     self.set_state_dict(state, options.get('env_idx'))
                 else:
@@ -59,7 +61,14 @@ class MPMBaseEnv(BaseEnv):
                 self._last_obs = obs
             return obs, info
         finally:
+            self._mpm_initial_checkpoint = None
             self._mpm_reset_active = False
+
+    def defer_initial_state(self, state):
+        """Restore a task's recorded start after native controller reset finishes."""
+        if not self._mpm_reset_active:
+            raise RuntimeError('Initial state selection is only allowed during reset')
+        self._mpm_initial_checkpoint = state
 
     def rebuild_mpm(self, builder, bodies):
         """Build fresh buffers during reset, including clearing prior failures."""

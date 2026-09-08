@@ -3,9 +3,9 @@
 This branch preserves ManiSkill 2 v0.5.3's MPM solver and adds a SAPIEN 3
 coupling adapter and `MPMBaseEnv`. The tested configuration uses one CPU PhysX
 scene with either CPU or CUDA MPM. This is an editable-checkout prototype.
-`Fill-v0` and `Excavate-v0` now run with their legacy robot, material initialization, SDF contacts,
+`Fill-v0`, `Excavate-v0`, and `Hang-v0` now run with their legacy robot, material initialization, SDF contacts,
 success/reward equations, and particle sphere visuals. Full reference parity is
-still unverified. The other four task ports, GPU PhysX batching, and distributable
+still unverified. The other three task ports, GPU PhysX batching, and distributable
 wheel packaging remain under development.
 
 The copied runtime has separate terms in
@@ -107,7 +107,7 @@ recomputed after restore.
 The lifecycle probe changes the reset recipe's density before restoring a checkpoint
 and checks that the saved masses and material arrays replace the new recipe.
 
-`mani_skill.envs.softbody.capture.CaptureAdapter` exposes both bucket tasks to the
+`mani_skill.envs.softbody.capture.CaptureAdapter` exposes both bucket tasks and Hang to the
 independent `softbody_lab` recorder. Version 2 fixtures use explicit physical actor, fixed-root,
 joint, controller, task, and particle fields for portable reset. Each engine's
 actual native state buffer is also recorded, but its serialization is not assumed
@@ -132,3 +132,57 @@ Excavate reward membership uses the first actual rigid collision hull, as in the
 legacy evaluator, separately from the open visual SDF used for particle contacts.
 That hull is cooked by the native PhysX version; exact cross-version hull and
 reward membership equivalence under manipulation remain to be verified.
+
+## Hang and the numeric reference pack
+
+Hang preserves the original 3,636-particle rope, 0.0698112 kg mass, five evaluation
+indices, randomized rod, and ten recorded grasp starts. Its native Panda uses
+the legacy URDF and exported SAPIEN 2 mass/COM/inertia/joint frames. Twelve bodies
+have MPM collision geometry: nine mesh SDFs, two fingers with primitive colliders,
+and the rod. The recorder additionally observes the collision-free links, for all
+13 Panda links plus the rod.
+
+Create the numeric pack inside the pinned ManiSkill 2 reference environment
+(SAPIEN 2.2.2, NumPy 1.23.5, legacy Warp built with CUDA). The reference checkout
+must be clean at `493be36121a9dd06071a57172274babe617b789f`, with its original
+assets and license files; its `HangEnv.sdf` cache must be writable if stale.
+
+```sh
+python /path/to/this/fork/tools/softbody/export_hang_assets.py \
+  --source /path/to/ManiSkill2 --output /path/to/new-hang-pack
+```
+
+The verified pack's `export.json` SHA-256 is
+`bd9a93ad23798da1b34bbb6b64f4bd2470a4740cbfbbec519ee5b584720db431`.
+The exporter reproduced this exact manifest independently. All NPZ hashes are
+pinned by it; the pack also includes provenance and original notices. Run the
+native task in the separate ManiSkill 3 environment:
+
+```sh
+export MANISKILL_LEGACY_MPM_DATA=/path/to/new-hang-pack
+export MANISKILL_LEGACY_ASSET_DIR=/path/to/ManiSkill2/mani_skill2/assets
+python tools/softbody/probe_hang.py --output /tmp/hang-001
+```
+
+Import `mani_skill.envs.softbody.hang` to register `Hang-v0`. The reset restores
+the recorded grasp after ManiSkill's controller reset, preserving the legacy
+nominal controller memory and native drive targets. Explicit user checkpoints
+take precedence. Particle/robot assignments occur only during reset.
+
+The original recorded joint acceleration is retained as diagnostic data. In the
+tested SAPIEN 3.0.3 runtime, setting `qacc` does not restore that native readback;
+the port reports the actual value instead. Acceleration is not in the original
+environment's serialized state, observation, or PD controller input. This is an
+observable compatibility limitation, not a claim of identical native APIs.
+
+The seed-101 native run completes 20 zero-action controls and dictionary/flat
+checkpoint replay with finite states. Maximum particle replay difference was
+8.94e-8 m; joint differences were below 1.87e-9. It does not solve the task.
+Three independent one-control reference replays calibrate the portable fixture.
+Its exact input hash matches, but **strict parity fails**: initial derived pose
+and velocity gates fail, and trajectory differences include 3.51e-6 m particle
+positions versus a 1e-6 m limit, and 7.82e-5 joint velocity versus 1e-5.
+Reward, mass, drive targets, rod state, and evaluation indices meet their limits.
+The limits were retained. Successful physical manipulation, other seeds,
+full-episode aggregate gates, and camera/checkpoint coverage beyond the current
+probe still require verification.

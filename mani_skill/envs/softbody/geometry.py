@@ -6,6 +6,7 @@ volumes preserve open cavities; no convex hull replaces the MPM collision mesh.
 """
 
 import hashlib
+import zipfile
 from pathlib import Path
 
 import numpy as np
@@ -14,6 +15,59 @@ import trimesh
 
 from .mpm import wp
 from warp.sim.model import DenseVolume
+
+
+def load_numeric_pack_file(directory, name, digest):
+    """Load a pinned, bounded numeric asset file; never deserialize pickle."""
+    if Path(name).name != name:
+        raise ValueError('Numeric asset filename must be a basename')
+    path = Path(directory) / name
+    if path.stat().st_size > 128 * 1024**2 or hashlib.sha256(path.read_bytes()).hexdigest() != digest:
+        raise ValueError(f'Numeric asset checksum/size mismatch: {name}')
+    with zipfile.ZipFile(path) as archive:
+        members = archive.infolist()
+        if len(members) > 128 or sum(v.file_size for v in members) > 256 * 1024**2:
+            raise ValueError('Numeric asset exceeds expanded size limit')
+        if len({v.filename for v in members}) != len(members):
+            raise ValueError('Duplicate numeric asset members')
+    with np.load(path, allow_pickle=False) as data:
+        arrays = dict(data)
+    if any(v.dtype.kind not in 'fiu' or not np.isfinite(v).all() for v in arrays.values()):
+        raise ValueError('Non-finite or nonnumeric asset arrays')
+    return arrays
+
+
+def register_reference_collision_body(builder, body, record, arrays):
+    """Use exported legacy collision SDFs/primitives with native body dynamics.
+
+    These are model inputs, not target poses or expected rollout outputs. Native
+    PhysX owns each real body; the coupler supplies its actual moving pose.
+    """
+    if len(body.get_collision_shapes()) != record['mesh_count'] + len(record['primitives']):
+        raise ValueError('Native collision shape count differs from the exported model')
+    index = builder.add_body(origin=wp.transform_identity())
+    if record['has_sdf']:
+        sdf, normal = arrays['sdf'], arrays['normal']
+        if sdf.ndim != 3 or normal.shape != (*sdf.shape, 3) or np.prod(sdf.shape) > 4_000_000:
+            raise ValueError('Invalid exported SDF shape')
+        if arrays['position'].shape != (3,) or arrays['scale'].shape != (3,) or np.any(arrays['scale'] <= 0):
+            raise ValueError('Invalid exported SDF grid transform')
+        volume = DenseVolume(np.concatenate([normal, sdf[..., None]], -1), arrays['position'],
+                             arrays['scale'], mass=1., I=np.eye(3), com=np.zeros(3))
+        builder.add_shape_dense_volume(index, volume=volume)
+    for primitive in record['primitives']:
+        pose, size = primitive['pose'], primitive['size']
+        kwargs = dict(body=index, pos=tuple(pose[:3]), rot=tuple(pose[4:7])+tuple(pose[3:4]))
+        if primitive['kind'] == 'box':
+            builder.add_shape_box(**kwargs, hx=size[0], hy=size[1], hz=size[2])
+        elif primitive['kind'] == 'capsule':
+            builder.add_shape_capsule(**kwargs, radius=size[0], half_width=size[1])
+        else:
+            raise NotImplementedError('Unsupported exported primitive collider')
+    com = body.cmass_local_pose
+    rotation = com.to_transformation_matrix()[:3, :3]
+    builder.set_body_mass(index, float(body.mass), rotation @ np.diag(body.inertia) @ rotation.T, com.p)
+    return index
 
 
 def visual_meshes(body):
