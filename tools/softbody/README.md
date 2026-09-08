@@ -177,7 +177,8 @@ observable compatibility limitation, not a claim of identical native APIs.
 
 The seed-101 native run completes 20 zero-action controls and dictionary/flat
 checkpoint replay with finite states. Maximum particle replay difference was
-8.94e-8 m; joint differences were below 1.87e-9. It does not solve the task.
+8.94e-8 m; joint differences were at most 2.39e-7 after the gripper correction.
+The zero-action run does not solve the task.
 Three independent one-control reference replays calibrate the portable fixture.
 Its exact input hash matches, but **strict parity fails**: initial derived pose
 and velocity gates fail, and trajectory differences include 3.51e-6 m particle
