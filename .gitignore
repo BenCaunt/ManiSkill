@@ -44,3 +44,7 @@ imgui.ini
 # testing
 .coverage*
 htmlcov/
+
+# Experimental legacy MPM build outputs (source and licenses are retained).
+/warp_maniskill/warp/bin/
+/warp_maniskill/warp/native/*.o

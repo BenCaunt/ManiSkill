@@ -44,6 +44,8 @@ render_backend_name_mapping = {
 
 
 def parse_backend_device_id(backend: str) -> tuple[str, int]:
+    if backend is None:
+        return None, None
     if ":" in backend:
         return backend.split(":")
     return backend, None
@@ -70,7 +72,9 @@ def parse_sim_and_render_backend(sim_backend: str, render_backend: str) -> Backe
         raise ValueError(f"Invalid simulation backend: {sim_backend}")
 
     try:
-        if platform.system() == "Darwin":
+        if render_backend == "none" or render_backend is None:
+            render_device = None
+        elif platform.system() == "Darwin":
             render_device = sapien.Device("cpu")
             render_backend = "sapien_cpu"
             logger.warning(
@@ -84,8 +88,6 @@ def parse_sim_and_render_backend(sim_backend: str, render_backend: str) -> Backe
         elif render_backend[:4] == "cuda":
             device_str = f"cuda:{render_device_id}" if render_device_id is not None else "cuda"
             render_device = sapien.Device(device_str)
-        elif render_backend == "none" or render_backend is None:
-            render_device = None
         else:
             # handle special cases such as for AMD gpus, render_backend must be defined as pci:... instead as cuda is not available.
             render_device = sapien.Device(render_backend)
