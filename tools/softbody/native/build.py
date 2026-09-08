@@ -39,7 +39,7 @@ def main():
            Path(sysconfig.get_paths()['include']),Path('/usr/local/cuda/include')]
     command=['c++','-std=c++20','-shared','-fPIC','-O2','-DNDEBUG','-DSAPIEN_CUDA',
              '-D_GLIBCXX_USE_CXX11_ABI=1',*[f'-I{p}' for p in roots],str(source/'actor_bridge.cpp'),
-             str(native),'-L/usr/local/cuda/lib64','-lcudart',f'-Wl,-rpath,{native.parent}','-o',str(target)]
+             str(native),'-L/usr/local/cuda/lib64','-lcudart','-Wl,-rpath,$ORIGIN/sapien.libs','-o',str(target)]
     (output/'command.json').write_text(json.dumps(command,indent=2)+'\n')
     subprocess.run(command,check=True)
     manifest=dict(sapien=version('sapien'),torch=version('torch'),python=sys.version,

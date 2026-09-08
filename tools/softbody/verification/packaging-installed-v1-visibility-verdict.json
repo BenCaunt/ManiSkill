@@ -1,0 +1,229 @@
+{
+  "passed": true,
+  "failures": [],
+  "reports": {
+    "Pour-single-101/env0/inspection-bottle-hidden": {
+      "particle_pixels": 1648,
+      "visible_particles": 727,
+      "max_surface_error_m": 0.0015019946934439203,
+      "median_surface_error_m": 0.00038716021222986465,
+      "hidden_ids": [
+        15
+      ],
+      "occluded_particle_pixels": 1648,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    },
+    "Pour-single-101/env0/inspection-bottle-robot-hidden": {
+      "particle_pixels": 1648,
+      "visible_particles": 727,
+      "max_surface_error_m": 0.0015019946934439203,
+      "median_surface_error_m": 0.00038716021222986465,
+      "hidden_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        15
+      ],
+      "occluded_particle_pixels": 1648,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    },
+    "Pour-single-17/env0/inspection-bottle-hidden": {
+      "particle_pixels": 1467,
+      "visible_particles": 649,
+      "max_surface_error_m": 0.00138570922099507,
+      "median_surface_error_m": 0.0003380887421854926,
+      "hidden_ids": [
+        15
+      ],
+      "occluded_particle_pixels": 1467,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    },
+    "Pour-single-17/env0/inspection-bottle-robot-hidden": {
+      "particle_pixels": 1467,
+      "visible_particles": 649,
+      "max_surface_error_m": 0.00138570922099507,
+      "median_surface_error_m": 0.0003380887421854926,
+      "hidden_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        15
+      ],
+      "occluded_particle_pixels": 1467,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    },
+    "Pour-batch-absolute/env0/inspection-bottle-hidden": {
+      "particle_pixels": 1648,
+      "visible_particles": 727,
+      "max_surface_error_m": 0.0015019946934439203,
+      "median_surface_error_m": 0.00038716021222986465,
+      "hidden_ids": [
+        15
+      ],
+      "occluded_particle_pixels": 1648,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    },
+    "Pour-batch-absolute/env0/inspection-bottle-robot-hidden": {
+      "particle_pixels": 1648,
+      "visible_particles": 727,
+      "max_surface_error_m": 0.0015019946934439203,
+      "median_surface_error_m": 0.00038716021222986465,
+      "hidden_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        15
+      ],
+      "occluded_particle_pixels": 1648,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    },
+    "Pour-batch-absolute/env1/inspection-bottle-hidden": {
+      "particle_pixels": 1467,
+      "visible_particles": 649,
+      "max_surface_error_m": 0.00138570922099507,
+      "median_surface_error_m": 0.0003380887421854926,
+      "hidden_ids": [
+        15
+      ],
+      "occluded_particle_pixels": 1467,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    },
+    "Pour-batch-absolute/env1/inspection-bottle-robot-hidden": {
+      "particle_pixels": 1467,
+      "visible_particles": 649,
+      "max_surface_error_m": 0.00138570922099507,
+      "median_surface_error_m": 0.0003380887421854926,
+      "hidden_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        15
+      ],
+      "occluded_particle_pixels": 1467,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    },
+    "Pour-batch-align/env0/inspection-bottle-hidden": {
+      "particle_pixels": 1648,
+      "visible_particles": 727,
+      "max_surface_error_m": 0.0015019946934439203,
+      "median_surface_error_m": 0.00038716021222986465,
+      "hidden_ids": [
+        15
+      ],
+      "occluded_particle_pixels": 1648,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    },
+    "Pour-batch-align/env0/inspection-bottle-robot-hidden": {
+      "particle_pixels": 1648,
+      "visible_particles": 727,
+      "max_surface_error_m": 0.0015019946934439203,
+      "median_surface_error_m": 0.00038716021222986465,
+      "hidden_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        15
+      ],
+      "occluded_particle_pixels": 1648,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    },
+    "Pour-batch-align/env1/inspection-bottle-hidden": {
+      "particle_pixels": 1467,
+      "visible_particles": 649,
+      "max_surface_error_m": 0.00138570922099507,
+      "median_surface_error_m": 0.0003380887421854926,
+      "hidden_ids": [
+        15
+      ],
+      "occluded_particle_pixels": 1467,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    },
+    "Pour-batch-align/env1/inspection-bottle-robot-hidden": {
+      "particle_pixels": 1467,
+      "visible_particles": 649,
+      "max_surface_error_m": 0.00138570922099507,
+      "median_surface_error_m": 0.0003380887421854926,
+      "hidden_ids": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        10,
+        12,
+        13,
+        15
+      ],
+      "occluded_particle_pixels": 1467,
+      "already_visible_particle_pixels": 0,
+      "explained_pixel_fraction": 1.0,
+      "failures": []
+    }
+  },
+  "scope": "Diagnostic visibility intervention only; ordinary camera and physical parity gates remain separate."
+}

@@ -11,8 +11,10 @@ import argparse
 
 package_dir = os.path.join(os.path.dirname(__file__))
 package_dir = os.path.normpath(package_dir)
+if "warp" in sys.modules and os.path.realpath(os.path.dirname(sys.modules["warp"].__file__)) != os.path.join(package_dir, "warp"):
+    raise ImportError("Build the bundled ManiSkill Warp in a fresh Python process")
 if package_dir not in sys.path:
-    sys.path.append(package_dir)
+    sys.path.insert(0, package_dir)
 
 import warp.config
 import warp.build

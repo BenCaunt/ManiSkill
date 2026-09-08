@@ -1,10 +1,15 @@
 import argparse
 import datetime
+import runpy
 import sys
 from datetime import date
 from pathlib import Path
 
 from setuptools import find_packages, setup
+
+_softbody_packaging = runpy.run_path(
+    str(Path(__file__).parent / "tools/softbody/native/wheel_support.py")
+)
 
 # update this version when a new official pypi release is made
 __version__ = "3.0.1"
@@ -51,6 +56,9 @@ def get_dependencies():
         "sapien>=3.0.0.b1;platform_system=='Windows'",
         "sapien>=3.0.2;platform_system=='Darwin'",
     ]
+    if _softbody_packaging["binary_directory"]() is not None:
+        # The bundled compatibility adapters target this exact native ABI.
+        install_requires.append("sapien==3.0.3")
     # NOTE (stao): until sapien is uploaded to pypi with mac support, users need to install manually below as so
     # f"sapien @ https://github.com/haosulab/SAPIEN/releases/download/nightly/sapien-3.0.0.dev20250303+291f6a77-{python_version}-{python_version}-macosx_12_0_universal2.whl;platform_system=='Darwin'"
     return install_requires
@@ -92,16 +100,28 @@ def main(argv):
         long_description_content_type="text/markdown",
         author="ManiSkill contributors",
         url="https://github.com/haosulab/ManiSkill",
-        packages=find_packages(include=["mani_skill*"]),
+        packages=find_packages(include=["mani_skill*", "warp_maniskill*"],
+                               exclude=["warp_maniskill.warp.tests*"])
+        + ["mani_skill.envs.softbody.native", "mani_skill.envs.softbody.native.cooked"],
+        package_dir={"mani_skill.envs.softbody.native": "tools/softbody/native"},
+        distclass=_softbody_packaging["SoftbodyDistribution"],
+        cmdclass={"build_py": _softbody_packaging["BuildSoftbodyPython"]},
         python_requires=">=3.9",
         setup_requires=["setuptools>=62.3.0"],
         install_requires=get_dependencies(),
         # Glob patterns do not automatically match dotfiles
         package_data={
             "mani_skill": ["assets/**", "envs/**/*", "utils/**/*"],
-            "warp_maniskill.warp": ["native/*", "native/nanovdb/*"],
+            "warp_maniskill": ["LICENSE.md", "PROVENANCE.json", "README.md", "VERSION.md",
+                               "licenses/*.txt", "licenses/assets/*.txt"],
+            "warp_maniskill.warp": ["native/*.h", "native/*.cpp", "native/*.cu", "native/nanovdb/*.h"],
+            "mani_skill.envs.softbody.native": ["*.cpp", "README.md", "vendor/*.h", "vendor/LICENSE", "vendor/*.json"],
+            "mani_skill.envs.softbody.native.cooked": ["*.cpp", "*.h", "*.patch", "*.json", "README.md",
+                                                       "vendor/*.h", "vendor/LICENSE", "vendor/*.json"],
         },
+        exclude_package_data={"": ["__pycache__/*", "*.pyc", "*.pyo", "*.o", "*.obj", "*.so", "*.dll", "*.dylib"]},
         extras_require={
+            "softbody": ["sapien==3.0.3"],
             "dev": [
                 "pytest",
                 "black",

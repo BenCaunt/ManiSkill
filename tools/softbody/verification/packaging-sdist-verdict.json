@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "failures": [],
+  "wheel": "mani_skill-3.0.1-py3-none-any.whl",
+  "sha256": "37ec0eb4d93e6c381cf7af229e2f921e527b986c5d0bac95221a089c44b18c18",
+  "file_count": 498,
+  "source_files_checked": 481,
+  "native_libraries": [],
+  "excluded_python_scaffolds": [
+    "mani_skill/agents/robots/_template/template_robot.py"
+  ],
+  "scope": "Wheel contents, compatibility metadata and source identity; separate installed physics validation required."
+}

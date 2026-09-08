@@ -1,0 +1,23 @@
+/home/ubuntu/softbody/records/packaging-native-v2/native/bundle/sapien303_actor_bridge.cpython-310-x86_64-linux-gnu.so
+ 0x0000000000000001 (NEEDED)             Shared library: [libsapien.so]
+ 0x0000000000000001 (NEEDED)             Shared library: [libcudart.so.11.0]
+ 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-x86-64.so.2]
+ 0x000000000000001d (RUNPATH)            Library runpath: [$ORIGIN/sapien.libs]
+/home/ubuntu/softbody/records/packaging-native-v2/native/bundle/sapien303_cooked_bridge.cpython-310-x86_64-linux-gnu.so
+ 0x0000000000000001 (NEEDED)             Shared library: [libsapien.so]
+ 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-x86-64.so.2]
+ 0x000000000000001d (RUNPATH)            Library runpath: [$ORIGIN/sapien.libs]
+/home/ubuntu/softbody/records/packaging-native-v2/native/bundle/warp.so
+ 0x0000000000000001 (NEEDED)             Shared library: [libnvrtc.so.11.2]
+ 0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libm.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [libgcc_s.so.1]
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+ 0x0000000000000001 (NEEDED)             Shared library: [ld-linux-x86-64.so.2]
+ 0x000000000000001d (RUNPATH)            Library runpath: [$ORIGIN]

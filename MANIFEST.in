@@ -1,0 +1,7 @@
+include tools/softbody/native/wheel_support.py
+recursive-include tools/softbody/native *.py *.cpp *.h *.json *.md *.patch LICENSE
+include warp_maniskill/LICENSE.md warp_maniskill/PROVENANCE.json warp_maniskill/README.md warp_maniskill/VERSION.md
+recursive-include warp_maniskill/licenses *.txt
+recursive-include warp_maniskill/warp/native *.h *.cpp *.cu
+global-exclude *.pyc *.pyo *.o *.obj *.so *.dll *.dylib
+prune warp_maniskill/warp/tests

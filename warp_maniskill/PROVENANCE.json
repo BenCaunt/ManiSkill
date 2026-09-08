@@ -295,14 +295,16 @@
     "warp/codegen.py",
     "warp/context.py",
     "warp/native/warp.cpp",
-    "warp/types.py"
+    "warp/types.py",
+    "build_lib.py"
   ],
   "modifications": {
     "warp/build.py": "Remove unused imp import for Python 3.12",
     "warp/codegen.py": "Remove unused imp import; generate packed CPU entry points for portable ctypes calls",
     "warp/context.py": "Convert NumPy byte counts at ctypes boundary; call packed CPU entry points and invalidate old kernel cache ABI",
     "warp/types.py": "Use numpy.asarray for copy-if-needed behavior under NumPy 2",
-    "warp/native/warp.cpp": "Provide no-CUDA dense-volume device stubs required by runtime symbol binding"
+    "warp/native/warp.cpp": "Provide no-CUDA dense-volume device stubs required by runtime symbol binding",
+    "build_lib.py": "Prefer bundled Warp during offline builds and reject a different Warp already imported; prevents an unrelated installed package from supplying the build implementation."
   },
   "physics_equations_changed": false
 }

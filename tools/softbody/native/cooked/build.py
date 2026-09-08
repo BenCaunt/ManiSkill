@@ -52,9 +52,10 @@ def main():
     roots=[overlay,include,include/'physx/include',args.eigen.resolve(),
            Path(torch.__file__).parent/'include',Path(sysconfig.get_paths()['include'])]
     if platform.system()=='Linux':roots.append(Path('/usr/local/cuda/include'))
+    rpath = '$ORIGIN/sapien.libs' if platform.system() == 'Linux' else str(native.parent)
     command=['c++','-std=c++20','-shared','-fPIC','-O2','-DNDEBUG',*flags,
              *[f'-I{r}' for r in roots],str(source/'bridge.cpp'),str(source/'convex_mesh_cooked.cpp'),
-             str(native),f'-Wl,-rpath,{native.parent}','-o',str(target)]
+             str(native),f'-Wl,-rpath,{rpath}','-o',str(target)]
     (out/'command.json').write_text(json.dumps(command,indent=2)+'\n')
     subprocess.run(command,check=True,timeout=120)
     report=dict(platform=platform.platform(),sapien=version('sapien'),python=sys.version,

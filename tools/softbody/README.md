@@ -3,7 +3,8 @@
 This branch preserves ManiSkill 2 v0.5.3's MPM solver and adds a SAPIEN 3
 coupling adapter and `MPMBaseEnv`. Tested configurations include one CPU PhysX
 scene with CPU or CUDA MPM and short single-scene GPU PhysX task runs with CUDA
-MPM. This is an editable-checkout prototype.
+MPM. Source and Linux native [wheel builds](packaging.md) are available for
+this experimental integration.
 `Fill-v0`, `Excavate-v0`, `Hang-v0`, `Pour-v0`, `Write-v0`, and `Pinch-v0` now run with their legacy robot, material initialization, SDF contacts,
 success/reward equations, and particle sphere visuals. Full reference parity is
 still unverified. The [GPU task suite](gpu-tasks.md) records short rollouts for
@@ -19,8 +20,8 @@ verified partial resets. [Write batching](gpu-write-batching.md) and
 rendering and RNG checks, while exact original model-frame comparisons fail.
 [Pour batching](gpu-pour-batching.md) uses verified cooked bottle walls and
 retains camera visibility and selected-pose failures. Broader
-original Pinch/Write benchmark validation and distributable
-wheel packaging remain under development.
+original Pinch/Write benchmark validation and calibrated reference parity
+remain under development.
 
 The copied runtime has separate terms in
 [`warp_maniskill/LICENSE.md`](../../warp_maniskill/LICENSE.md). Those terms

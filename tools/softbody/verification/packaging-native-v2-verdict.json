@@ -1,0 +1,17 @@
+{
+  "passed": true,
+  "failures": [],
+  "wheel": "mani_skill-3.0.1-cp310-cp310-linux_x86_64.whl",
+  "sha256": "99235cd8639a8196c55a5675e2a1a87641526d88497b4ae370b14edde4e435d2",
+  "file_count": 502,
+  "source_files_checked": 481,
+  "native_libraries": [
+    "sapien303_actor_bridge.cpython-310-x86_64-linux-gnu.so",
+    "sapien303_cooked_bridge.cpython-310-x86_64-linux-gnu.so",
+    "warp_maniskill/warp/bin/warp.so"
+  ],
+  "excluded_python_scaffolds": [
+    "mani_skill/agents/robots/_template/template_robot.py"
+  ],
+  "scope": "Wheel contents, compatibility metadata and source identity; separate installed physics validation required."
+}

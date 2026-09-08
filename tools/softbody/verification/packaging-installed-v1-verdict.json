@@ -1,0 +1,141 @@
+{
+  "passed": true,
+  "failures": [],
+  "contacts": {
+    "coupling-cpu-free": {
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "displacement_m": 0.0093303257599473,
+        "grid_clearance_m": 0.19201123714447021,
+        "peak_force_n": 0.43321433663368225,
+        "momentum_error_kg_m_s": 1.0354785678863688e-07,
+        "rigid_impulse_error_kg_m_s": 1.594453651875661e-11
+      }
+    },
+    "coupling-cpu-rotated": {
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "displacement_m": 0.007241155952215195,
+        "grid_clearance_m": 0.2605000138282776,
+        "peak_force_n": 0.22592531144618988,
+        "momentum_error_kg_m_s": 2.535641184928227e-07,
+        "rigid_impulse_error_kg_m_s": 6.529685639595046e-10
+      }
+    },
+    "coupling-cpu-slider": {
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "displacement_m": 0.009366503916680813,
+        "grid_clearance_m": 0.191038116812706,
+        "peak_force_n": 0.4334581196308136,
+        "joint_impulse_error": 1.8576974984349515e-10
+      }
+    },
+    "coupling-cpu-hinge": {
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "displacement_m": 0.006008239928632975,
+        "grid_clearance_m": 0.18460607528686523,
+        "peak_force_n": 0.4351224899291992,
+        "joint_impulse_error": 1.577342585972613e-11
+      }
+    },
+    "coupling-cuda-free": {
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "displacement_m": 0.009330330416560173,
+        "grid_clearance_m": 0.1920110434293747,
+        "peak_force_n": 0.433215469121933,
+        "momentum_error_kg_m_s": 1.0446638081164495e-07,
+        "rigid_impulse_error_kg_m_s": 3.5302673444192983e-10
+      }
+    },
+    "coupling-cuda-rotated": {
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "displacement_m": 0.007241146173328161,
+        "grid_clearance_m": 0.2605000138282776,
+        "peak_force_n": 0.22592659294605255,
+        "momentum_error_kg_m_s": 2.5357479188248935e-07,
+        "rigid_impulse_error_kg_m_s": 5.849489030715419e-11
+      }
+    },
+    "coupling-cuda-slider": {
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "displacement_m": 0.009366516023874283,
+        "grid_clearance_m": 0.19103772938251495,
+        "peak_force_n": 0.4334576427936554,
+        "joint_impulse_error": 3.5529956234070514e-10
+      }
+    },
+    "coupling-cuda-hinge": {
+      "passed": true,
+      "failures": [],
+      "metrics": {
+        "displacement_m": 0.006008242256939411,
+        "grid_clearance_m": 0.18460549414157867,
+        "peak_force_n": 0.4351193308830261,
+        "joint_impulse_error": 1.1331571816400494e-11
+      }
+    }
+  },
+  "origins": {
+    "coupling-cpu-free": {
+      "passed": true,
+      "failures": []
+    },
+    "coupling-cpu-rotated": {
+      "passed": true,
+      "failures": []
+    },
+    "coupling-cpu-slider": {
+      "passed": true,
+      "failures": []
+    },
+    "coupling-cpu-hinge": {
+      "passed": true,
+      "failures": []
+    },
+    "coupling-cuda-free": {
+      "passed": true,
+      "failures": []
+    },
+    "coupling-cuda-rotated": {
+      "passed": true,
+      "failures": []
+    },
+    "coupling-cuda-slider": {
+      "passed": true,
+      "failures": []
+    },
+    "coupling-cuda-hinge": {
+      "passed": true,
+      "failures": []
+    },
+    "Pour-single-101": {
+      "passed": true,
+      "failures": []
+    },
+    "Pour-single-17": {
+      "passed": true,
+      "failures": []
+    },
+    "Pour-batch-absolute": {
+      "passed": true,
+      "failures": []
+    },
+    "Pour-batch-align": {
+      "passed": true,
+      "failures": []
+    }
+  },
+  "scope": "Installed wheel identity in twelve processes and eight analytic contacts. Separate unchanged Pour acceptance verdict required."
+}

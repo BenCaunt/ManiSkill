@@ -1,0 +1,91 @@
+{
+  "recorded_at_utc": "2026-09-08T23:21:33.617974+00:00",
+  "native_wheel": {
+    "filename": "mani_skill-3.0.1-cp310-cp310-linux_x86_64.whl",
+    "sha256": "99235cd8639a8196c55a5675e2a1a87641526d88497b4ae370b14edde4e435d2",
+    "files": 502,
+    "source_files_checked": 481,
+    "native_libraries": 3
+  },
+  "source_wheel_sha256": "1c7ebc3bbdd2c3e348745cd046ba51b4c4df6a396b6629707dea815f76bc2f8c",
+  "sdist_rebuilt_wheel_sha256": "37ec0eb4d93e6c381cf7af229e2f921e527b986c5d0bac95221a089c44b18c18",
+  "native_build_result_archive_sha256": "2711f5d8b34e033d3d574c03317532ac9c76271a0865aa23d5f72dcda4ef3bca",
+  "installed_run": {
+    "input_sha256": "dee84d1cca9835743da52612c593685e5725d1b0198708096479cd3978554629",
+    "archive_sha256": "ddc8fa2336e26e27020bd6ca94dc89a96147fb792f6c74c7472c3423a0e2c527",
+    "image": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+    "processes_completed": 12,
+    "installed_origin_checks_passed": 12,
+    "analytic_contact_cases_passed": 8
+  },
+  "contact_metrics": {
+    "coupling-cpu-free": {
+      "displacement_m": 0.0093303257599473,
+      "grid_clearance_m": 0.19201123714447021,
+      "peak_force_n": 0.43321433663368225,
+      "momentum_error_kg_m_s": 1.0354785678863688e-07,
+      "rigid_impulse_error_kg_m_s": 1.594453651875661e-11
+    },
+    "coupling-cpu-rotated": {
+      "displacement_m": 0.007241155952215195,
+      "grid_clearance_m": 0.2605000138282776,
+      "peak_force_n": 0.22592531144618988,
+      "momentum_error_kg_m_s": 2.535641184928227e-07,
+      "rigid_impulse_error_kg_m_s": 6.529685639595046e-10
+    },
+    "coupling-cpu-slider": {
+      "displacement_m": 0.009366503916680813,
+      "grid_clearance_m": 0.191038116812706,
+      "peak_force_n": 0.4334581196308136,
+      "joint_impulse_error": 1.8576974984349515e-10
+    },
+    "coupling-cpu-hinge": {
+      "displacement_m": 0.006008239928632975,
+      "grid_clearance_m": 0.18460607528686523,
+      "peak_force_n": 0.4351224899291992,
+      "joint_impulse_error": 1.577342585972613e-11
+    },
+    "coupling-cuda-free": {
+      "displacement_m": 0.009330330416560173,
+      "grid_clearance_m": 0.1920110434293747,
+      "peak_force_n": 0.433215469121933,
+      "momentum_error_kg_m_s": 1.0446638081164495e-07,
+      "rigid_impulse_error_kg_m_s": 3.5302673444192983e-10
+    },
+    "coupling-cuda-rotated": {
+      "displacement_m": 0.007241146173328161,
+      "grid_clearance_m": 0.2605000138282776,
+      "peak_force_n": 0.22592659294605255,
+      "momentum_error_kg_m_s": 2.5357479188248935e-07,
+      "rigid_impulse_error_kg_m_s": 5.849489030715419e-11
+    },
+    "coupling-cuda-slider": {
+      "displacement_m": 0.009366516023874283,
+      "grid_clearance_m": 0.19103772938251495,
+      "peak_force_n": 0.4334576427936554,
+      "joint_impulse_error": 3.5529956234070514e-10
+    },
+    "coupling-cuda-hinge": {
+      "displacement_m": 0.006008242256939411,
+      "grid_clearance_m": 0.18460549414157867,
+      "peak_force_n": 0.4351193308830261,
+      "joint_impulse_error": 1.1331571816400494e-11
+    }
+  },
+  "pour": {
+    "cases_completed": 4,
+    "acceptance_passed": false,
+    "failures": 24,
+    "default_visibility_failures": 16,
+    "exact_selected_pose_failures": 8,
+    "failures_identical_to_gpu_batch_v20": true,
+    "diagnostic_visibility_comparisons_passed": 12
+  },
+  "local_tests": {
+    "combined": 37,
+    "packaged_independent_verifier": 24
+  },
+  "source_sdist_scope": "Source distributions rebuilt and audited; macOS installed CPU compile/contact exercised; native build from checkout, not a fresh Linux sdist build.",
+  "dependency_scope": "Offline --no-deps installation into the pinned image; resolver compatibility on a new OS/CUDA stack is not established.",
+  "full_port_complete": false
+}
