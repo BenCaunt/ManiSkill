@@ -48,3 +48,30 @@ def test_absolute_joint_actions_use_each_actual_initial_configuration():
     action = expected_actions(case,q)
     assert action.shape == (2,7)
     np.testing.assert_allclose(action[:,0]-q[:,0],[.002,-.001],atol=2e-8)
+
+
+def test_panda_ik_preserves_full_initial_state_but_only_controls_arm(records):
+    case, step, model, _ = deepcopy(records)
+    case['task'] = 'Hang'
+    for i, call in enumerate(step['ik_calls']):
+        fingers = [.01+i*.002,.015+i*.002]
+        step['qpos_before'][i].extend(fingers)
+        call['initial_qpos'].extend(fingers)
+        call['result'].extend(fingers)
+        call['active_qmask'] = [True]*7+[False]*2
+        model['masks'][i] = [True]*7+[False]*2
+    action = expected_actions(case,np.asarray(step['qpos_before']))
+    assert action.shape == (2,4)
+    assert not action[:,-1].any()
+    assert not check_ik_step(case,step,model,action,1e-6)
+    step['ik_calls'][1]['initial_qpos'][-1] = step['ik_calls'][0]['initial_qpos'][-1]
+    assert any('stale initial qpos' in f for f in check_ik_step(case,step,model,action,1e-6))
+
+
+@pytest.mark.parametrize('mode,width',[('pd_joint_pos',8),('pd_joint_pos_vel',15),
+    ('pd_joint_delta_pos_vel',15),('pd_ee_delta_pose',7),('pd_ee_target_delta_pos',4)])
+def test_panda_actions_include_one_gripper_command(mode,width):
+    case = dict(task='Hang',control_mode=mode,action_scales=[1.,-.5],controller_lifecycle=True)
+    action = expected_actions(case,np.zeros((2,9),np.float32))
+    assert action.shape == (2,width)
+    assert not action[:,-1].any()

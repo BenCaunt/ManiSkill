@@ -1,0 +1,76 @@
+{
+  "declared_at_utc": "2026-09-08T18:23:33.737471+00:00",
+  "input_sha256": "fadda04c499df6142b837217657fe57254ff51fb18c47ea3735c0c1f11114008",
+  "request_sha256": "17b601a8517e916ec7608cfe07378ec1f5ee9aac4d75ac107bb15ca6e6895aee",
+  "probe_sha256": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+  "runner_sha256": "956f4962a88127da06b4ba1e02f8af7bbe3a8289dae64696835813bb846b198d",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+  "cases": [
+    {
+      "name": "Hang-pd_ee_delta_pose_align-gpu",
+      "task": "Hang",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_align"
+    },
+    {
+      "name": "Hang-pd_ee_target_delta_pose-gpu",
+      "task": "Hang",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose"
+    },
+    {
+      "name": "Pour-pd_ee_pose-gpu",
+      "task": "Pour",
+      "backend": "gpu",
+      "control_mode": "pd_ee_pose"
+    },
+    {
+      "name": "Write-pd_ee_delta_pose_demo-gpu",
+      "task": "Write",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_demo"
+    },
+    {
+      "name": "Pinch-pd_ee_target_delta_pos-gpu",
+      "task": "Pinch",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pos"
+    },
+    {
+      "name": "Hang-pd_ee_target_delta_pose-cpu",
+      "task": "Hang",
+      "backend": "cpu",
+      "control_mode": "pd_ee_target_delta_pose"
+    },
+    {
+      "name": "Pour-pd_ee_pose-cpu",
+      "task": "Pour",
+      "backend": "cpu",
+      "control_mode": "pd_ee_pose"
+    },
+    {
+      "name": "Write-pd_ee_delta_pose_demo-cpu",
+      "task": "Write",
+      "backend": "cpu",
+      "control_mode": "pd_ee_delta_pose_demo"
+    },
+    {
+      "name": "Pinch-pd_ee_target_delta_pos-cpu",
+      "task": "Pinch",
+      "backend": "cpu",
+      "control_mode": "pd_ee_target_delta_pos"
+    }
+  ],
+  "checkpoint_exact_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_drives",
+    "controller",
+    "task",
+    "task_particles"
+  ],
+  "joint_replay_limit": 0.001,
+  "scope": "Native N1 Hang/Pour/Write/Pinch CPU/GPU regressions after shared LegacyPanda parameter application and Hang batching initialization refactor. Nine unchanged cases from lifecyclev2; original probe, dictionary/flat/reconfigured exact restore and joint1e-3 gates. Runtime byte-identical to Hang batchv8. Full-reference parity remains incomplete.",
+  "regression_reason": "Shared LegacyPanda helper affects all four tasks. Verify N1 behavior after its per-environment refactor; Hang also exercises rewritten initialization/evaluation."
+}

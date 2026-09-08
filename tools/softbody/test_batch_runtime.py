@@ -6,6 +6,7 @@ import pytest
 import torch
 
 from mani_skill.envs.softbody.batch import MPMBatchRuntime
+from mani_skill.envs.softbody.batch import BaseEnv
 
 
 @pytest.fixture
@@ -85,3 +86,37 @@ def test_checkpoint_mask_must_match_declared_live_count(runtime):
     state = {'mpm_meta': {'count': [[2]], 'mask': [[True, False, False, False]]}}
     with pytest.raises(ValueError, match='live prefix'):
         runtime.restore(state, [0])
+
+
+@pytest.mark.parametrize('explicit', [False, True])
+def test_deferred_grasp_follows_controller_reset_and_explicit_checkpoint_wins(runtime, monkeypatch, explicit):
+    env = runtime.env; events = []
+    pending, requested = {'grasp':torch.ones((1,3))}, {'saved':torch.zeros((1,3))}
+    env._mpm_initial_checkpoint = {'stale':True}
+    def base_reset(self, *, seed, options):
+        assert self._mpm_initial_checkpoint is None and self._mpm_reset_active
+        events.append('controller reset'); self._mpm_initial_checkpoint = pending
+        return 'fresh', {'reconfigure':False}
+    monkeypatch.setattr(BaseEnv,'reset',base_reset)
+    env.set_state_dict = lambda state, selected: events.append((state, selected))
+    env.get_info = lambda: {'success':False}
+    env.get_obs = lambda info: 'restored'
+    options={'env_idx':[1]}
+    if explicit: options['reset_to_env_states']={'env_states':requested}
+    obs,info = runtime.reset([17],options)
+    assert events[0]=='controller reset' and events[1][0] is (requested if explicit else pending)
+    assert events[1][1]==[1] and obs==env._last_obs=='restored'
+    assert not env._mpm_reset_active and env._mpm_initial_checkpoint is None and runtime.reset_indices is None
+
+
+def test_failed_deferred_restore_clears_pending_grasp_and_poisoned_world(runtime,monkeypatch):
+    env=runtime.env; coupler=SimpleNamespace(failed=False)
+    env.mpm_gpu_world=SimpleNamespace(pending_step=False,_active=False,failed=False,couplers=[coupler])
+    def base_reset(self,**kwargs):
+        self._mpm_initial_checkpoint={'grasp':True}; return None,{'reconfigure':False}
+    monkeypatch.setattr(BaseEnv,'reset',base_reset)
+    def reject(*args):raise ValueError('bad grasp')
+    env.set_state_dict=reject
+    with pytest.raises(ValueError,match='bad grasp'):runtime.reset([101,17],{})
+    assert env.mpm_gpu_world.failed and coupler.failed
+    assert env._mpm_initial_checkpoint is None and not env._mpm_reset_active and runtime.reset_indices is None

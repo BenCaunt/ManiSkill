@@ -134,8 +134,8 @@ including the failed v1 checks. Raw archives, built libraries and restricted
 assets remain external to Git. The latest probe is `probe_gpu_batch.py`; use the
 probe hash recorded by the chosen protocol when reproducing a historical run.
 
-Fill and [Excavate](gpu-excavate-batching.md) opt into the batched task lifecycle.
+Fill, [Excavate](gpu-excavate-batching.md) and [Hang](gpu-hang-batching.md) opt into the batched task lifecycle.
 Legacy end-effector controllers use [independent per-environment IK and target memory](gpu-controller-batching.md);
-the other four task classes still reject multiple environments. Full episodes, reference parity, heterogeneous
+the other three task classes still reject multiple environments. Full episodes, reference parity, heterogeneous
 visual checkpoints, changed rigid topology, efficient rendering and distribution
 packaging remain incomplete.

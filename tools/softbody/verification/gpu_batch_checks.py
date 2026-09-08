@@ -10,7 +10,7 @@ from .gpu_rendering_checks import measure_frame
 from .job_archive import file_hash, inventory
 
 
-def check_snapshot(data, count, capacity):
+def check_snapshot(data, count, capacity, dof=7):
     failures = []
     counts = data['counts']
     if counts.shape != (count,) or counts.dtype.kind not in 'iu' or np.any(counts <= 0):
@@ -33,7 +33,7 @@ def check_snapshot(data, count, capacity):
                     exposed = ('state/mpm_material/particle_mass' if field == 'mass' else 'state/mpm/' + field)
                     if not np.array_equal(data[exposed][index, :n], value):
                         failures.append('Exposed particle data differ from actual solver data: ' + field)
-    if data['qpos'].shape != (count, 7) or data['qvel'].shape != (count, 7):
+    if data['qpos'].shape != (count, dof) or data['qvel'].shape != (count, dof):
         raise ValueError('Wrong native robot batch shape')
     return failures
 
@@ -60,7 +60,7 @@ def expected_actions(case, initial_qpos):
     scales = np.asarray(case['action_scales'], dtype=np.float64)[:, None]
     if not case.get('controller_lifecycle'):
         return np.array([np.array([.02,-.04,.01,.03,-.01,.03,-.02],np.float32)*s for s in case['action_scales']])
-    mode = case['control_mode']; q = initial_qpos.astype(np.float64)
+    mode = case['control_mode']; q = initial_qpos[:,:7].astype(np.float64)
     if mode == 'pd_joint_pos':
         value = q + scales * np.array([.002, -.003, .001, -.002, .001, .002, -.001])
     elif mode == 'pd_joint_pos_vel':
@@ -71,7 +71,35 @@ def expected_actions(case, initial_qpos):
         value = scales * np.array([.01, -.02, .01, .03, -.02, .01])[:3 if mode.endswith('_pos') else 6]
     else:
         value = np.repeat(scales * .01, 7, axis=1)
+    if case.get('task') in ('Hang','Pour','Pinch'):
+        value = np.column_stack([value,np.zeros(len(value))])
     return value.astype(np.float32)
+
+
+def reduction_indices(case, snapshot):
+    count = int(snapshot['counts'][0]); keep = np.arange(0,count,2)
+    if case.get('preserve_task_particle_indices'):
+        selected = snapshot['state/task/selected_indices'][0]
+        if selected.shape != (5,) or not np.isfinite(selected).all() or np.any(selected != np.floor(selected)) or np.any((selected<0)|(selected>=count)):
+            raise ValueError('Invalid task particle indices before reduction')
+        keep = np.union1d(keep,selected.astype(int))
+    return keep
+
+
+def check_reduced_checkpoint(case, before, reduced):
+    keep = reduction_indices(case,before); failures = []
+    for key,value in before.items():
+        if not key.startswith('state/'):continue
+        expected = value[:1].copy()
+        if key.startswith(('state/mpm/','state/mpm_material/')):
+            expected[:] = 0;expected[0,:len(keep)] = value[0,keep]
+        elif key == 'state/mpm_meta/count':expected[:] = len(keep)
+        elif key == 'state/mpm_meta/mask':expected[:] = np.arange(case['capacity']) < len(keep)
+        elif key == 'state/task/selected_indices' and case.get('preserve_task_particle_indices'):
+            expected[0] = np.searchsorted(keep,value[0])
+        if key not in reduced or not np.array_equal(expected,reduced[key]):
+            failures.append('Count-reduction recipe changed: '+key)
+    return failures
 
 
 def evaluate(root, protocol):
@@ -94,11 +122,14 @@ def evaluate(root, protocol):
         if not result['complete'] or json.loads((directory/'execution.json').read_text())['exit_code'] != 0:
             failures.append(name+': '+result.get('error','incomplete'));continue
         count=len(case['seeds'])
+        dof=9 if case['task'] in ('Hang','Pour','Pinch') else 7
         if (result['num_envs'] != count or result['world_couplers'] != count or result['physics_system'] != 'PhysxGpuSystem'
                 or not result['shared_native_system'] or not result['model_scene_ownership'] or not result['replaced_native_system']):
             failures.append(name+': missing genuine shared-world/native scene ownership or reconfiguration')
         if result['mpm_substeps'] != [4]*count or result['rigid_dt'] != [float(np.float32(.002))]*count:
             failures.append(name+': physical timestep changed')
+        if 'particle_radius' in case and result.get('particle_radius') != [float(np.float32(case['particle_radius']))]*count:
+            failures.append(name+': native particle radius changed')
         labels=['warmup-1','warmup-2','expected']+(['continued'] if count==1 else ['partial-stepped','count-stepped','flat-stepped'])
         if [s['label'] for s in result['steps']] != labels or result['native_steps'] != 25*len(labels):
             failures.append(name+': missing controls or wrong total native step count')
@@ -113,7 +144,7 @@ def evaluate(root, protocol):
         if not np.array_equal(np.array(result['action'],np.float32),expected_actions(case,data['initial']['qpos'])):
             failures.append(name+': action recipe changed')
         for label, values in data.items():
-            if 'counts' in values:failures.extend(name+'/'+label+': '+f for f in check_snapshot(values,count,case.get('capacity')))
+            if 'counts' in values:failures.extend(name+'/'+label+': '+f for f in check_snapshot(values,count,case.get('capacity'),dof))
         exact={}
         if count>1:
             for label,before,ai,after,bi,groups in [
@@ -127,8 +158,9 @@ def evaluate(root, protocol):
                 changes=state_changes(data[before],ai,data[after],bi,groups);exact[label]=changes
                 if changes:failures.append(name+'/'+label+': changed checkpoint fields '+','.join(changes))
             expected_counts = data['partial-fresh']['counts'].copy()
-            expected_counts[0] = (data['warmup-2']['counts'][0] + 1) // 2
+            expected_counts[0] = len(reduction_indices(case,data['warmup-2']))
             if not np.array_equal(data['partial-count']['counts'],expected_counts):failures.append(name+': count-changing reset did not affect only its selected model')
+            failures.extend(name+': '+f for f in check_reduced_checkpoint(case,data['warmup-2'],data['reduced-checkpoint']))
             for before,after,index in [('expected','partial-restored',1),('partial-stepped','partial-fresh',0),('partial-fresh','partial-count',1)]:
                 if data[before]['elapsed_steps'][index]!=data[after]['elapsed_steps'][index]:failures.append(name+': reset changed unselected elapsed-step counter')
             leaves=[value.reshape(count,-1) for key,value in data['warmup-2'].items() if key.startswith('state/')]
@@ -139,7 +171,7 @@ def evaluate(root, protocol):
         expected_renders=[(label,index) for label in (['camera-initial','camera-reconfigured'] if count==1 else ['camera-initial','camera-partial-count','camera-reconfigured']) for index in range(count)]
         if [(r['label'],r['index']) for r in result['renders']] != expected_renders:failures.append(name+': missing batched camera frames')
         for frame in result['renders']:
-            label=frame['file'][:-4];measured=measure_frame(data[label],.0025,protocol['rendering'])
+            label=frame['file'][:-4];measured=measure_frame(data[label],case.get('particle_radius',.0025),protocol['rendering'])
             failures.extend(name+'/'+label+': '+f for f in measured['failures']);cameras[label]=measured
             with Image.open(directory/(label+'.png')) as picture:
                 if not np.array_equal(np.asarray(picture),data[label]['rgb'][0]):failures.append(name+': rendered PNG differs from native RGB')

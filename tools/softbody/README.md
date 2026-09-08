@@ -12,8 +12,10 @@ Pour. [Shared-world Fill batching](gpu-batching.md) now has verified partial-res
 state isolation and two-environment camera geometry, while its strict trajectory
 comparison still fails. [Excavate batching](gpu-excavate-batching.md) adds
 independent terrain/count/target lifecycles and documents the selected-wall
-restore failure found by its stronger actor checks. The remaining four tasks'
-batched lifecycle, original Pinch/Write benchmark validation and distributable
+restore failure found by its stronger actor checks. [Hang batching](gpu-hang-batching.md)
+adds independent recorded rope grasps, rod targets, Panda controllers and
+verified partial resets. The remaining three tasks' batched lifecycle,
+original Pinch/Write benchmark validation and distributable
 wheel packaging remain under development.
 
 The copied runtime has separate terms in
@@ -63,8 +65,8 @@ Target-relative modes save their target pose in checkpoints. Hang initializes
 nominal controller memory before restoring its recorded rope grasp, matching
 the original reset sequence. The IK adapter now builds one model per native
 articulation and preserves per-environment targets during partial reset; see the
-[shared-world controller suite](gpu-controller-batching.md). Fill and Excavate
-support batched task lifecycles; the other four task classes require one environment. The [native GPU lifecycle suite](gpu-lifecycle.md) covers all
+[shared-world controller suite](gpu-controller-batching.md). Fill, Excavate and
+Hang support batched task lifecycles; the other three task classes require one environment. The [native GPU lifecycle suite](gpu-lifecycle.md) covers all
 eleven original arm modes on Fill and additional end-effector modes across the
 other five tasks. Its 23 CPU/GPU cases pass 69 exact checkpoint restore trials,
 including dictionary, flat and rebuilt-scene states. The separate GPU task

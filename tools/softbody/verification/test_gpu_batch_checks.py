@@ -2,7 +2,8 @@
 import numpy as np
 import pytest
 
-from tools.softbody.verification.gpu_batch_checks import check_snapshot, state_changes, particle_errors
+from tools.softbody.verification.gpu_batch_checks import (check_snapshot, state_changes, particle_errors,
+    reduction_indices, check_reduced_checkpoint)
 
 
 @pytest.fixture
@@ -62,3 +63,28 @@ def test_trajectory_comparison_uses_actual_solver_state(snapshot):
     changed = {k: v.copy() for k, v in snapshot.items()}
     changed['actual/0/x'][0, 0] += .125
     assert particle_errors(snapshot, 0, changed, 0)['x'] == .125
+
+
+def test_reduction_keeps_and_remaps_goal_particles_without_changing_other_state():
+    case = dict(capacity=12,preserve_task_particle_indices=True)
+    before = {'counts':np.array([10,9]),'state/mpm/x':np.arange(72).reshape(2,12,3),
+        'state/mpm_meta/count':np.array([[10],[9]]),
+        'state/mpm_meta/mask':np.arange(12)[None]<np.array([[10],[9]]),
+        'state/task/selected_indices':np.array([[1,3,4,6,9],[0,1,2,3,4]]),
+        'state/actors/rod':np.arange(14).reshape(2,7)}
+    keep = np.array([0,1,2,3,4,6,8,9])
+    np.testing.assert_array_equal(reduction_indices(case,before),keep)
+    reduced = {k:v[:1].copy() for k,v in before.items() if k.startswith('state/')}
+    reduced['state/mpm/x'][:] = 0
+    reduced['state/mpm/x'][0,:8] = before['state/mpm/x'][0,keep]
+    reduced['state/mpm_meta/count'][:] = 8
+    reduced['state/mpm_meta/mask'][:] = np.arange(12)<8
+    reduced['state/task/selected_indices'][:] = [1,3,4,5,7]
+    assert not check_reduced_checkpoint(case,before,reduced)
+    reduced['state/task/selected_indices'][0,-1] = 9
+    assert any('selected_indices' in f for f in check_reduced_checkpoint(case,before,reduced))
+    reduced['state/actors/rod'][0,0] += 1
+    assert any('actors/rod' in f for f in check_reduced_checkpoint(case,before,reduced))
+    before['state/task/selected_indices'][0,-1] = 10
+    with pytest.raises(ValueError,match='Invalid task particle'):
+        reduction_indices(case,before)

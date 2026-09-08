@@ -1,0 +1,152 @@
+{
+  "declared_at_utc": "2026-09-08T18:22:12.740189+00:00",
+  "input_sha256": "28c0e6436f937140d25b0005f5550141d5fa5fcfb5471206122abd9be75bc6ac",
+  "request_sha256": "fa126e89805cea573fb4ccb877fe07dd52cf41aa785c21fc5f2242d88d8fa908",
+  "probe_sha256": "f3ccb99ea40169647d148f9b054f381d660908efdd0a48557d734a14bfc0f896",
+  "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "cases": [
+    {
+      "name": "Hang-single-101",
+      "task": "Hang",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        101
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005
+    },
+    {
+      "name": "Hang-single-17",
+      "task": "Hang",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        17
+      ],
+      "action_scales": [
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005
+    },
+    {
+      "name": "Hang-batch-target",
+      "task": "Hang",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "capacity": 8192,
+      "preserve_task_particle_indices": true
+    },
+    {
+      "name": "Hang-batch-align",
+      "task": "Hang",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_align",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "capacity": 8192,
+      "preserve_task_particle_indices": true
+    }
+  ],
+  "exact_checkpoint_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_meta",
+    "mpm_drives",
+    "controller",
+    "task",
+    "actors"
+  ],
+  "rendering": {
+    "minimum_particle_pixels": 10,
+    "surface_distance_error_limit_m": 0.003,
+    "require_visual_pool_checks": true,
+    "require_native_buffer_checks": true,
+    "require_rigid_visual_bounds": true,
+    "minimum_rigid_pixels": 10,
+    "rigid_bound_error_limit_m": 0.003
+  },
+  "scope": "Native Hang N2 shared-world lifecycle using original rope material/geometry, pinned recorded grasps and independent native Panda IK models. Exact selected/untouched checkpoint groups include actor poses and task indices. Reduced-count reset preserves five evaluation particles and remaps their IDs; it is a reset diagnostic, not a benchmark episode. Independent numeric success/reward equations and N1 seed/grasp/model comparisons; old N1 seed101 initial particles, materials, joints and drives must remain exact. Native seeded rod pose limit1e-6 accounts for existing float32 shared-origin composition; unchanged joint replay1e-3, target pose1e-6 and camera3mm lifecycle limits. Particle replay errors descriptive. No full-episode, successful-manipulation or reference parity claim. All prior strict FK/particle failures remain failures.",
+  "compare_batch_vs_single": false,
+  "joint_replay_limit": 0.001,
+  "target_pose_limit": 1e-06,
+  "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+  "reward_limit": 1e-06,
+  "baseline": {
+    "label": "gpu-lifecycle-v2",
+    "archive_sha256": "5e5796221a71d41170e3cd5b996281a73e245f714d22a952ff04a460cc934aa2",
+    "files": {
+      "execution.json": "6537c5ee24bd667f5efc97977ea22ff4b4e41950635c663a587a529f3f750b65",
+      "request.json": "7139aef98858eb9c6f7615b5e4b03012eb69bb12d5a098359f0136f6d1e36e82",
+      "probe.py": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+      "source/hang.py": "409c0ef56bc53d6508a06e6985e531e4715a3cf3616a76b35d0d1c7cea27ed54",
+      "source/legacy_panda.py": "a9d09c9d8c7e6521d4ac68254b9ab8cce453bac6cf79b2a2d1a7562f73f01371",
+      "Hang-pd_ee_target_delta_pose-gpu/initial.npz": "a704df8ce01ef716253efcb9f33f5cb33224c70395fac7cb60343873227159d3",
+      "Hang-pd_ee_target_delta_pose-gpu/checkpoint.npz": "08972c7a0230bcb76e641468ad621c6e0801faf91e183d403abc179ebc7889ee",
+      "Hang-pd_ee_target_delta_pose-gpu/result.json": "0233793ae1a302a432dcf70a9def1eb54c9a969cbd52907ec7e61c17953712c5"
+    },
+    "snapshot": "Hang-pd_ee_target_delta_pose-gpu/initial.npz",
+    "checkpoint": "Hang-pd_ee_target_delta_pose-gpu/checkpoint.npz",
+    "new_case": "Hang-single-101"
+  },
+  "initial_comparisons": [
+    [
+      "Hang-batch-target",
+      0,
+      "Hang-single-101"
+    ],
+    [
+      "Hang-batch-target",
+      1,
+      "Hang-single-17"
+    ],
+    [
+      "Hang-batch-align",
+      0,
+      "Hang-single-101"
+    ],
+    [
+      "Hang-batch-align",
+      1,
+      "Hang-single-17"
+    ]
+  ],
+  "initial_pose_limit": 1e-06,
+  "pack_files": {
+    "export.json": "bd9a93ad23798da1b34bbb6b64f4bd2470a4740cbfbbec519ee5b584720db431",
+    "initial-states.npz": "cea40f78aad0b788e5fd04acd3a925e962e93efac6517bbf410d4a24ae8bf2d0"
+  },
+  "verifier_files": {
+    "gpu_hang_batch_checks.py": "0c2fe14f91c8136ff2305748b9fb0c92090d4b282036232d2e87091dfb02b567",
+    "gpu_controller_batch_checks.py": "4e7d73707aee8e7f1e7d98608f61689a15a12506db005a1ee12e22525a8c38ee",
+    "gpu_batch_checks.py": "e29987b1e5c132ce32ce6bd4e9816d1c451e2faa3a9758353b2ac34910f816d4",
+    "gpu_rendering_checks.py": "832f642fab91d5d267b6138eff4746f63a8756fedd07e582db4d8c0a3f591342"
+  }
+}

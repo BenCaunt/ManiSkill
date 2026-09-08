@@ -17,16 +17,16 @@ def apply_reference_robot_parameters(robot, parameters):
     if set(robot.links_map) != {v['name'] for v in parameters['links']}:
         raise ValueError('Robot link names differ from the reference model')
     for record in parameters['links']:
-        body = robot.links_map[record['name']]._objs[0]
-        body.mass = record['mass']
-        body.inertia = record['inertia']
         com = record['com']
-        body.cmass_local_pose = sapien.Pose(com[:3], com[3:])
+        for body in robot.links_map[record['name']]._objs:
+            body.mass = record['mass']
+            body.inertia = record['inertia']
+            body.cmass_local_pose = sapien.Pose(com[:3], com[3:])
     for record in parameters['joints']:
-        joint = robot.joints_map[record['name']]._objs[0]
         parent, child = record['parent_pose'], record['child_pose']
-        joint.pose_in_parent = sapien.Pose(parent[:3], parent[3:])
-        joint.pose_in_child = sapien.Pose(child[:3], child[3:])
+        for joint in robot.joints_map[record['name']]._objs:
+            joint.pose_in_parent = sapien.Pose(parent[:3], parent[3:])
+            joint.pose_in_child = sapien.Pose(child[:3], child[3:])
 
 
 class LegacyPanda(LegacyPassiveForceMixin, Panda):
@@ -45,8 +45,8 @@ class LegacyPanda(LegacyPassiveForceMixin, Panda):
         # drives both joints to the same target without a physical tendon.
         # The SAPIEN 3 default adds a 1e5-stiffness tendon, changing the forces
         # on a grasped rope. Disable that extra constraint at construction.
-        if self.scene.num_envs != 1 or self.build_separate:
-            raise NotImplementedError('Legacy Panda currently requires one scene')
+        if self.build_separate:
+            raise NotImplementedError('Legacy Panda requires a shared articulation builder')
         loader = self.scene.create_urdf_loader()
         loader.name = self.uid if self._agent_idx is None else f'{self.uid}-agent-{self._agent_idx}'
         loader.fix_root_link = self.fix_root_link

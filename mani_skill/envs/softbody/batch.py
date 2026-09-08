@@ -52,11 +52,12 @@ class MPMBatchRuntime:
             raise RuntimeError('A failed shared world requires a full reset')
         restore = options.pop('reset_to_env_states', None)
         self.reset_indices = selected
+        env._mpm_initial_checkpoint = None
         env._mpm_reset_active = True
         try:
             obs, info = BaseEnv.reset(env, seed=seed, options=options)
-            if restore is not None:
-                state = restore['env_states']
+            state = restore['env_states'] if restore is not None else env._mpm_initial_checkpoint
+            if state is not None:
                 if isinstance(state, dict):
                     env.set_state_dict(state, selected)
                 else:
@@ -73,6 +74,7 @@ class MPMBatchRuntime:
             raise
         finally:
             self.reset_indices = None
+            env._mpm_initial_checkpoint = None
             env._mpm_reset_active = False
 
     def rebuild(self, builder, bodies, index):

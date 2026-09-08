@@ -1,0 +1,1237 @@
+{
+  "updated_at": "2026-09-08T18:30:57.162713+00:00",
+  "full_port_complete": false,
+  "scope": "Hang shared-world lifecycle, initial recorded grasps and task equations; no full-episode or reference-parity acceptance.",
+  "candidate_base_commit": "267576549119ac3ef15f8b1873a9fd155b23616a",
+  "runs": {
+    "gpu-batch-v8": {
+      "archive_sha256": "1bc81ff26abcf8a0f24de579eb8139dc226437ce95e07e14d134fb9fff0471db",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T18:22:12.740189+00:00",
+        "input_sha256": "28c0e6436f937140d25b0005f5550141d5fa5fcfb5471206122abd9be75bc6ac",
+        "request_sha256": "fa126e89805cea573fb4ccb877fe07dd52cf41aa785c21fc5f2242d88d8fa908",
+        "probe_sha256": "f3ccb99ea40169647d148f9b054f381d660908efdd0a48557d734a14bfc0f896",
+        "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "cases": [
+          {
+            "name": "Hang-single-101",
+            "task": "Hang",
+            "backend": "gpu",
+            "control_mode": "pd_ee_target_delta_pose",
+            "seeds": [
+              101
+            ],
+            "action_scales": [
+              1.0
+            ],
+            "controller_lifecycle": true,
+            "reward_mode": "dense",
+            "particle_radius": 0.005
+          },
+          {
+            "name": "Hang-single-17",
+            "task": "Hang",
+            "backend": "gpu",
+            "control_mode": "pd_ee_target_delta_pose",
+            "seeds": [
+              17
+            ],
+            "action_scales": [
+              -0.5
+            ],
+            "controller_lifecycle": true,
+            "reward_mode": "dense",
+            "particle_radius": 0.005
+          },
+          {
+            "name": "Hang-batch-target",
+            "task": "Hang",
+            "backend": "gpu",
+            "control_mode": "pd_ee_target_delta_pose",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "controller_lifecycle": true,
+            "reward_mode": "dense",
+            "particle_radius": 0.005,
+            "capacity": 8192,
+            "preserve_task_particle_indices": true
+          },
+          {
+            "name": "Hang-batch-align",
+            "task": "Hang",
+            "backend": "gpu",
+            "control_mode": "pd_ee_delta_pose_align",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "controller_lifecycle": true,
+            "reward_mode": "dense",
+            "particle_radius": 0.005,
+            "capacity": 8192,
+            "preserve_task_particle_indices": true
+          }
+        ],
+        "exact_checkpoint_groups": [
+          "mpm",
+          "mpm_material",
+          "mpm_meta",
+          "mpm_drives",
+          "controller",
+          "task",
+          "actors"
+        ],
+        "rendering": {
+          "minimum_particle_pixels": 10,
+          "surface_distance_error_limit_m": 0.003,
+          "require_visual_pool_checks": true,
+          "require_native_buffer_checks": true,
+          "require_rigid_visual_bounds": true,
+          "minimum_rigid_pixels": 10,
+          "rigid_bound_error_limit_m": 0.003
+        },
+        "scope": "Native Hang N2 shared-world lifecycle using original rope material/geometry, pinned recorded grasps and independent native Panda IK models. Exact selected/untouched checkpoint groups include actor poses and task indices. Reduced-count reset preserves five evaluation particles and remaps their IDs; it is a reset diagnostic, not a benchmark episode. Independent numeric success/reward equations and N1 seed/grasp/model comparisons; old N1 seed101 initial particles, materials, joints and drives must remain exact. Native seeded rod pose limit1e-6 accounts for existing float32 shared-origin composition; unchanged joint replay1e-3, target pose1e-6 and camera3mm lifecycle limits. Particle replay errors descriptive. No full-episode, successful-manipulation or reference parity claim. All prior strict FK/particle failures remain failures.",
+        "compare_batch_vs_single": false,
+        "joint_replay_limit": 0.001,
+        "target_pose_limit": 1e-06,
+        "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+        "reward_limit": 1e-06,
+        "baseline": {
+          "label": "gpu-lifecycle-v2",
+          "archive_sha256": "5e5796221a71d41170e3cd5b996281a73e245f714d22a952ff04a460cc934aa2",
+          "files": {
+            "execution.json": "6537c5ee24bd667f5efc97977ea22ff4b4e41950635c663a587a529f3f750b65",
+            "request.json": "7139aef98858eb9c6f7615b5e4b03012eb69bb12d5a098359f0136f6d1e36e82",
+            "probe.py": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+            "source/hang.py": "409c0ef56bc53d6508a06e6985e531e4715a3cf3616a76b35d0d1c7cea27ed54",
+            "source/legacy_panda.py": "a9d09c9d8c7e6521d4ac68254b9ab8cce453bac6cf79b2a2d1a7562f73f01371",
+            "Hang-pd_ee_target_delta_pose-gpu/initial.npz": "a704df8ce01ef716253efcb9f33f5cb33224c70395fac7cb60343873227159d3",
+            "Hang-pd_ee_target_delta_pose-gpu/checkpoint.npz": "08972c7a0230bcb76e641468ad621c6e0801faf91e183d403abc179ebc7889ee",
+            "Hang-pd_ee_target_delta_pose-gpu/result.json": "0233793ae1a302a432dcf70a9def1eb54c9a969cbd52907ec7e61c17953712c5"
+          },
+          "snapshot": "Hang-pd_ee_target_delta_pose-gpu/initial.npz",
+          "checkpoint": "Hang-pd_ee_target_delta_pose-gpu/checkpoint.npz",
+          "new_case": "Hang-single-101"
+        },
+        "initial_comparisons": [
+          [
+            "Hang-batch-target",
+            0,
+            "Hang-single-101"
+          ],
+          [
+            "Hang-batch-target",
+            1,
+            "Hang-single-17"
+          ],
+          [
+            "Hang-batch-align",
+            0,
+            "Hang-single-101"
+          ],
+          [
+            "Hang-batch-align",
+            1,
+            "Hang-single-17"
+          ]
+        ],
+        "initial_pose_limit": 1e-06,
+        "pack_files": {
+          "export.json": "bd9a93ad23798da1b34bbb6b64f4bd2470a4740cbfbbec519ee5b584720db431",
+          "initial-states.npz": "cea40f78aad0b788e5fd04acd3a925e962e93efac6517bbf410d4a24ae8bf2d0"
+        },
+        "verifier_files": {
+          "gpu_hang_batch_checks.py": "0c2fe14f91c8136ff2305748b9fb0c92090d4b282036232d2e87091dfb02b567",
+          "gpu_controller_batch_checks.py": "4e7d73707aee8e7f1e7d98608f61689a15a12506db005a1ee12e22525a8c38ee",
+          "gpu_batch_checks.py": "e29987b1e5c132ce32ce6bd4e9816d1c451e2faa3a9758353b2ac34910f816d4",
+          "gpu_rendering_checks.py": "832f642fab91d5d267b6138eff4746f63a8756fedd07e582db4d8c0a3f591342"
+        }
+      },
+      "source_audit": {
+        "public_head": "267576549119ac3ef15f8b1873a9fd155b23616a",
+        "source_inventory_changes_from": "gpu-batch-v7",
+        "changed_files": {
+          "mani_skill/envs/softbody/hang.py": "071d98897c5f2c2f55895b036a945adf6062ed46a3ba8bab4bc31c62f0d8e0b7",
+          "mani_skill/envs/softbody/batch.py": "04d7cc987b33433f8717a6db09fc49d44c10f6c11ec4eda641b377f506549ace",
+          "mani_skill/envs/softbody/legacy_panda.py": "bced4a25b59ac99601109fcba81e93150896f6fd86c06b3af2a0f8dd7f83168a"
+        },
+        "source_file_count": 515,
+        "tracked_files_verified": 514,
+        "empty_native_library_mountpoint": "warp_maniskill/warp/bin/warp.so",
+        "runner_identical": true,
+        "probe_sha256": "f3ccb99ea40169647d148f9b054f381d660908efdd0a48557d734a14bfc0f896",
+        "reason": "Hang batched recorded grasp initialization, per-environment native robot parameters and deferred reset restoration. Only the three listed runtime files differ from published2675765; no task assets or physical constants changed."
+      },
+      "verdict": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Hang-single-101": {
+            "task_snapshots": 6,
+            "initial_counts": [
+              3636
+            ],
+            "grasp_indices": [
+              3
+            ]
+          },
+          "Hang-single-17": {
+            "task_snapshots": 6,
+            "initial_counts": [
+              3636
+            ],
+            "grasp_indices": [
+              0
+            ]
+          },
+          "Hang-batch-target": {
+            "task_snapshots": 12,
+            "initial_counts": [
+              3636,
+              3636
+            ],
+            "grasp_indices": [
+              3,
+              0
+            ]
+          },
+          "Hang-batch-align": {
+            "task_snapshots": 12,
+            "initial_counts": [
+              3636,
+              3636
+            ],
+            "grasp_indices": [
+              3,
+              0
+            ]
+          }
+        },
+        "controller_lifecycle": {
+          "passed": true,
+          "failures": [],
+          "reports": {
+            "Hang-single-101": {
+              "ik_requests": 4,
+              "replay_errors": {}
+            },
+            "Hang-single-17": {
+              "ik_requests": 4,
+              "replay_errors": {}
+            },
+            "Hang-batch-target": {
+              "ik_requests": 12,
+              "replay_errors": {
+                "partial-stepped/env0": {
+                  "x": 1.7881393432617188e-07,
+                  "v": 2.1202489733695984e-05,
+                  "F": 5.7220458984375e-06,
+                  "C": 0.0016492903232574463,
+                  "vc": 0.0,
+                  "qpos": 9.313225746154785e-10,
+                  "qvel": 8.195638656616211e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env0": {
+                  "x": 1.7881393432617188e-07,
+                  "v": 2.1204352378845215e-05,
+                  "F": 5.7220458984375e-06,
+                  "C": 0.0016499459743499756,
+                  "vc": 0.0,
+                  "qpos": 9.313225746154785e-10,
+                  "qvel": 8.568167686462402e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env1": {
+                  "x": 2.086162567138672e-07,
+                  "v": 1.3044103980064392e-05,
+                  "F": 6.571412086486816e-06,
+                  "C": 0.0007338225841522217,
+                  "vc": 0.0,
+                  "qpos": 1.862645149230957e-09,
+                  "qvel": 3.91155481338501e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                }
+              }
+            },
+            "Hang-batch-align": {
+              "ik_requests": 12,
+              "replay_errors": {
+                "partial-stepped/env0": {
+                  "x": 2.682209014892578e-07,
+                  "v": 2.142786979675293e-05,
+                  "F": 1.4059245586395264e-05,
+                  "C": 0.0016520023345947266,
+                  "vc": 0.0,
+                  "qpos": 4.76837158203125e-07,
+                  "qvel": 2.182088792324066e-06,
+                  "drive_position": 4.76837158203125e-07,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env0": {
+                  "x": 2.682209014892578e-07,
+                  "v": 2.136826515197754e-05,
+                  "F": 1.4036893844604492e-05,
+                  "C": 0.0016391277313232422,
+                  "vc": 0.0,
+                  "qpos": 4.76837158203125e-07,
+                  "qvel": 2.180226147174835e-06,
+                  "drive_position": 4.76837158203125e-07,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env1": {
+                  "x": 3.8743019104003906e-07,
+                  "v": 3.499351441860199e-05,
+                  "F": 1.475214958190918e-05,
+                  "C": 0.002533264458179474,
+                  "vc": 0.0,
+                  "qpos": 4.76837158203125e-07,
+                  "qvel": 2.01445072889328e-06,
+                  "drive_position": 2.384185791015625e-07,
+                  "drive_velocity": 0.0
+                }
+              }
+            }
+          },
+          "lifecycle_and_rendering": {
+            "passed": true,
+            "failures": [],
+            "reports": {
+              "Hang-single-101": {
+                "exact_checkpoints": {},
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 29894,
+                    "max_rigid_bound_violation_m": 0.0012765910759928584,
+                    "particle_pixels": 2568,
+                    "visible_particles": 610,
+                    "max_surface_error_m": 0.0015111399768870494,
+                    "median_surface_error_m": 0.0005148216619601867,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 29894,
+                    "max_rigid_bound_violation_m": 0.0012765910759928584,
+                    "particle_pixels": 2568,
+                    "visible_particles": 610,
+                    "max_surface_error_m": 0.0015111399768870494,
+                    "median_surface_error_m": 0.0005148216619601867,
+                    "failures": []
+                  }
+                }
+              },
+              "Hang-single-17": {
+                "exact_checkpoints": {},
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 29884,
+                    "max_rigid_bound_violation_m": 0.0012775013420291206,
+                    "particle_pixels": 2553,
+                    "visible_particles": 611,
+                    "max_surface_error_m": 0.0014708763885864463,
+                    "median_surface_error_m": 0.000529037215112195,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 29884,
+                    "max_rigid_bound_violation_m": 0.0012775013420291206,
+                    "particle_pixels": 2553,
+                    "visible_particles": 611,
+                    "max_surface_error_m": 0.0014708763885864463,
+                    "median_surface_error_m": 0.000529037215112195,
+                    "failures": []
+                  }
+                }
+              },
+              "Hang-batch-target": {
+                "exact_checkpoints": {
+                  "partial-unchosen": [],
+                  "fresh-unchosen": [],
+                  "count-unchosen": [],
+                  "partial-selected": [],
+                  "count-selected": [],
+                  "flat-env0": [],
+                  "flat-env1": []
+                },
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 29894,
+                    "max_rigid_bound_violation_m": 0.0012765910907407488,
+                    "particle_pixels": 2568,
+                    "visible_particles": 610,
+                    "max_surface_error_m": 0.0015111399768870494,
+                    "median_surface_error_m": 0.0005148216619601867,
+                    "failures": []
+                  },
+                  "camera-initial-env1": {
+                    "rigid_pixels": 29884,
+                    "max_rigid_bound_violation_m": 0.0012775013519738115,
+                    "particle_pixels": 2553,
+                    "visible_particles": 611,
+                    "max_surface_error_m": 0.0014708763885864463,
+                    "median_surface_error_m": 0.000529037215112195,
+                    "failures": []
+                  },
+                  "camera-partial-count-env0": {
+                    "rigid_pixels": 29983,
+                    "max_rigid_bound_violation_m": 0.0012189843203464015,
+                    "particle_pixels": 2484,
+                    "visible_particles": 457,
+                    "max_surface_error_m": 0.0015902747432843846,
+                    "median_surface_error_m": 0.0005381152676573516,
+                    "failures": []
+                  },
+                  "camera-partial-count-env1": {
+                    "rigid_pixels": 29948,
+                    "max_rigid_bound_violation_m": 0.0012826557384305048,
+                    "particle_pixels": 2535,
+                    "visible_particles": 603,
+                    "max_surface_error_m": 0.0015413997419442289,
+                    "median_surface_error_m": 0.0005198081843187149,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 29894,
+                    "max_rigid_bound_violation_m": 0.0012765910907407488,
+                    "particle_pixels": 2568,
+                    "visible_particles": 610,
+                    "max_surface_error_m": 0.0015111399768870494,
+                    "median_surface_error_m": 0.0005148216619601867,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env1": {
+                    "rigid_pixels": 29884,
+                    "max_rigid_bound_violation_m": 0.0012775013519738115,
+                    "particle_pixels": 2553,
+                    "visible_particles": 611,
+                    "max_surface_error_m": 0.0014708763885864463,
+                    "median_surface_error_m": 0.000529037215112195,
+                    "failures": []
+                  }
+                }
+              },
+              "Hang-batch-align": {
+                "exact_checkpoints": {
+                  "partial-unchosen": [],
+                  "fresh-unchosen": [],
+                  "count-unchosen": [],
+                  "partial-selected": [],
+                  "count-selected": [],
+                  "flat-env0": [],
+                  "flat-env1": []
+                },
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 29894,
+                    "max_rigid_bound_violation_m": 0.0012765910907407488,
+                    "particle_pixels": 2568,
+                    "visible_particles": 610,
+                    "max_surface_error_m": 0.0015111399768870494,
+                    "median_surface_error_m": 0.0005148216619601867,
+                    "failures": []
+                  },
+                  "camera-initial-env1": {
+                    "rigid_pixels": 29884,
+                    "max_rigid_bound_violation_m": 0.0012775013519738115,
+                    "particle_pixels": 2553,
+                    "visible_particles": 611,
+                    "max_surface_error_m": 0.0014708763885864463,
+                    "median_surface_error_m": 0.000529037215112195,
+                    "failures": []
+                  },
+                  "camera-partial-count-env0": {
+                    "rigid_pixels": 29854,
+                    "max_rigid_bound_violation_m": 0.001282008798309961,
+                    "particle_pixels": 2495,
+                    "visible_particles": 455,
+                    "max_surface_error_m": 0.0015378372393485525,
+                    "median_surface_error_m": 0.0005285229351085835,
+                    "failures": []
+                  },
+                  "camera-partial-count-env1": {
+                    "rigid_pixels": 29948,
+                    "max_rigid_bound_violation_m": 0.0012826557384305048,
+                    "particle_pixels": 2535,
+                    "visible_particles": 603,
+                    "max_surface_error_m": 0.0015413997419442289,
+                    "median_surface_error_m": 0.0005198081843187149,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 29894,
+                    "max_rigid_bound_violation_m": 0.0012765910907407488,
+                    "particle_pixels": 2568,
+                    "visible_particles": 610,
+                    "max_surface_error_m": 0.0015111399768870494,
+                    "median_surface_error_m": 0.0005148216619601867,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env1": {
+                    "rigid_pixels": 29884,
+                    "max_rigid_bound_violation_m": 0.0012775013519738115,
+                    "particle_pixels": 2553,
+                    "visible_particles": 611,
+                    "max_surface_error_m": 0.0014708763885864463,
+                    "median_surface_error_m": 0.000529037215112195,
+                    "failures": []
+                  }
+                }
+              }
+            },
+            "scope": "Native Hang N2 shared-world lifecycle using original rope material/geometry, pinned recorded grasps and independent native Panda IK models. Exact selected/untouched checkpoint groups include actor poses and task indices. Reduced-count reset preserves five evaluation particles and remaps their IDs; it is a reset diagnostic, not a benchmark episode. Independent numeric success/reward equations and N1 seed/grasp/model comparisons; old N1 seed101 initial particles, materials, joints and drives must remain exact. Native seeded rod pose limit1e-6 accounts for existing float32 shared-origin composition; unchanged joint replay1e-3, target pose1e-6 and camera3mm lifecycle limits. Particle replay errors descriptive. No full-episode, successful-manipulation or reference parity claim. All prior strict FK/particle failures remain failures.",
+            "full_port_complete": false
+          },
+          "scope": "Native Hang N2 shared-world lifecycle using original rope material/geometry, pinned recorded grasps and independent native Panda IK models. Exact selected/untouched checkpoint groups include actor poses and task indices. Reduced-count reset preserves five evaluation particles and remaps their IDs; it is a reset diagnostic, not a benchmark episode. Independent numeric success/reward equations and N1 seed/grasp/model comparisons; old N1 seed101 initial particles, materials, joints and drives must remain exact. Native seeded rod pose limit1e-6 accounts for existing float32 shared-origin composition; unchanged joint replay1e-3, target pose1e-6 and camera3mm lifecycle limits. Particle replay errors descriptive. No full-episode, successful-manipulation or reference parity claim. All prior strict FK/particle failures remain failures.",
+          "full_port_complete": false
+        },
+        "scope": "Native Hang N2 shared-world lifecycle using original rope material/geometry, pinned recorded grasps and independent native Panda IK models. Exact selected/untouched checkpoint groups include actor poses and task indices. Reduced-count reset preserves five evaluation particles and remaps their IDs; it is a reset diagnostic, not a benchmark episode. Independent numeric success/reward equations and N1 seed/grasp/model comparisons; old N1 seed101 initial particles, materials, joints and drives must remain exact. Native seeded rod pose limit1e-6 accounts for existing float32 shared-origin composition; unchanged joint replay1e-3, target pose1e-6 and camera3mm lifecycle limits. Particle replay errors descriptive. No full-episode, successful-manipulation or reference parity claim. All prior strict FK/particle failures remain failures.",
+        "full_port_complete": false
+      }
+    },
+    "gpu-lifecycle-v4": {
+      "archive_sha256": "170ebd7c49276a844cd0749e860bfdc0e1db72aa32e2b9ef6672db247cb3cbfc",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T18:23:33.737471+00:00",
+        "input_sha256": "fadda04c499df6142b837217657fe57254ff51fb18c47ea3735c0c1f11114008",
+        "request_sha256": "17b601a8517e916ec7608cfe07378ec1f5ee9aac4d75ac107bb15ca6e6895aee",
+        "probe_sha256": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+        "runner_sha256": "956f4962a88127da06b4ba1e02f8af7bbe3a8289dae64696835813bb846b198d",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "cases": [
+          {
+            "name": "Hang-pd_ee_delta_pose_align-gpu",
+            "task": "Hang",
+            "backend": "gpu",
+            "control_mode": "pd_ee_delta_pose_align"
+          },
+          {
+            "name": "Hang-pd_ee_target_delta_pose-gpu",
+            "task": "Hang",
+            "backend": "gpu",
+            "control_mode": "pd_ee_target_delta_pose"
+          },
+          {
+            "name": "Pour-pd_ee_pose-gpu",
+            "task": "Pour",
+            "backend": "gpu",
+            "control_mode": "pd_ee_pose"
+          },
+          {
+            "name": "Write-pd_ee_delta_pose_demo-gpu",
+            "task": "Write",
+            "backend": "gpu",
+            "control_mode": "pd_ee_delta_pose_demo"
+          },
+          {
+            "name": "Pinch-pd_ee_target_delta_pos-gpu",
+            "task": "Pinch",
+            "backend": "gpu",
+            "control_mode": "pd_ee_target_delta_pos"
+          },
+          {
+            "name": "Hang-pd_ee_target_delta_pose-cpu",
+            "task": "Hang",
+            "backend": "cpu",
+            "control_mode": "pd_ee_target_delta_pose"
+          },
+          {
+            "name": "Pour-pd_ee_pose-cpu",
+            "task": "Pour",
+            "backend": "cpu",
+            "control_mode": "pd_ee_pose"
+          },
+          {
+            "name": "Write-pd_ee_delta_pose_demo-cpu",
+            "task": "Write",
+            "backend": "cpu",
+            "control_mode": "pd_ee_delta_pose_demo"
+          },
+          {
+            "name": "Pinch-pd_ee_target_delta_pos-cpu",
+            "task": "Pinch",
+            "backend": "cpu",
+            "control_mode": "pd_ee_target_delta_pos"
+          }
+        ],
+        "checkpoint_exact_groups": [
+          "mpm",
+          "mpm_material",
+          "mpm_drives",
+          "controller",
+          "task",
+          "task_particles"
+        ],
+        "joint_replay_limit": 0.001,
+        "scope": "Native N1 Hang/Pour/Write/Pinch CPU/GPU regressions after shared LegacyPanda parameter application and Hang batching initialization refactor. Nine unchanged cases from lifecyclev2; original probe, dictionary/flat/reconfigured exact restore and joint1e-3 gates. Runtime byte-identical to Hang batchv8. Full-reference parity remains incomplete.",
+        "regression_reason": "Shared LegacyPanda helper affects all four tasks. Verify N1 behavior after its per-environment refactor; Hang also exercises rewritten initialization/evaluation."
+      },
+      "source_audit": {
+        "runtime_identical_to": "gpu-batch-v8",
+        "source_files": 515,
+        "probe_identical_to": "gpu-lifecycle-v2",
+        "cases": 9
+      },
+      "verdict": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Hang-pd_ee_delta_pose_align-gpu": {
+            "exact_checkpoints": {
+              "dict": true,
+              "flat": true,
+              "reconfigure": true
+            },
+            "replay_errors": {
+              "dict": {
+                "x": 2.384185791015625e-07,
+                "qpos": 8.940696716308594e-08,
+                "qvel": 4.654750227928162e-06,
+                "drive_position": 4.76837158203125e-07,
+                "drive_velocity": 0.0
+              },
+              "flat": {
+                "x": 2.384185791015625e-07,
+                "qpos": 8.940696716308594e-08,
+                "qvel": 4.653818905353546e-06,
+                "drive_position": 4.76837158203125e-07,
+                "drive_velocity": 0.0
+              },
+              "reconfigure": {
+                "x": 2.2351741790771484e-07,
+                "qpos": 8.940696716308594e-08,
+                "qvel": 4.652887582778931e-06,
+                "drive_position": 4.76837158203125e-07,
+                "drive_velocity": 0.0
+              }
+            },
+            "robot_motion_max_abs": 0.013644099235534668,
+            "particle_count": 3636,
+            "changed_particle_count": false
+          },
+          "Hang-pd_ee_target_delta_pose-gpu": {
+            "exact_checkpoints": {
+              "dict": true,
+              "flat": true,
+              "reconfigure": true
+            },
+            "replay_errors": {
+              "dict": {
+                "x": 1.341104507446289e-07,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 8.195638656616211e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat": {
+                "x": 1.341104507446289e-07,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 8.568167686462402e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "reconfigure": {
+                "x": 1.341104507446289e-07,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 8.195638656616211e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            },
+            "robot_motion_max_abs": 0.01370692253112793,
+            "particle_count": 3636,
+            "changed_particle_count": false
+          },
+          "Pour-pd_ee_pose-gpu": {
+            "exact_checkpoints": {
+              "dict": true,
+              "flat": true,
+              "reconfigure": true
+            },
+            "replay_errors": {
+              "dict": {
+                "x": 0.00010747089982032776,
+                "qpos": 2.384185791015625e-07,
+                "qvel": 3.603426739573479e-05,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat": {
+                "x": 8.860230445861816e-05,
+                "qpos": 3.5762786865234375e-07,
+                "qvel": 3.816932439804077e-05,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "reconfigure": {
+                "x": 0.00047688931226730347,
+                "qpos": 1.714937388896942e-05,
+                "qvel": 0.0005443733098218217,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            },
+            "robot_motion_max_abs": 0.012440711259841919,
+            "particle_count": 8534,
+            "changed_particle_count": true
+          },
+          "Write-pd_ee_delta_pose_demo-gpu": {
+            "exact_checkpoints": {
+              "dict": true,
+              "flat": true,
+              "reconfigure": true
+            },
+            "replay_errors": {
+              "dict": {
+                "x": 8.940696716308594e-08,
+                "qpos": 2.384185791015625e-07,
+                "qvel": 4.76837158203125e-06,
+                "drive_position": 7.152557373046875e-07,
+                "drive_velocity": 0.0
+              },
+              "flat": {
+                "x": 8.940696716308594e-08,
+                "qpos": 2.384185791015625e-07,
+                "qvel": 4.76837158203125e-06,
+                "drive_position": 7.152557373046875e-07,
+                "drive_velocity": 0.0
+              },
+              "reconfigure": {
+                "x": 8.940696716308594e-08,
+                "qpos": 2.384185791015625e-07,
+                "qvel": 4.76837158203125e-06,
+                "drive_position": 7.152557373046875e-07,
+                "drive_velocity": 0.0
+              }
+            },
+            "robot_motion_max_abs": 0.06510621309280396,
+            "particle_count": 19404,
+            "changed_particle_count": false
+          },
+          "Pinch-pd_ee_target_delta_pos-gpu": {
+            "exact_checkpoints": {
+              "dict": true,
+              "flat": true,
+              "reconfigure": true
+            },
+            "replay_errors": {
+              "dict": {
+                "x": 1.1920928955078125e-07,
+                "qpos": 0.0,
+                "qvel": 2.2351741790771484e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat": {
+                "x": 8.940696716308594e-08,
+                "qpos": 0.0,
+                "qvel": 2.2351741790771484e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "reconfigure": {
+                "x": 7.450580596923828e-08,
+                "qpos": 0.0,
+                "qvel": 2.2351741790771484e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            },
+            "robot_motion_max_abs": 0.02199789136648178,
+            "particle_count": 3072,
+            "changed_particle_count": false
+          },
+          "Hang-pd_ee_target_delta_pose-cpu": {
+            "exact_checkpoints": {
+              "dict": true,
+              "flat": true,
+              "reconfigure": true
+            },
+            "replay_errors": {
+              "dict": {
+                "x": 8.940696716308594e-08,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 1.2814998626708984e-06,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat": {
+                "x": 8.940696716308594e-08,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 1.2814998626708984e-06,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "reconfigure": {
+                "x": 8.940696716308594e-08,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 1.2814998626708984e-06,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            },
+            "robot_motion_max_abs": 0.03413495421409607,
+            "particle_count": 3636,
+            "changed_particle_count": false
+          },
+          "Pour-pd_ee_pose-cpu": {
+            "exact_checkpoints": {
+              "dict": true,
+              "flat": true,
+              "reconfigure": true
+            },
+            "replay_errors": {
+              "dict": {
+                "x": 0.00036391615867614746,
+                "qpos": 6.884336471557617e-05,
+                "qvel": 0.005563040263950825,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat": {
+                "x": 0.00036516785621643066,
+                "qpos": 6.818771362304688e-05,
+                "qvel": 0.005509465001523495,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "reconfigure": {
+                "x": 0.00040215253829956055,
+                "qpos": 7.50422477722168e-05,
+                "qvel": 0.003214238560758531,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            },
+            "robot_motion_max_abs": 0.01076631061732769,
+            "particle_count": 8534,
+            "changed_particle_count": true
+          },
+          "Write-pd_ee_delta_pose_demo-cpu": {
+            "exact_checkpoints": {
+              "dict": true,
+              "flat": true,
+              "reconfigure": true
+            },
+            "replay_errors": {
+              "dict": {
+                "x": 8.940696716308594e-08,
+                "qpos": 0.0,
+                "qvel": 2.9802322387695312e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat": {
+                "x": 8.940696716308594e-08,
+                "qpos": 0.0,
+                "qvel": 2.9802322387695312e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "reconfigure": {
+                "x": 8.940696716308594e-08,
+                "qpos": 0.0,
+                "qvel": 2.9802322387695312e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            },
+            "robot_motion_max_abs": 0.0651063323020935,
+            "particle_count": 19404,
+            "changed_particle_count": false
+          },
+          "Pinch-pd_ee_target_delta_pos-cpu": {
+            "exact_checkpoints": {
+              "dict": true,
+              "flat": true,
+              "reconfigure": true
+            },
+            "replay_errors": {
+              "dict": {
+                "x": 8.940696716308594e-08,
+                "qpos": 0.0,
+                "qvel": 0.0,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat": {
+                "x": 5.960464477539063e-08,
+                "qpos": 0.0,
+                "qvel": 0.0,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "reconfigure": {
+                "x": 5.960464477539063e-08,
+                "qpos": 0.0,
+                "qvel": 0.0,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            },
+            "robot_motion_max_abs": 0.02199789136648178,
+            "particle_count": 3072,
+            "changed_particle_count": false
+          }
+        },
+        "scope": "Native N1 Hang/Pour/Write/Pinch CPU/GPU regressions after shared LegacyPanda parameter application and Hang batching initialization refactor. Nine unchanged cases from lifecyclev2; original probe, dictionary/flat/reconfigured exact restore and joint1e-3 gates. Runtime byte-identical to Hang batchv8. Full-reference parity remains incomplete.",
+        "full_port_complete": false
+      }
+    },
+    "gpu-batch-v9": {
+      "archive_sha256": "0b7ff7edf5ab81e654723b5e182d374cf0670848d048d9f9f3504a52c31ddab0",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T18:25:28.809515+00:00",
+        "input_sha256": "91dd892350e67bc1296e8e108cd38081ca9367e9b664ab677dff3ad06942fed9",
+        "request_sha256": "083364f09883cd29052ba7859ba9a02520e49aec9ac8755e6804d6be408a27aa",
+        "probe_sha256": "f3ccb99ea40169647d148f9b054f381d660908efdd0a48557d734a14bfc0f896",
+        "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "cases": [
+          {
+            "name": "Excavate-batch-ee",
+            "task": "Excavate",
+            "backend": "gpu",
+            "control_mode": "pd_ee_delta_pose_align",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "capacity": 32768,
+            "controller_lifecycle": true,
+            "reward_mode": "dense"
+          },
+          {
+            "name": "Fill-reset-regression-ee",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_ee_target_delta_pose",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "capacity": 2048,
+            "controller_lifecycle": true
+          }
+        ],
+        "exact_checkpoint_groups": [
+          "mpm",
+          "mpm_material",
+          "mpm_meta",
+          "mpm_drives",
+          "controller",
+          "task",
+          "actors"
+        ],
+        "rendering": {
+          "minimum_particle_pixels": 10,
+          "surface_distance_error_limit_m": 0.003,
+          "require_visual_pool_checks": true,
+          "require_native_buffer_checks": true,
+          "require_rigid_visual_bounds": true,
+          "minimum_rigid_pixels": 10,
+          "rigid_bound_error_limit_m": 0.003
+        },
+        "scope": "N2 Fill/Excavate shared-reset regression after adding deferred Hang initial grasp checkpoints. Runtime identical to Hang batchv8; same two cases and actor-inclusive exact isolation, joint1e-3, target1e-6, camera3mm gates asv7. Excavate task reward/outcome checks retained. No new N1 comparisons or full episode/strict parity claim.",
+        "compare_batch_vs_single": false,
+        "joint_replay_limit": 0.001,
+        "target_pose_limit": 1e-06,
+        "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+        "reward_limit": 1e-06,
+        "baseline": {
+          "label": "gpu-lifecycle-v2",
+          "archive_sha256": "5e5796221a71d41170e3cd5b996281a73e245f714d22a952ff04a460cc934aa2",
+          "files": {
+            "execution.json": "6537c5ee24bd667f5efc97977ea22ff4b4e41950635c663a587a529f3f750b65",
+            "request.json": "7139aef98858eb9c6f7615b5e4b03012eb69bb12d5a098359f0136f6d1e36e82",
+            "probe.py": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+            "source/excavate.py": "2673371a834bb32e3916843d58cb9665e4893b9ab1ef0a1dc7dffa330e158371",
+            "Excavate-pd_ee_delta_pose_align-gpu/initial.npz": "52b15a70db132ac01722a8792cdaeab96ffe8367ee03dedb6fe1432c05dd5184",
+            "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz": "92e35aa79b811c30c4b5ce9ae97ff062aa46a9c4b92c9839bc3b776de52884da",
+            "Excavate-pd_ee_delta_pose_align-gpu/result.json": "984c245516cfbe8b6cc74755c0b4d283f7b0d8f30e2b3a38e22ee3e320a3ed29"
+          },
+          "snapshot": "Excavate-pd_ee_delta_pose_align-gpu/initial.npz",
+          "checkpoint": "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz",
+          "new_case": "Excavate-single-101"
+        },
+        "initial_comparisons": []
+      },
+      "source_audit": {
+        "runtime_identical_to": "gpu-batch-v8",
+        "probe_identical_to": "gpu-batch-v8",
+        "runner_identical_to": "gpu-batch-v7",
+        "source_files": 515
+      },
+      "verdict": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Excavate-batch-ee": {
+            "task_snapshots": 12,
+            "initial_counts": [
+              11056,
+              11071
+            ],
+            "initial_targets": [
+              1113.0,
+              873.0
+            ]
+          }
+        },
+        "controller_lifecycle": {
+          "passed": true,
+          "failures": [],
+          "reports": {
+            "Excavate-batch-ee": {
+              "ik_requests": 12,
+              "replay_errors": {
+                "partial-stepped/env0": {
+                  "x": 9.685754776000977e-07,
+                  "v": 3.5468488931655884e-05,
+                  "F": 0.0005773305892944336,
+                  "C": 0.008359313011169434,
+                  "vc": 2.7567148208618164e-07,
+                  "qpos": 1.1920928955078125e-07,
+                  "qvel": 4.809349775314331e-06,
+                  "drive_position": 5.960464477539062e-07,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env0": {
+                  "x": 3.081560134887695e-05,
+                  "v": 0.00044407695531845093,
+                  "F": 0.015429258346557617,
+                  "C": 0.1473757028579712,
+                  "vc": 2.5331974029541016e-07,
+                  "qpos": 1.1920928955078125e-07,
+                  "qvel": 4.809349775314331e-06,
+                  "drive_position": 5.960464477539062e-07,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env1": {
+                  "x": 2.3320317268371582e-05,
+                  "v": 0.0012534342240542173,
+                  "F": 0.02420705556869507,
+                  "C": 0.8491261601448059,
+                  "vc": 0.019274314865469933,
+                  "qpos": 2.384185791015625e-07,
+                  "qvel": 4.701199941337109e-06,
+                  "drive_position": 7.152557373046875e-07,
+                  "drive_velocity": 0.0
+                }
+              }
+            },
+            "Fill-reset-regression-ee": {
+              "ik_requests": 12,
+              "replay_errors": {
+                "partial-stepped/env0": {
+                  "x": 1.3418495655059814e-05,
+                  "v": 0.0011730901896953583,
+                  "F": 0.01863420009613037,
+                  "C": 0.20182305574417114,
+                  "vc": 0.0010923147201538086,
+                  "qpos": 0.0,
+                  "qvel": 3.7439167499542236e-07,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env0": {
+                  "x": 2.384185791015625e-07,
+                  "v": 1.249462366104126e-05,
+                  "F": 6.714463233947754e-05,
+                  "C": 0.002436041831970215,
+                  "vc": 2.3618340492248535e-05,
+                  "qpos": 0.0,
+                  "qvel": 5.21540641784668e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                },
+                "flat-stepped/env1": {
+                  "x": 1.7881393432617188e-07,
+                  "v": 2.074427902698517e-05,
+                  "F": 3.641843795776367e-05,
+                  "C": 0.0026203393936157227,
+                  "vc": 2.5890767574310303e-05,
+                  "qpos": 0.0,
+                  "qvel": 3.725290298461914e-08,
+                  "drive_position": 0.0,
+                  "drive_velocity": 0.0
+                }
+              }
+            }
+          },
+          "lifecycle_and_rendering": {
+            "passed": true,
+            "failures": [],
+            "reports": {
+              "Excavate-batch-ee": {
+                "exact_checkpoints": {
+                  "partial-unchosen": [],
+                  "fresh-unchosen": [],
+                  "count-unchosen": [],
+                  "partial-selected": [],
+                  "count-selected": [],
+                  "flat-env0": [],
+                  "flat-env1": []
+                },
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 44140,
+                    "max_rigid_bound_violation_m": 0.0010863688006547412,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-initial-env1": {
+                    "rigid_pixels": 42384,
+                    "max_rigid_bound_violation_m": 0.001059106218912871,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  },
+                  "camera-partial-count-env0": {
+                    "rigid_pixels": 43717,
+                    "max_rigid_bound_violation_m": 0.0011389318784181673,
+                    "particle_pixels": 15652,
+                    "visible_particles": 1924,
+                    "max_surface_error_m": 0.0016404591311211486,
+                    "median_surface_error_m": 0.0005756247530266407,
+                    "failures": []
+                  },
+                  "camera-partial-count-env1": {
+                    "rigid_pixels": 39961,
+                    "max_rigid_bound_violation_m": 0.0011240419058999168,
+                    "particle_pixels": 16842,
+                    "visible_particles": 2035,
+                    "max_surface_error_m": 0.0016185428048027472,
+                    "median_surface_error_m": 0.0005696376821987812,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 44140,
+                    "max_rigid_bound_violation_m": 0.0010863688006547412,
+                    "particle_pixels": 16821,
+                    "visible_particles": 2031,
+                    "max_surface_error_m": 0.0015809763569507277,
+                    "median_surface_error_m": 0.0005842781037719564,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env1": {
+                    "rigid_pixels": 42384,
+                    "max_rigid_bound_violation_m": 0.001059106218912871,
+                    "particle_pixels": 16205,
+                    "visible_particles": 1941,
+                    "max_surface_error_m": 0.001590443312767057,
+                    "median_surface_error_m": 0.0005854509973434265,
+                    "failures": []
+                  }
+                }
+              },
+              "Fill-reset-regression-ee": {
+                "exact_checkpoints": {
+                  "partial-unchosen": [],
+                  "fresh-unchosen": [],
+                  "count-unchosen": [],
+                  "partial-selected": [],
+                  "count-selected": [],
+                  "flat-env0": [],
+                  "flat-env1": []
+                },
+                "cameras": {
+                  "camera-initial-env0": {
+                    "rigid_pixels": 35410,
+                    "max_rigid_bound_violation_m": 0.0014656652884353916,
+                    "particle_pixels": 1262,
+                    "visible_particles": 226,
+                    "max_surface_error_m": 0.0015480025122622735,
+                    "median_surface_error_m": 0.0004848182231410921,
+                    "failures": []
+                  },
+                  "camera-initial-env1": {
+                    "rigid_pixels": 35398,
+                    "max_rigid_bound_violation_m": 0.001347999887893983,
+                    "particle_pixels": 1280,
+                    "visible_particles": 234,
+                    "max_surface_error_m": 0.0015049038963031564,
+                    "median_surface_error_m": 0.0005229196131294495,
+                    "failures": []
+                  },
+                  "camera-partial-count-env0": {
+                    "rigid_pixels": 36121,
+                    "max_rigid_bound_violation_m": 0.0014048820837600715,
+                    "particle_pixels": 927,
+                    "visible_particles": 155,
+                    "max_surface_error_m": 0.0015484091916453742,
+                    "median_surface_error_m": 0.0005210393198954275,
+                    "failures": []
+                  },
+                  "camera-partial-count-env1": {
+                    "rigid_pixels": 35352,
+                    "max_rigid_bound_violation_m": 0.0014116438505610354,
+                    "particle_pixels": 1301,
+                    "visible_particles": 218,
+                    "max_surface_error_m": 0.0015248591910106374,
+                    "median_surface_error_m": 0.00048500101862220327,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env0": {
+                    "rigid_pixels": 35410,
+                    "max_rigid_bound_violation_m": 0.0014656652884353916,
+                    "particle_pixels": 1262,
+                    "visible_particles": 226,
+                    "max_surface_error_m": 0.0015480025122622735,
+                    "median_surface_error_m": 0.0004848182231410921,
+                    "failures": []
+                  },
+                  "camera-reconfigured-env1": {
+                    "rigid_pixels": 35398,
+                    "max_rigid_bound_violation_m": 0.001347999887893983,
+                    "particle_pixels": 1280,
+                    "visible_particles": 234,
+                    "max_surface_error_m": 0.0015049038963031564,
+                    "median_surface_error_m": 0.0005229196131294495,
+                    "failures": []
+                  }
+                }
+              }
+            },
+            "scope": "N2 Fill/Excavate shared-reset regression after adding deferred Hang initial grasp checkpoints. Runtime identical to Hang batchv8; same two cases and actor-inclusive exact isolation, joint1e-3, target1e-6, camera3mm gates asv7. Excavate task reward/outcome checks retained. No new N1 comparisons or full episode/strict parity claim.",
+            "full_port_complete": false
+          },
+          "scope": "N2 Fill/Excavate shared-reset regression after adding deferred Hang initial grasp checkpoints. Runtime identical to Hang batchv8; same two cases and actor-inclusive exact isolation, joint1e-3, target1e-6, camera3mm gates asv7. Excavate task reward/outcome checks retained. No new N1 comparisons or full episode/strict parity claim.",
+          "full_port_complete": false
+        },
+        "scope": "N2 Fill/Excavate shared-reset regression after adding deferred Hang initial grasp checkpoints. Runtime identical to Hang batchv8; same two cases and actor-inclusive exact isolation, joint1e-3, target1e-6, camera3mm gates asv7. Excavate task reward/outcome checks retained. No new N1 comparisons or full episode/strict parity claim.",
+        "full_port_complete": false
+      }
+    }
+  },
+  "local_tests": "221 host tests +14 subtests;125 fork task/verifier tests pass.",
+  "visual_qa": "Viewed Hang-batch-target/camera-initial-env1 and Hang-batch-align/camera-partial-count-env0; rod, rope grasp and native robot geometry visible. Numeric camera gates pass all16 frames.",
+  "original_strict_failures_retained": true
+}

@@ -29,8 +29,9 @@ def target_pose(previous, action, mode):
 
 def check_ik_step(case, step, model_info, action, tolerance):
     count = len(case['seeds']); failures = []
+    dof = 9 if case.get('task') in ('Hang','Pour','Pinch') else 7
     before = np.asarray(step['qpos_before'])
-    if before.shape != (count, 7) or not np.isfinite(before).all():
+    if before.shape != (count, dof) or not np.isfinite(before).all():
         return ['Invalid pre-action native joint state']
     if 'ee' not in case['control_mode']:
         return [] if not step['ik_calls'] else ['Joint controller unexpectedly ran IK']
@@ -44,12 +45,13 @@ def check_ik_step(case, step, model_info, action, tolerance):
             return ['Invalid batched IK telemetry: '+key]
     for index, call in enumerate(calls):
         if (call['link'] != model_info['links'][index] or call['active_qmask'] != model_info['masks'][index]
-                or call['active_qmask'] != [True]*7 or call['max_iterations'] != 100):
+                or call['active_qmask'] != [True]*7+[False]*(dof-7) or call['max_iterations'] != 100):
             failures.append('Native IK link/mask/iteration contract changed')
         if not np.array_equal(call['initial_qpos'], step['qpos_before'][index]):
             failures.append('Native IK used another environment or stale initial qpos')
         previous = np.asarray(step['target_pose_before' if '_target_' in case['control_mode'] else 'ee_pose_before'][index])
-        expected = target_pose(previous, action[index].astype(float), case['control_mode'])
+        arm_width = 3 if case['control_mode'].endswith('_pos') else 6
+        expected = target_pose(previous, action[index,:arm_width].astype(float), case['control_mode'])
         target = np.asarray(step['target_pose_after'][index])
         if np.max(np.abs(target-expected)) > tolerance:
             failures.append('EE target disagrees with independent legacy frame composition')
@@ -59,7 +61,7 @@ def check_ik_step(case, step, model_info, action, tolerance):
         if not call['success'] or not step['ik_success'][index]:
             failures.append('Native IK failed for a declared reachable action')
         result = np.asarray(call['result'], np.float32)
-        if result.shape != (7,) or not np.isfinite(result).all() or not np.array_equal(result, np.asarray(step['target_qpos_after'][index],np.float32)):
+        if result.shape != (dof,) or not np.isfinite(result).all() or not np.array_equal(result[:7], np.asarray(step['target_qpos_after'][index],np.float32)):
             failures.append('Controller did not use its own native IK solution')
     return failures
 

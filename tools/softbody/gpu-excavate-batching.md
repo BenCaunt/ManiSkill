@@ -96,5 +96,5 @@ The checker reads numeric records without importing candidate simulation code.
 The baseline and input/probe/source identities are pinned in the protocol.
 Local task and synthetic verifier tests are contract checks, not native physics
 evidence. Full episodes, repeated-seed reference parity, the previous Excavate
-spill failure, the other four task classes' batching and distribution packaging
+spill failure, Pour/Write/Pinch batching and distribution packaging
 remain incomplete. The original strict particle-trajectory failures remain failures.

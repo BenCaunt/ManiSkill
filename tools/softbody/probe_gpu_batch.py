@@ -26,7 +26,8 @@ def take_rows(value, indices):
 
 
 def controller_actions(mode, qpos, scales):
-    qpos = qpos.astype(np.float64)
+    has_gripper = qpos.shape[1] == 9
+    qpos = qpos[:, :7].astype(np.float64)
     actions = []
     for q, scale in zip(qpos, scales):
         if mode == 'pd_joint_pos':
@@ -40,7 +41,7 @@ def controller_actions(mode, qpos, scales):
             value = np.array([.01, -.02, .01, .03, -.02, .01])[:width] * scale
         else:
             value = np.full(7, scale * .01)
-        actions.append(value)
+        actions.append(np.r_[value,0.] if has_gripper else value)
     return np.asarray(actions, np.float32)
 
 
@@ -54,8 +55,9 @@ def run(args):
         sys.path.insert(0, str(args.source))
         from mani_skill.envs.softbody.fill import FillEnv
         from mani_skill.envs.softbody.excavate import ExcavateEnv
+        from mani_skill.envs.softbody.hang import HangEnv
         from mani_skill.envs.softbody.geometry import visual_meshes, convex_collision_meshes
-        task_class = {'Fill': FillEnv, 'Excavate': ExcavateEnv}[case['task']]
+        task_class = {'Fill': FillEnv, 'Excavate': ExcavateEnv, 'Hang': HangEnv}[case['task']]
         count = len(case['seeds'])
         offsets = case.get('scene_offsets')
         if offsets is not None:
@@ -101,6 +103,7 @@ def run(args):
                       scene_offsets=[env.scene.px.get_scene_offset(s).tolist() for s in env.scene.sub_scenes],
                       shared_native_system=all(s.physx_system is env.scene.px for s in env.scene.sub_scenes),
                       world_couplers=len(env.mpm_gpu_world.couplers),
+                      particle_radius=[float(np.float32(c.model.struct.particle_radius)) for c in env.mpm_couplers],
                       mpm_substeps=[c.substeps for c in env.mpm_couplers],
                       rigid_dt=[c.rigid_dt for c in env.mpm_couplers],
                       model_scene_ownership=all(c.scene is s and all(b.entity.scene is s for b in c.bodies)
@@ -120,6 +123,16 @@ def run(args):
             report['files'][path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
         def dump(label):
             state = flatten(env.get_state_dict(), 'state/')
+            if case['task'] == 'Hang':
+                info = env.evaluate()
+                state.update(flatten(info, 'reported/'))
+                state['reported/reward'] = env.compute_dense_reward(None, None, info).cpu().numpy().copy()
+                state['reported/target'] = env._get_obs_extra(info)['target'].cpu().numpy().copy()
+                for name, bodies in [('hand',env.hands),('rod',env.rod_bodies),('leftfinger',env.leftfingers),('rightfinger',env.rightfingers)]:
+                    poses = [env.rigid_pose(body) for body in bodies]
+                    state[name+'_pose'] = np.array([np.r_[p.p,p.q] for p in poses])
+                    state[name+'_matrix'] = np.array([p.to_transformation_matrix() for p in poses])
+                state['recipe_grasp_index'] = (env.rope_start_indices.copy() if count>1 else np.array([env.rope_start_index]))
             if case['task'] == 'Excavate':
                 info = env.evaluate()
                 state.update(flatten(info, 'reported/'))
@@ -160,6 +173,12 @@ def run(args):
                     wall_half_size=np.array([[b.collision_shapes[0].half_size for b in row] for row in bodies]),
                     bucket_reward_hull=np.array([convex_collision_meshes(b)[0].vertices for b in env.buckets]),
                     stored_reward_hull=np.array([v[:, :3] for v in env.vertices_mats]))
+            if case['task'] == 'Hang':
+                model.update(rod_mass=np.array([b.mass for b in env.rod_bodies]),
+                    rod_inertia=np.array([b.inertia for b in env.rod_bodies]),
+                    rod_com=np.array([pose(b.cmass_local_pose) for b in env.rod_bodies]),
+                    rod_half_size=np.array([b.collision_shapes[0].half_size for b in env.rod_bodies]),
+                    robot_joint_limits=np.array([r.get_qlimits() for r in robots]))
             save(label, model)
         def render(label):
             before = flatten(env.get_state_dict(), 'checkpoint/')
@@ -233,10 +252,17 @@ def run(args):
             dump('partial-restored'); step('partial-stepped')
             env.reset(seed=[17], options=dict(env_idx=torch.tensor([1], device=env.device)))
             dump('partial-fresh')
-            reduced = take_rows(checkpoint, [0]); old_count = int(reduced['mpm_meta']['count'][0, 0]); new_count = (old_count + 1) // 2
+            reduced = take_rows(checkpoint, [0]); old_count = int(reduced['mpm_meta']['count'][0, 0])
+            retained = np.arange(0,old_count,2)
+            if case.get('preserve_task_particle_indices'):
+                task_indices = reduced['task']['selected_indices'][0].cpu().numpy()
+                retained = np.unique(np.r_[retained,task_indices])
+                reduced['task']['selected_indices'][0] = torch.as_tensor(np.searchsorted(retained,task_indices),device=env.device)
+            new_count = len(retained)
+            retained_tensor = torch.as_tensor(retained,device=env.device)
             for group in ('mpm', 'mpm_material'):
                 for key, value in reduced[group].items():
-                    target = torch.zeros_like(value); target[:, :new_count] = value[:, :old_count:2]; reduced[group][key] = target
+                    target = torch.zeros_like(value); target[:, :new_count] = value[:, retained_tensor]; reduced[group][key] = target
             reduced['mpm_meta']['count'].fill_(new_count)
             reduced['mpm_meta']['mask'][:] = torch.arange(case['capacity'], device=env.device)[None] < new_count
             save('reduced-checkpoint', flatten(reduced, 'state/'))
