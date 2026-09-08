@@ -193,6 +193,33 @@ still fails four initialization gates and two trajectory gates: particle
 velocity 1.63e-5 versus 1e-5, and affine velocity matrix 0.001017 versus 0.001.
 The original failure remains recorded. Reward, mass, drive targets, rod state,
 and evaluation indices meet their limits. The limits were retained.
-Successful physical manipulation, other seeds,
+Broader physical manipulation coverage, additional seeds,
 full-episode aggregate gates, and camera/checkpoint coverage beyond the current
 probe still require verification.
+
+## Physical demonstration replays
+
+The official dataset revision `0c367447d26e4e2de13fbf5e5d2ab09a258187da` contains
+recorded actions and one initial state per episode. Its first Fill and Hang
+demonstrations were freshly replayed in the pinned reference engine, then exported
+as portable initialization/material/controller/action fixtures for the port.
+Reference outcomes were excluded from the candidate containers. Every subsequent
+state came from drive targets and physical contacts; no state correction occurred
+between actions. These are recorded reference controls, not a vision policy.
+
+| Task / seed | Controls | First success, reference / port | Final result |
+| --- | ---: | ---: | --- |
+| Fill / 1 | 176 | 156 / 161 | Both successful; reference contains 701/704 particles, port 637/704 |
+| Hang / 3 | 338 | 237 / 237 | Both successful with released fingers and rope supported above ground |
+
+An external NumPy evaluator recomputed the legacy outcome predicates from every
+recorded state and matched all reference and candidate labels. Counts and masses
+stay constant and all recorded values are finite. The port's Fill final contained
+mass is 0.122304 kg versus the reference's 0.134592 kg; both report zero spill
+under the original spill definition (which does not count particles still in the
+bucket). Passing the task threshold does not establish matching transfer quality.
+
+No full-episode parity protocol has been calibrated. Maximum particle-identity
+position differences over these episodes are 0.1573 m for Fill and 0.0920 m for
+Hang; maximum COM distances are 0.0132 m and 0.0171 m. Both successful actions
+and these substantial trajectory differences remain part of the evidence.
