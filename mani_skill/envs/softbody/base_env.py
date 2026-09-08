@@ -2,6 +2,7 @@
 
 import numpy as np
 import torch
+import sapien
 
 from mani_skill.envs.sapien_env import BaseEnv
 from mani_skill.utils import common
@@ -9,14 +10,14 @@ from .mpm import MPMCoupler, wp
 
 
 class MPMBaseEnv(BaseEnv):
-    """CPU PhysX with CPU or CUDA MPM; state observations only for now.
+    """CPU PhysX with CPU or CUDA MPM and particle sphere visualization.
 
     Tasks build their rigid scene normally and call rebuild_mpm(builder, bodies)
     during _initialize_episode, after setting their reset poses. Both engines
     retain their own state; only reaction forces cross the coupling boundary.
     """
 
-    SUPPORTED_OBS_MODES = ("state", "state_dict", "none")
+    SUPPORTED_OBS_MODES = ("state", "state_dict", "none", "sensor_data", "any_textures", "pointcloud")
 
     def __init__(self, *args, mpm_device="cuda", mpm_dt=.0005,
                  num_envs=1, sim_backend="physx_cpu", **kwargs):
@@ -31,13 +32,29 @@ class MPMBaseEnv(BaseEnv):
         self.mpm_coupler = None
         self._mpm_reset_active = False
         self.last_coupling_step = None
+        self._particle_entities = []
         wp.init()
         super().__init__(*args, num_envs=1, sim_backend="physx_cpu", **kwargs)
 
     def reset(self, *, seed=None, options=None):
+        options = dict(options or {})
+        restore = options.pop('reset_to_env_states', None)
         self._mpm_reset_active = True
         try:
-            return super().reset(seed=seed, options=options)
+            # The base reset-to-state path skips _initialize_episode. MPM must
+            # first build fresh topology/material buffers, including after a
+            # scene reconfiguration, then restore the checkpoint during reset.
+            obs, info = super().reset(seed=seed, options=options)
+            if restore is not None:
+                state = restore['env_states']
+                if isinstance(state, dict):
+                    self.set_state_dict(state, options.get('env_idx'))
+                else:
+                    self.set_state(state, options.get('env_idx'))
+                info = {**self.get_info(), 'reconfigure': info['reconfigure']}
+                obs = self.get_obs(info)
+                self._last_obs = obs
+            return obs, info
         finally:
             self._mpm_reset_active = False
 
@@ -57,6 +74,46 @@ class MPMBaseEnv(BaseEnv):
         self.mpm_coupler = MPMCoupler(self.scene.sub_scenes[0], model, states,
                                       bodies, mpm_dt=self.mpm_dt)
         self.last_coupling_step = None
+        self._setup_particle_rendering()
+
+    def _setup_particle_rendering(self):
+        if not self.scene.can_render():
+            return
+        scene = self.scene.sub_scenes[0]
+        for entity in self._particle_entities:
+            scene.remove_entity(entity)
+        self._particle_entities = []
+        count = self.mpm_coupler.model.struct.n_particles
+        # Minimal shaders omit PointCloudComponent. Sphere visuals populate
+        # normal camera color/depth/segmentation. They have no physics component
+        # and do not enter the simulation state registry. Separate entities are
+        # required because attached render-shape local poses are immutable.
+        # CPU pose updates are the initial single-scene correctness path.
+        colors = np.asarray(self.mpm_coupler.model.mpm_particle_colors[:count], dtype=np.float32)
+        radius = self.mpm_coupler.model.struct.particle_radius
+        prototypes = {}
+        for i, color in enumerate(colors):
+            key = tuple(color)
+            if key not in prototypes:
+                material = sapien.render.RenderMaterial(base_color=[*key, 1.], roughness=.8)
+                prototypes[key] = sapien.render.RenderShapeSphere(radius, material)
+            component = sapien.render.RenderBodyComponent()
+            component.attach(prototypes[key].clone())
+            entity = sapien.Entity()
+            entity.name = f'mpm_particle_visual_only_{i}'
+            entity.add_component(component)
+            scene.add_entity(entity)
+            self._particle_entities.append(entity)
+        self._update_particle_rendering()
+
+    def _update_particle_rendering(self):
+        if self._particle_entities:
+            for entity, position in zip(self._particle_entities, self.mpm_coupler.particle_state()['x']):
+                entity.pose = sapien.Pose(position)
+
+    def _after_control_step(self):
+        self._update_particle_rendering()
+        super()._after_control_step()
 
     def _configure_mpm_model(self, model):
         """Task-specific contact/material configuration, applied before buffers."""
@@ -95,8 +152,18 @@ class MPMBaseEnv(BaseEnv):
 
     def get_state_dict(self):
         state = super().get_state_dict() if self.agent is not None else self.scene.get_sim_state()
+        if self.agent is not None:
+            # Native CPU drive targets and controller memory are separate from
+            # qpos/qvel. Both are needed to replay target-relative controllers.
+            joints = self.agent.robot._objs[0].active_joints
+            state['mpm_drives'] = {
+                'position': torch.as_tensor(np.array([j.drive_target for j in joints]).reshape(1, -1), device=self.device),
+                'velocity': torch.as_tensor(np.array([j.drive_velocity_target for j in joints]).reshape(1, -1), device=self.device),
+            }
         state["mpm"] = self._mpm_tensors()
-        return state
+        def copy_tree(value):
+            return {k: copy_tree(v) for k, v in value.items()} if isinstance(value, dict) else value.clone()
+        return copy_tree(state)
 
     def get_state(self):
         # Particle tensors have more dimensions than the base rigid-state flattener.
@@ -118,7 +185,31 @@ class MPMBaseEnv(BaseEnv):
             if value.shape != (1, *initial.shape) or not np.isfinite(value).all():
                 raise ValueError(f"Invalid MPM state field: {key}")
             values[key] = value[0]
-        super().set_state_dict({k: v for k, v in state.items() if k != "mpm"}, env_idx)
+        drives = None
+        if self.agent is not None:
+            joints = self.agent.robot._objs[0].active_joints
+            drives = state.get('mpm_drives', {})
+            if set(drives) != {'position', 'velocity'}:
+                raise ValueError('Restored robot state requires both drive target arrays')
+            drives = {k: torch.as_tensor(v).detach().cpu().numpy() for k, v in drives.items()}
+            if any(v.shape != (1, len(joints)) or not np.isfinite(v).all() for v in drives.values()):
+                raise ValueError('Invalid robot drive targets')
+            def restore_controller(value, template):
+                if isinstance(template, dict):
+                    if not isinstance(value, dict) or set(value) != set(template):
+                        raise ValueError('Controller state does not match the selected control mode')
+                    return {k: restore_controller(value[k], v) for k, v in template.items()}
+                tensor = torch.as_tensor(value, device=self.device)
+                if tensor.shape != template.shape or not torch.isfinite(tensor).all():
+                    raise ValueError('Invalid controller state tensor')
+                return tensor.to(dtype=template.dtype).clone()
+            controller = restore_controller(state.get('controller', {}), self.agent.get_controller_state())
+        super().set_state_dict({k: v for k, v in state.items() if k not in ('mpm', 'mpm_drives', 'controller')}, env_idx)
+        if drives is not None:
+            self.agent.set_controller_state(controller)
+            for i, joint in enumerate(joints):
+                joint.set_drive_target(float(drives['position'][0, i]))
+                joint.set_drive_velocity_target(float(drives['velocity'][0, i]))
         for buffer in self.mpm_coupler.states:
             for key, field in (("x", "particle_q"), ("v", "particle_qd"), ("F", "particle_F"),
                                ("C", "particle_C"), ("vc", "particle_volume_correction")):
@@ -130,6 +221,7 @@ class MPMBaseEnv(BaseEnv):
         self.mpm_coupler.failed = False
         self.mpm_coupler.pending_step = None
         self.last_coupling_step = None
+        self._update_particle_rendering()
 
     def set_state(self, state, env_idx=None):
         state = torch.as_tensor(state, device=self.device)
@@ -155,6 +247,7 @@ class MPMBaseEnv(BaseEnv):
         self.set_state_dict(restored, env_idx)
 
     def _clear(self):
+        self._particle_entities = []
         self.mpm_coupler = None
         self.last_coupling_step = None
         super()._clear()
