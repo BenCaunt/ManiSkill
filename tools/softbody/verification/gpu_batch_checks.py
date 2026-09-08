@@ -56,6 +56,24 @@ def particle_errors(a, ai, b, bi):
     return result
 
 
+def expected_actions(case, initial_qpos):
+    scales = np.asarray(case['action_scales'], dtype=np.float64)[:, None]
+    if not case.get('controller_lifecycle'):
+        return np.array([np.array([.02,-.04,.01,.03,-.01,.03,-.02],np.float32)*s for s in case['action_scales']])
+    mode = case['control_mode']; q = initial_qpos.astype(np.float64)
+    if mode == 'pd_joint_pos':
+        value = q + scales * np.array([.002, -.003, .001, -.002, .001, .002, -.001])
+    elif mode == 'pd_joint_pos_vel':
+        value = np.concatenate([q + scales * .002, np.repeat(scales * .02, 7, axis=1)], axis=1)
+    elif mode == 'pd_joint_delta_pos_vel':
+        value = np.concatenate([np.repeat(scales * .01, 7, axis=1), np.repeat(scales * .02, 7, axis=1)], axis=1)
+    elif 'ee' in mode:
+        value = scales * np.array([.01, -.02, .01, .03, -.02, .01])[:3 if mode.endswith('_pos') else 6]
+    else:
+        value = np.repeat(scales * .01, 7, axis=1)
+    return value.astype(np.float32)
+
+
 def evaluate(root, protocol):
     root = Path(root); failures, reports, arrays = [], {}, {}
     execution = json.loads((root/'execution.json').read_text())
@@ -81,8 +99,6 @@ def evaluate(root, protocol):
             failures.append(name+': missing genuine shared-world/native scene ownership or reconfiguration')
         if result['mpm_substeps'] != [4]*count or result['rigid_dt'] != [float(np.float32(.002))]*count:
             failures.append(name+': physical timestep changed')
-        expected_action=np.array([np.array([.02,-.04,.01,.03,-.01,.03,-.02],np.float32)*scale for scale in case['action_scales']])
-        if not np.array_equal(np.array(result['action'],np.float32),expected_action):failures.append(name+': action recipe changed')
         labels=['warmup-1','warmup-2','expected']+(['continued'] if count==1 else ['partial-stepped','count-stepped','flat-stepped'])
         if [s['label'] for s in result['steps']] != labels or result['native_steps'] != 25*len(labels):
             failures.append(name+': missing controls or wrong total native step count')
@@ -94,6 +110,8 @@ def evaluate(root, protocol):
             if Path(filename).name != filename or file_hash(directory/filename) != digest: raise ValueError('Invalid trace archive identity')
             with np.load(directory/filename,allow_pickle=False) as z: data[filename[:-4]]={k:z[k] for k in z.files}
             if any(v.dtype.kind not in 'fibu' or not np.isfinite(v).all() for v in data[filename[:-4]].values()):raise ValueError('Invalid numeric trace')
+        if not np.array_equal(np.array(result['action'],np.float32),expected_actions(case,data['initial']['qpos'])):
+            failures.append(name+': action recipe changed')
         for label, values in data.items():
             if 'counts' in values:failures.extend(name+'/'+label+': '+f for f in check_snapshot(values,count,case.get('capacity')))
         exact={}

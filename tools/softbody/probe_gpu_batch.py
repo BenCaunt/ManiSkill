@@ -25,6 +25,25 @@ def take_rows(value, indices):
     return {k: take_rows(v, indices) for k, v in value.items()} if isinstance(value, dict) else value[indices].clone()
 
 
+def controller_actions(mode, qpos, scales):
+    qpos = qpos.astype(np.float64)
+    actions = []
+    for q, scale in zip(qpos, scales):
+        if mode == 'pd_joint_pos':
+            value = q + scale * np.array([.002, -.003, .001, -.002, .001, .002, -.001])
+        elif mode == 'pd_joint_pos_vel':
+            value = np.r_[q + scale * .002, np.full(7, scale * .02)]
+        elif mode == 'pd_joint_delta_pos_vel':
+            value = np.r_[np.full(7, scale * .01), np.full(7, scale * .02)]
+        elif 'ee' in mode:
+            width = 3 if mode.endswith('_pos') else 6
+            value = np.array([.01, -.02, .01, .03, -.02, .01])[:width] * scale
+        else:
+            value = np.full(7, scale * .01)
+        actions.append(value)
+    return np.asarray(actions, np.float32)
+
+
 def run(args):
     case = json.loads(args.request.read_text())['cases'][args.case_index]
     report = dict(case=case, complete=False, files={}, steps=[], renders=[],
@@ -56,6 +75,23 @@ def run(args):
         env = DiagnosticFillEnv(**kwargs)
         env.reset(seed=case['seeds'])
         original_system = env.scene.px
+        arm = env.agent.controller.controllers['arm']
+        ik_calls = []
+        original_models = tuple(getattr(arm, 'pmodels', ()))
+        if case.get('controller_lifecycle') and 'ee' in case['control_mode']:
+            report['ik_models'] = dict(count=len(original_models), distinct=len({id(m) for m in original_models}) == count,
+                native_ownership=all(a is b for a, b in zip(arm._native_robots, env.agent.robot._objs)),
+                links=list(arm.ee_link_indices), masks=[mask.tolist() for mask in arm.qmasks])
+            class RecordedIK:
+                def __init__(self, model, index):
+                    self.model, self.index = model, index
+                def compute_inverse_kinematics(self, link, pose, **kwargs):
+                    result = self.model.compute_inverse_kinematics(link, pose, **kwargs)
+                    ik_calls.append(dict(index=self.index, link=link, target_pose=np.r_[pose.p, pose.q].tolist(),
+                        initial_qpos=kwargs['initial_qpos'].tolist(), active_qmask=kwargs['active_qmask'].tolist(),
+                        max_iterations=kwargs['max_iterations'], result=np.asarray(result[0]).tolist(), success=bool(result[1])))
+                    return result
+            arm.pmodels = [RecordedIK(model, i) for i, model in enumerate(original_models)]
         report.update(num_envs=env.num_envs, physics_system=type(env.scene.px).__name__,
                       scene_offsets=[env.scene.px.get_scene_offset(s).tolist() for s in env.scene.sub_scenes],
                       shared_native_system=all(s.physx_system is env.scene.px for s in env.scene.sub_scenes),
@@ -79,6 +115,10 @@ def run(args):
             report['files'][path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
         def dump(label):
             state = flatten(env.get_state_dict(), 'state/')
+            if case.get('controller_lifecycle') and 'ee' in case['control_mode']:
+                current_arm = env.agent.controller.controllers['arm']
+                state.update(ee_pose_at_base=current_arm.ee_pose_at_base.raw_pose.cpu().numpy().copy(),
+                             ee_target_pose=current_arm._target_pose.raw_pose.cpu().numpy().copy())
             for i, coupler in enumerate(env.mpm_couplers):
                 state.update({f'actual/{i}/' + k: v for k, v in coupler.particle_state().items()})
                 state[f'actual/{i}/mass'] = coupler.model.struct.particle_mass.numpy()[:coupler.model.struct.n_particles].copy()
@@ -131,12 +171,29 @@ def run(args):
                 report['renders'].append(dict(label=label, index=i, file=name + '.npz'))
         base_action = np.array([.02, -.04, .01, .03, -.01, .03, -.02], np.float32)
         action = np.array([base_action * scale for scale in case['action_scales']])
+        if case.get('controller_lifecycle'):
+            action = controller_actions(case['control_mode'], env.agent.robot.get_qpos().cpu().numpy(), case['action_scales'])
         report['action'] = action.tolist()
         def step(label):
             before = native_steps
+            controller_record = {}
+            if case.get('controller_lifecycle'):
+                controller_record['qpos_before'] = env.agent.robot.get_qpos().cpu().tolist()
+                if 'ee' in case['control_mode']:
+                    controller_record.update(ee_pose_before=arm.ee_pose_at_base.raw_pose.cpu().tolist(),
+                                             target_pose_before=arm._target_pose.raw_pose.cpu().tolist())
+                ik_calls.clear()
             _, reward, terminated, truncated, _ = env.step(action)
+            if case.get('controller_lifecycle'):
+                controller_record['ik_calls'] = list(ik_calls)
+                if 'ee' in case['control_mode']:
+                    controller_record.update(target_pose_after=arm._target_pose.raw_pose.cpu().tolist(),
+                        target_qpos_after=arm._target_qpos.cpu().tolist(),
+                        ik_success=np.asarray(arm.last_ik_success.cpu() if isinstance(arm.last_ik_success, torch.Tensor)
+                                               else [arm.last_ik_success]).tolist())
             report['steps'].append(dict(label=label, native_steps=native_steps-before,
                                        world_models=len(env.mpm_gpu_world.couplers),
+                                       **controller_record,
                                        reward=reward.cpu().tolist(), terminated=terminated.cpu().tolist(), truncated=truncated.cpu().tolist()))
             dump(label)
         dump('initial')
@@ -168,6 +225,11 @@ def run(args):
             dump('flat-restored'); step('flat-stepped')
         env.reset(seed=case['seeds'], options={'reconfigure': True})
         report['replaced_native_system'] = env.scene.px is not original_system
+        if original_models:
+            rebuilt = env.agent.controller.controllers['arm']
+            report['rebuilt_ik_models'] = (len(rebuilt.pmodels) == count
+                and all(all(model is not old for old in original_models) for model in rebuilt.pmodels)
+                and all(a is b for a, b in zip(rebuilt._native_robots, env.agent.robot._objs)))
         dump('reconfigured'); dump_model('model-reconfigured'); render('camera-reconfigured')
         report['native_steps'] = native_steps
         report['complete'] = True

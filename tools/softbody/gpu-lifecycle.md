@@ -27,7 +27,7 @@ the saved counts are 11,056 and 8,534 respectively. The rebuilt-scene cases
 verify replacement of the native physics-system object.
 
 The joint-position replay limit is 1e-3, retained from the earlier CPU
-controller lifecycle probe. GPU replay differences reach 2.0663e-5 and CPU
+controller lifecycle probe. In the original v1 run, GPU replay differences reach 2.0663e-5 and CPU
 differences reach 7.6958e-5 in native joint coordinates. This is a lifecycle
 stability gate, not a new reference-parity limit. Particle and joint-velocity
 differences are recorded descriptively here: GPU maxima reach 0.0004908 m and
@@ -53,3 +53,15 @@ records remain in the outer workspace at
 `artifacts/softbody/lambda/evidence-gpu-lifecycle-v1`. The host checker is
 `softbody_lab/gpu_lifecycle_checks.py`; twelve synthetic corruption tests verify
 the checker and do not count as physics evidence.
+
+The v2 regression repeats the same 23 cases, probe and limits with the batched
+controller implementation. All 69 exact checkpoint comparisons pass again,
+and the corrected wrapper exits zero. Maximum joint replay differences are
+1.9363e-5 on GPU and 8.0228e-5 on CPU. Descriptive particle maxima are
+0.0005941 m and 0.0003310 m; joint-velocity maxima are 0.001208 and 0.002609.
+The runtime source matches the controller batching v4/v5 runs. This regression
+uses the original single-environment Excavate implementation; it does not
+validate the subsequent Excavate batching extension. Its archive SHA-256 is
+`5e5796221a71d41170e3cd5b996281a73e245f714d22a952ff04a460cc934aa2`,
+with records under `artifacts/softbody/lambda/evidence-gpu-lifecycle-v2` and the
+complete frozen protocol/verdict in the results file above.

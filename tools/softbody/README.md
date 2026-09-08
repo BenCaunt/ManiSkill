@@ -58,8 +58,10 @@ drive targets; they do not assign physical poses.
 
 Target-relative modes save their target pose in checkpoints. Hang initializes
 nominal controller memory before restoring its recorded rope grasp, matching
-the original reset sequence. The current IK adapter explicitly requires one
-PhysX scene. The [native GPU lifecycle suite](gpu-lifecycle.md) now covers all
+the original reset sequence. The IK adapter now builds one model per native
+articulation and preserves per-environment targets during partial reset; see the
+[shared-world controller suite](gpu-controller-batching.md). The other five
+task classes still require one environment. The [native GPU lifecycle suite](gpu-lifecycle.md) covers all
 eleven original arm modes on Fill and additional end-effector modes across the
 other five tasks. Its 23 CPU/GPU cases pass 69 exact checkpoint restore trials,
 including dictionary, flat and rebuilt-scene states. The separate GPU task

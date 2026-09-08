@@ -131,7 +131,7 @@ assets remain external to Git. The latest probe is `probe_gpu_batch.py`; use the
 probe hash recorded by the chosen protocol when reproducing a historical run.
 
 Only Fill currently opts into the batched task lifecycle. Legacy end-effector
-controllers still require one environment; the other five task classes still
-reject multiple environments. Full episodes, reference parity, heterogeneous
+controllers now use [independent per-environment IK and target memory](gpu-controller-batching.md);
+the other five task classes still reject multiple environments. Full episodes, reference parity, heterogeneous
 visual checkpoints, changed rigid topology, efficient rendering and distribution
 packaging remain incomplete.

@@ -1,0 +1,208 @@
+{
+  "declared_at_utc": "2026-09-08T17:15:53.758020+00:00",
+  "input_sha256": "de204d0ec75dcf134ecf32f526364f4ad2d3f047138eae18b4ab4eb18c316ffd",
+  "request_sha256": "2f54cb15d21aa6daf6c3e0f80a8efba53a96b944653795f77862c8c2eda0c88e",
+  "probe_sha256": "1b485341403e84db1957acec11efbf5ec0fce6710e3b406e491df267a6256b17",
+  "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "cases": [
+    {
+      "name": "Fill-pd_ee_target_delta_pose-N2",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Fill-pd_ee_delta_pos-N2",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pos",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Fill-pd_ee_delta_pose-N2",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Fill-pd_ee_delta_pose_align-N2",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_align",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Fill-pd_ee_target_delta_pos-N2",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pos",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Fill-pd_joint_delta_pos-N2",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_delta_pos",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Fill-pd_joint_pos-N2",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_pos",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Fill-pd_joint_target_delta_pos-N2",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Fill-pd_joint_vel-N2",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_vel",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Fill-pd_joint_pos_vel-N2",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_pos_vel",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Fill-pd_joint_delta_pos_vel-N2",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_delta_pos_vel",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    }
+  ],
+  "exact_checkpoint_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_meta",
+    "mpm_drives",
+    "controller",
+    "task"
+  ],
+  "rendering": {
+    "minimum_particle_pixels": 10,
+    "surface_distance_error_limit_m": 0.003,
+    "require_visual_pool_checks": true,
+    "require_native_buffer_checks": true,
+    "require_rigid_visual_bounds": true,
+    "minimum_rigid_pixels": 10,
+    "rigid_bound_error_limit_m": 0.003
+  },
+  "scope": "All11 original Panda arm modes in genuine N2 GPU Fill lifecycle with distinct seeds/actions: one shared native world, separate actual IK models for EE modes, independent frame/IK input checks, exact selected/untouched particle/material/controller/drive/task state, partial/count/flat/rebuilt reset and physical cameras. Joint replay limit1e-3 is the existing lifecycle bound; particle errors remain descriptive here and prior strict trajectory failures remain FAIL. No full episode or reference parity claim.",
+  "compare_batch_vs_single": false,
+  "joint_replay_limit": 0.001,
+  "target_pose_limit": 1e-06,
+  "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743"
+}

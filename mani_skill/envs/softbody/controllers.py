@@ -25,16 +25,23 @@ from mani_skill.utils.structs import Pose
 
 class LegacyEEPosController(PDJointPosController):
     def _initialize_joints(self):
-        if self.scene.num_envs != 1:
-            raise NotImplementedError('Legacy IK currently requires one PhysX scene')
         super()._initialize_joints()
-        self._native_robot = self.articulation._objs[0]
-        self.pmodel = self._native_robot.create_pinocchio_model()
-        self.qmask = np.zeros(self._native_robot.dof, dtype=bool)
+        self._native_robots = tuple(self.articulation._objs)
+        if len(self._native_robots) != self.scene.num_envs:
+            raise ValueError('Legacy IK requires one native articulation per environment')
         self._joint_indices = self.active_joint_indices.cpu().numpy()
-        self.qmask[self._joint_indices] = True
         self.ee_link = self.articulation.links_map[self.config.ee_link]
-        self.ee_link_idx = self._native_robot.links.index(self.ee_link._objs[0])
+        self.pmodels, self.qmasks, self.ee_link_indices = [], [], []
+        for index, robot in enumerate(self._native_robots):
+            self.pmodels.append(robot.create_pinocchio_model())
+            mask = np.zeros(robot.dof, dtype=bool)
+            mask[self._joint_indices] = True
+            self.qmasks.append(mask)
+            self.ee_link_indices.append(robot.links.index(self.ee_link._objs[index]))
+        # Retain the original N1 inspection attributes; actual IK uses each row's
+        # native model, link index, joint mask and initial configuration below.
+        self._native_robot, self.pmodel = self._native_robots[0], self.pmodels[0]
+        self.qmask, self.ee_link_idx = self.qmasks[0], self.ee_link_indices[0]
 
     def _initialize_action_space(self):
         self.single_action_space = spaces.Box(np.float32(np.broadcast_to(self.config.lower,3)),
@@ -46,22 +53,35 @@ class LegacyEEPosController(PDJointPosController):
 
     def reset(self):
         super().reset()
-        self._target_pose = self.ee_pose_at_base
+        current = self.ee_pose_at_base.raw_pose
+        if not hasattr(self, '_target_pose'):
+            self._target_pose = Pose.create(current.clone(), device=self.device)
+        else:
+            mask = self.scene._reset_mask
+            self._target_pose.raw_pose[mask] = current[mask]
 
     def compute_target_pose(self, previous, action):
-        value = action.detach().cpu().numpy()[0]
+        values = action.detach().cpu().numpy()
+        poses = previous.raw_pose.detach().cpu().numpy()
+        if len(values) != len(poses):
+            raise ValueError('Each legacy action needs its own previous target pose')
+        # Compose each row through the same native float32 pose operations as N1.
+        return Pose.create([self._compose_target_pose(sapien.Pose(p[:3], p[3:]), value)
+                            for p, value in zip(poses, values)], device=self.device)
+
+    def _compose_target_pose(self, previous, value):
         delta = sapien.Pose(value)
         if not self.config.use_delta:
             if self.config.frame != 'base':
                 raise ValueError('Absolute legacy position requires the base frame')
             result = delta
         elif self.config.frame == 'base':
-            result = delta * previous.sp
+            result = delta * previous
         elif self.config.frame == 'ee':
-            result = previous.sp * delta
+            result = previous * delta
         else:
             raise ValueError(f'Unknown legacy position frame: {self.config.frame}')
-        return Pose.create(result, device=self.device)
+        return result
 
     def set_action(self, action):
         action = self._preprocess_action(action)
@@ -69,10 +89,20 @@ class LegacyEEPosController(PDJointPosController):
         self._start_qpos = self.qpos
         previous = self._target_pose if self.config.use_target else self.ee_pose_at_base
         self._target_pose = self.compute_target_pose(previous,action)
-        result, success, _ = self.pmodel.compute_inverse_kinematics(self.ee_link_idx,self._target_pose.sp,
-            initial_qpos=self.articulation.get_qpos()[0].detach().cpu().numpy(),active_qmask=self.qmask,max_iterations=100)
-        self.last_ik_success = bool(success)
-        self._target_qpos = torch.as_tensor(result[self._joint_indices],dtype=self.qpos.dtype,device=self.device)[None] if success else self._start_qpos
+        initial = self.articulation.get_qpos().detach().cpu().numpy()
+        targets = self._target_pose.raw_pose.detach().cpu().numpy()
+        self._target_qpos = self._start_qpos.clone()
+        successes = []
+        for index, (robot, model, mask, link, pose) in enumerate(zip(
+                self._native_robots, self.pmodels, self.qmasks, self.ee_link_indices, targets)):
+            result, success, _ = model.compute_inverse_kinematics(link, sapien.Pose(pose[:3], pose[3:]),
+                initial_qpos=initial[index, :robot.dof].copy(), active_qmask=mask, max_iterations=100)
+            success = bool(success) and np.shape(result) == (robot.dof,) and np.isfinite(result).all()
+            successes.append(bool(success))
+            if success:
+                self._target_qpos[index] = torch.as_tensor(result[self._joint_indices], dtype=self._start_qpos.dtype, device=self.device)
+        self.last_ik_success = (successes[0] if len(successes) == 1
+                               else torch.tensor(successes, dtype=torch.bool, device=self.device))
         if self.config.interpolate:
             self._step_size = (self._target_qpos-self._start_qpos)/self._sim_steps
         else:
@@ -83,7 +113,10 @@ class LegacyEEPosController(PDJointPosController):
 
     def set_state(self, state):
         if self.config.use_target:
-            self._target_pose = Pose.create(state['target_pose'],device=self.device)
+            pose = Pose.create(state['target_pose'], device=self.device)
+            if pose.shape != (self.scene.num_envs, 7) or not torch.isfinite(pose.raw_pose).all():
+                raise ValueError('Expected one finite legacy target pose per environment')
+            self._target_pose = Pose.create(pose.raw_pose.clone(), device=self.device)
 
 
 @dataclass
@@ -117,8 +150,7 @@ class LegacyEEPoseController(LegacyEEPosController):
         rotation = rotation / torch.maximum(norm,torch.ones_like(norm)) * self.config.rot_bound
         return torch.cat((position,rotation),dim=1)
 
-    def compute_target_pose(self, previous, action):
-        value = action.detach().cpu().numpy()[0]
+    def _compose_target_pose(self, previous, value):
         quat = Rotation.from_rotvec(value[3:6]).as_quat()[[3,0,1,2]]
         delta = sapien.Pose(value[:3],quat)
         if not self.config.use_delta:
@@ -126,14 +158,14 @@ class LegacyEEPoseController(LegacyEEPosController):
                 raise ValueError('Absolute legacy pose requires the base frame')
             result = delta
         elif self.config.frame == 'ee':
-            result = previous.sp * delta
+            result = previous * delta
         elif self.config.frame in ('base','ee_align'):
-            result = delta * previous.sp
+            result = delta * previous
             if self.config.frame == 'ee_align':
-                result.p = previous.sp.p + value[:3]
+                result.p = previous.p + value[:3]
         else:
             raise ValueError(f'Unknown legacy pose frame: {self.config.frame}')
-        return Pose.create(result,device=self.device)
+        return result
 
 
 @dataclass
