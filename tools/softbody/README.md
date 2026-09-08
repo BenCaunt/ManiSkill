@@ -147,6 +147,19 @@ completed with finite states, matching reference joint positions, and zero spill
 particles. It is a settling diagnostic, not a calibrated full-episode parity pass
 or proof that the robot can scoop material successfully.
 
+The official seed-1, 231-control Excavate demonstration was subsequently replayed
+in both engines with identical portable input hashes (12,115 particles,
+4.543125 kg, target 772). The reference succeeds at step 230 and finishes with
+791 lifted particles and one spilled. The port lifts 763 but spills 31, failing
+the unchanged requirement of fewer than 20 spilled particles; the amount and
+settling checks pass. Independent NumPy recomputation agrees with every recorded
+success label. Maximum joint error is 0.000452 rad and COM separation 0.001628 m,
+while particle-identity separation reaches 0.268717 m. This unsuccessful transfer
+is retained for diagnosis; reference repeatability and full-episode aggregate
+parity are not established. The source demonstration is episode 0 at dataset
+revision `0c367447d26e4e2de13fbf5e5d2ab09a258187da`, with HDF5 SHA-256
+`4a6baa93d40d82cedf54ee7ae28add84d84aa90373f1f5fdb622fe3f54387b8b`.
+
 Excavate reward membership uses the first actual rigid collision hull, as in the
 legacy evaluator, separately from the open visual SDF used for particle contacts.
 That hull is cooked by the native PhysX version; exact cross-version hull and
