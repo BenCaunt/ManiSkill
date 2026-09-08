@@ -30,16 +30,16 @@ class LegacyPandaBucket(LegacyPassiveForceMixin, BaseAgent):
         path = Path(__file__).with_name('legacy_fill_physics.json')
         parameters = json.loads(path.read_text())['robot_parameters']
         for link in parameters['links']:
-            body = self.robot.links_map[link['name']]._objs[0]
-            body.mass = link['mass']
-            body.inertia = link['inertia']
-            com = link['com']
-            body.cmass_local_pose = sapien.Pose(com[:3], com[3:])
+            for body in self.robot.links_map[link['name']]._objs:
+                body.mass = link['mass']
+                body.inertia = link['inertia']
+                com = link['com']
+                body.cmass_local_pose = sapien.Pose(com[:3], com[3:])
         for record in parameters['joints']:
-            joint = self.robot.joints_map[record['name']]._objs[0]
-            parent, child = record['parent_pose'], record['child_pose']
-            joint.pose_in_parent = sapien.Pose(parent[:3], parent[3:])
-            joint.pose_in_child = sapien.Pose(child[:3], child[3:])
+            for joint in self.robot.joints_map[record['name']]._objs:
+                parent, child = record['parent_pose'], record['child_pose']
+                joint.pose_in_parent = sapien.Pose(parent[:3], parent[3:])
+                joint.pose_in_child = sapien.Pose(child[:3], child[3:])
 
     @property
     def _controller_configs(self):
@@ -53,3 +53,4 @@ class LegacyBucketEnv(LegacyMPMEnv):
                                       legacy_asset_dir=self.legacy_asset_dir,
                                       initial_pose=sapien.Pose([-.6, 0., 0.]))
         self.bucket = self.agent.robot.links_map['bucket']._objs[0]
+        self.buckets = self.agent.robot.links_map['bucket']._objs

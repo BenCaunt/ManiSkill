@@ -1,0 +1,74 @@
+{
+  "declared_at_utc": "2026-09-08T16:35:39.370395+00:00",
+  "input_sha256": "03575d4c360b3ae810ca0cf3400e1e136ba682dd0a41a17eaf163d95033cadb1",
+  "request_sha256": "27fd177fa3a268c085b708df5fd5e1f8b6517e2f3a930f93f7cda074c91ceb43",
+  "probe_sha256": "f351ab431c2da007c8c15da644806b956c835dca206cb1743edced5e44cc22b6",
+  "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "cases": [
+    {
+      "name": "Fill-single-101",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        101
+      ],
+      "action_scales": [
+        1.0
+      ]
+    },
+    {
+      "name": "Fill-single-17",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        17
+      ],
+      "action_scales": [
+        -0.5
+      ]
+    },
+    {
+      "name": "Fill-batch",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048
+    }
+  ],
+  "exact_checkpoint_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_meta",
+    "mpm_drives",
+    "controller",
+    "task"
+  ],
+  "replay_limits": {
+    "x": 1e-05,
+    "qpos": 1e-05,
+    "qvel": 0.0001,
+    "drive_position": 0.0,
+    "drive_velocity": 0.0
+  },
+  "rendering": {
+    "minimum_particle_pixels": 10,
+    "surface_distance_error_limit_m": 0.003,
+    "require_visual_pool_checks": true,
+    "require_native_buffer_checks": true,
+    "require_rigid_visual_bounds": true,
+    "minimum_rigid_pixels": 10,
+    "rigid_bound_error_limit_m": 0.003
+  },
+  "scope": "Genuine N2 Fill task sharing one native PhysxGpuSystem and one MPMGPUWorld, exactly25 shared rigid steps per control and4MPM substeps, independent seeds/actions versus separate N1 cases, per-scene observations/counts/masks and actual solver arrays, exact unselected checkpoint isolation and selected particle/material/controller/drive/task restore, flat/full/partial/count reset and rebuild, physical camera geometry. Retain original short-task replay thresholds; not full episode success or full port parity."
+}

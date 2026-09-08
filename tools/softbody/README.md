@@ -8,8 +8,10 @@ MPM. This is an editable-checkout prototype.
 success/reward equations, and particle sphere visuals. Full reference parity is
 still unverified. The [GPU task suite](gpu-tasks.md) records short rollouts for
 all six tasks and retains checkpoint replay failures for Fill, Excavate and
-Pour. Original Pinch/Write benchmark validation, GPU PhysX batching, and distributable
-wheel packaging remain under development.
+Pour. [Shared-world Fill batching](gpu-batching.md) now has verified partial-reset
+state isolation and two-environment camera geometry, while its strict trajectory
+comparison still fails. The other tasks' batched lifecycle, original Pinch/Write
+benchmark validation, and distributable wheel packaging remain under development.
 
 The copied runtime has separate terms in
 [`warp_maniskill/LICENSE.md`](../../warp_maniskill/LICENSE.md). Those terms
@@ -116,7 +118,8 @@ state-registry component. This supports color/depth/segmentation but has per-par
 CPU update overhead. GPU camera captures use a separate CUDA visual-pose buffer
 and preserve particle identities across resets. The [rendering suite](gpu-rendering.md)
 checks particle surfaces, robot visual bounds, native sensor observations and
-count-changing reset behavior. Multi-environment task rendering remains unproven.
+count-changing reset behavior. The separate [Fill batching suite](gpu-batching.md)
+also verifies ten frames across N1/N2 scenes and a partial count-changing reset.
 
 The Fill probe checks particle count/mass, outward ground normal, finite state,
 and broad robot stability bounds. It records every state for external comparison

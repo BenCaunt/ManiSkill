@@ -1,0 +1,1026 @@
+{
+  "updated_at": "2026-09-08T16:59:46.238124+00:00",
+  "scope": "Genuine N2 Fill shared-world lifecycle and rendering; strict particle trajectory parity fails. Matched-origin and identical-input self-repeats are separate diagnostics.",
+  "full_port_complete": false,
+  "candidate_base_commit": "ff8412136ea312210b54ffa016aa1fc8a31fe604",
+  "reference_commit": "493be36121a9dd06071a57172274babe617b789f",
+  "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+  "physx_gpu_binary_sha256": "4c582a16509a71faf5592fe9708586dfcc7ab61ae932eabc1ddd81f290818706",
+  "runs": {
+    "gpu-batch-v1": {
+      "archive_sha256": "dd46bfb4daa30b6689ee290970ff3e02495c1cf272e6e966dd0a9d7c06483d4a",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T16:35:39.370395+00:00",
+        "input_sha256": "03575d4c360b3ae810ca0cf3400e1e136ba682dd0a41a17eaf163d95033cadb1",
+        "request_sha256": "27fd177fa3a268c085b708df5fd5e1f8b6517e2f3a930f93f7cda074c91ceb43",
+        "probe_sha256": "f351ab431c2da007c8c15da644806b956c835dca206cb1743edced5e44cc22b6",
+        "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "cases": [
+          {
+            "name": "Fill-single-101",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101
+            ],
+            "action_scales": [
+              1.0
+            ]
+          },
+          {
+            "name": "Fill-single-17",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              17
+            ],
+            "action_scales": [
+              -0.5
+            ]
+          },
+          {
+            "name": "Fill-batch",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "capacity": 2048
+          }
+        ],
+        "exact_checkpoint_groups": [
+          "mpm",
+          "mpm_material",
+          "mpm_meta",
+          "mpm_drives",
+          "controller",
+          "task"
+        ],
+        "replay_limits": {
+          "x": 1e-05,
+          "qpos": 1e-05,
+          "qvel": 0.0001,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0
+        },
+        "rendering": {
+          "minimum_particle_pixels": 10,
+          "surface_distance_error_limit_m": 0.003,
+          "require_visual_pool_checks": true,
+          "require_native_buffer_checks": true,
+          "require_rigid_visual_bounds": true,
+          "minimum_rigid_pixels": 10,
+          "rigid_bound_error_limit_m": 0.003
+        },
+        "scope": "Genuine N2 Fill task sharing one native PhysxGpuSystem and one MPMGPUWorld, exactly25 shared rigid steps per control and4MPM substeps, independent seeds/actions versus separate N1 cases, per-scene observations/counts/masks and actual solver arrays, exact unselected checkpoint isolation and selected particle/material/controller/drive/task restore, flat/full/partial/count reset and rebuild, physical camera geometry. Retain original short-task replay thresholds; not full episode success or full port parity."
+      },
+      "verdict": {
+        "passed": false,
+        "failures": [
+          "Fill-batch/partial-unchosen: changed checkpoint fields state/articulations/legacy_panda_bucket",
+          "Fill-batch/fresh-unchosen: changed checkpoint fields state/articulations/legacy_panda_bucket",
+          "Fill-batch/count-unchosen: changed checkpoint fields state/articulations/legacy_panda_bucket",
+          "env0/expected: x difference 0.00012966245412826538 exceeds 1e-05",
+          "env0/flat-stepped: x difference 0.00012968480587005615 exceeds 1e-05",
+          "env0/partial-stepped: x difference 0.00012978911399841309 exceeds 1e-05",
+          "env1/expected: x difference 3.927946090698242e-05 exceeds 1e-05",
+          "env1/flat-stepped: x difference 3.9264559745788574e-05 exceeds 1e-05",
+          "env1/partial-stepped: x difference 5.6415796279907227e-05 exceeds 1e-05"
+        ],
+        "reports": {
+          "Fill-single-101": {
+            "exact_checkpoints": {},
+            "cameras": {
+              "camera-initial-env0": {
+                "rigid_pixels": 35410,
+                "max_rigid_bound_violation_m": 0.0014653322067091912,
+                "particle_pixels": 1262,
+                "visible_particles": 226,
+                "max_surface_error_m": 0.0015480025122622735,
+                "median_surface_error_m": 0.0004848182231410921,
+                "failures": []
+              },
+              "camera-reconfigured-env0": {
+                "rigid_pixels": 35410,
+                "max_rigid_bound_violation_m": 0.0014653322067091912,
+                "particle_pixels": 1262,
+                "visible_particles": 226,
+                "max_surface_error_m": 0.0015480025122622735,
+                "median_surface_error_m": 0.0004848182231410921,
+                "failures": []
+              }
+            }
+          },
+          "Fill-single-17": {
+            "exact_checkpoints": {},
+            "cameras": {
+              "camera-initial-env0": {
+                "rigid_pixels": 35398,
+                "max_rigid_bound_violation_m": 0.001348028484904909,
+                "particle_pixels": 1280,
+                "visible_particles": 234,
+                "max_surface_error_m": 0.0015049038963031564,
+                "median_surface_error_m": 0.0005229196131294495,
+                "failures": []
+              },
+              "camera-reconfigured-env0": {
+                "rigid_pixels": 35398,
+                "max_rigid_bound_violation_m": 0.001348028484904909,
+                "particle_pixels": 1280,
+                "visible_particles": 234,
+                "max_surface_error_m": 0.0015049038963031564,
+                "median_surface_error_m": 0.0005229196131294495,
+                "failures": []
+              }
+            }
+          },
+          "Fill-batch": {
+            "exact_checkpoints": {
+              "partial-unchosen": [
+                "state/articulations/legacy_panda_bucket"
+              ],
+              "fresh-unchosen": [
+                "state/articulations/legacy_panda_bucket"
+              ],
+              "count-unchosen": [
+                "state/articulations/legacy_panda_bucket"
+              ],
+              "partial-selected": [],
+              "count-selected": [],
+              "flat-env0": [],
+              "flat-env1": []
+            },
+            "cameras": {
+              "camera-initial-env0": {
+                "rigid_pixels": 35410,
+                "max_rigid_bound_violation_m": 0.0014656652884353916,
+                "particle_pixels": 1262,
+                "visible_particles": 226,
+                "max_surface_error_m": 0.0015480025122622735,
+                "median_surface_error_m": 0.0004848182231410921,
+                "failures": []
+              },
+              "camera-initial-env1": {
+                "rigid_pixels": 35398,
+                "max_rigid_bound_violation_m": 0.001347999887893983,
+                "particle_pixels": 1280,
+                "visible_particles": 234,
+                "max_surface_error_m": 0.0015049038963031564,
+                "median_surface_error_m": 0.0005229196131294495,
+                "failures": []
+              },
+              "camera-partial-count-env0": {
+                "rigid_pixels": 35337,
+                "max_rigid_bound_violation_m": 0.0014178549200433363,
+                "particle_pixels": 925,
+                "visible_particles": 158,
+                "max_surface_error_m": 0.0014752190172754582,
+                "median_surface_error_m": 0.000524550464605734,
+                "failures": []
+              },
+              "camera-partial-count-env1": {
+                "rigid_pixels": 35352,
+                "max_rigid_bound_violation_m": 0.0014115514984802402,
+                "particle_pixels": 1301,
+                "visible_particles": 218,
+                "max_surface_error_m": 0.0015248591910106374,
+                "median_surface_error_m": 0.00048500101862220327,
+                "failures": []
+              },
+              "camera-reconfigured-env0": {
+                "rigid_pixels": 35410,
+                "max_rigid_bound_violation_m": 0.0014656652884353916,
+                "particle_pixels": 1262,
+                "visible_particles": 226,
+                "max_surface_error_m": 0.0015480025122622735,
+                "median_surface_error_m": 0.0004848182231410921,
+                "failures": []
+              },
+              "camera-reconfigured-env1": {
+                "rigid_pixels": 35398,
+                "max_rigid_bound_violation_m": 0.001347999887893983,
+                "particle_pixels": 1280,
+                "visible_particles": 234,
+                "max_surface_error_m": 0.0015049038963031564,
+                "median_surface_error_m": 0.0005229196131294495,
+                "failures": []
+              }
+            }
+          },
+          "batch_vs_single": {
+            "env0/expected": {
+              "x": 0.00012966245412826538,
+              "v": 0.005777902901172638,
+              "F": 0.12991732358932495,
+              "C": 1.9167437553405762,
+              "vc": 0.10224638701765798,
+              "qpos": 2.384185791015625e-07,
+              "qvel": 1.348927617073059e-05,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "env0/flat-stepped": {
+              "x": 0.00012968480587005615,
+              "v": 0.005778469145298004,
+              "F": 0.1299172043800354,
+              "C": 1.9166970252990723,
+              "vc": 0.102253614080837,
+              "qpos": 2.384185791015625e-07,
+              "qvel": 1.3481825590133667e-05,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "env0/partial-stepped": {
+              "x": 0.00012978911399841309,
+              "v": 0.005780965089797974,
+              "F": 0.1299181580543518,
+              "C": 1.9159579277038574,
+              "vc": 0.10226477505057119,
+              "qpos": 2.384185791015625e-07,
+              "qvel": 1.3500452041625977e-05,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "env1/expected": {
+              "x": 3.927946090698242e-05,
+              "v": 0.002190709114074707,
+              "F": 0.029903531074523926,
+              "C": 0.5431561470031738,
+              "vc": 0.015125068835914135,
+              "qpos": 1.1920928955078125e-07,
+              "qvel": 4.326924681663513e-06,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "env1/flat-stepped": {
+              "x": 3.9264559745788574e-05,
+              "v": 0.0021930932998657227,
+              "F": 0.029903531074523926,
+              "C": 0.5431761741638184,
+              "vc": 0.015125070698559284,
+              "qpos": 1.1920928955078125e-07,
+              "qvel": 4.3157488107681274e-06,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "env1/partial-stepped": {
+              "x": 5.6415796279907227e-05,
+              "v": 0.0032794401049613953,
+              "F": 0.03012561798095703,
+              "C": 0.6545858383178711,
+              "vc": 0.010004937648773193,
+              "qpos": 2.384185791015625e-07,
+              "qvel": 8.014962077140808e-06,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            }
+          }
+        },
+        "scope": "Genuine N2 Fill task sharing one native PhysxGpuSystem and one MPMGPUWorld, exactly25 shared rigid steps per control and4MPM substeps, independent seeds/actions versus separate N1 cases, per-scene observations/counts/masks and actual solver arrays, exact unselected checkpoint isolation and selected particle/material/controller/drive/task restore, flat/full/partial/count reset and rebuild, physical camera geometry. Retain original short-task replay thresholds; not full episode success or full port parity.",
+        "full_port_complete": false
+      },
+      "source_audit": {
+        "public_repository": "https://github.com/BenCaunt/ManiSkill",
+        "public_head": "ff8412136ea312210b54ffa016aa1fc8a31fe604",
+        "source_inventory_changes_from": "gpu-rendering-v9",
+        "changed_files": {
+          "mani_skill/envs/sapien_env.py": "4a1f242cd546c97f0beec146b1048d41b022708a1c5586eb32ea73b75ea6aa65",
+          "mani_skill/envs/softbody/base_env.py": "338e0d0d5d8233eb796dd23d4f08491568efe36066dc4558da38cb6677608e6c",
+          "mani_skill/envs/softbody/fill.py": "d11a01d1c13b085c218a90092b00eb7cc19ce6fab1dc43212e44e3dd7883e1f7",
+          "mani_skill/envs/softbody/bucket.py": "6844f4df6f015ea37e088b3084769c9140c0ee22cdbf01696a45e1fc4a6d1c78",
+          "mani_skill/envs/softbody/batch.py": "ca57c67a1ecceed49d902b6f55faeb2e349c913c9c3a853135b7cfae163af31c",
+          "mani_skill/envs/softbody/particle_visuals.py": "d5e30936e1fc8346da3083ab7c80dec7b4db8de10baf910974e73b2d54700c3f"
+        },
+        "probe_sha256": "f351ab431c2da007c8c15da644806b956c835dca206cb1743edced5e44cc22b6",
+        "excluded": [
+          ".git",
+          "credentials",
+          "unrelated workspace",
+          "external mesh assets"
+        ],
+        "reason": "Native shared-world task batching with masked per-scene particle state; preserve controller reset mask; reusable particle visual pools; Fill per-env reference recipes and native model inputs."
+      }
+    },
+    "gpu-batch-v2": {
+      "archive_sha256": "6487ee7e3d74cc1b10016b145ff0bbdbfd52f707c3b8bfbde8786a9b5a306664",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T16:49:51.066249+00:00",
+        "input_sha256": "faf3158fd94882a19630d96b201cd7caa721cf1bd259afecb1ff01a6e9bb61ca",
+        "request_sha256": "770ecd1e2cc19067f2052380c500d5bd5eb34ec39b81de7997a83c7a68e75aa7",
+        "probe_sha256": "f351ab431c2da007c8c15da644806b956c835dca206cb1743edced5e44cc22b6",
+        "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "cases": [
+          {
+            "name": "Fill-single-101",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101
+            ],
+            "action_scales": [
+              1.0
+            ]
+          },
+          {
+            "name": "Fill-single-17",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              17
+            ],
+            "action_scales": [
+              -0.5
+            ]
+          },
+          {
+            "name": "Fill-batch",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101,
+              17
+            ],
+            "action_scales": [
+              1.0,
+              -0.5
+            ],
+            "capacity": 2048
+          }
+        ],
+        "exact_checkpoint_groups": [
+          "mpm",
+          "mpm_material",
+          "mpm_meta",
+          "mpm_drives",
+          "controller",
+          "task"
+        ],
+        "replay_limits": {
+          "x": 1e-05,
+          "qpos": 1e-05,
+          "qvel": 0.0001,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0
+        },
+        "rendering": {
+          "minimum_particle_pixels": 10,
+          "surface_distance_error_limit_m": 0.003,
+          "require_visual_pool_checks": true,
+          "require_native_buffer_checks": true,
+          "require_rigid_visual_bounds": true,
+          "minimum_rigid_pixels": 10,
+          "rigid_bound_error_limit_m": 0.003
+        },
+        "scope": "Genuine N2 Fill task sharing one native PhysxGpuSystem and one MPMGPUWorld, exactly25 shared rigid steps per control and4MPM substeps, independent seeds/actions versus separate N1 cases, per-scene observations/counts/masks and actual solver arrays, exact unselected checkpoint isolation and selected particle/material/controller/drive/task restore, flat/full/partial/count reset and rebuild, physical camera geometry. Retain original short-task replay thresholds; not full episode success or full port parity."
+      },
+      "verdict": {
+        "passed": false,
+        "failures": [
+          "env0/expected: x difference 0.00012529641389846802 exceeds 1e-05",
+          "env0/flat-stepped: x difference 0.00012511759996414185 exceeds 1e-05",
+          "env0/partial-stepped: x difference 0.00012526661157608032 exceeds 1e-05",
+          "env1/expected: x difference 1.963973045349121e-05 exceeds 1e-05",
+          "env1/flat-stepped: x difference 1.963973045349121e-05 exceeds 1e-05",
+          "env1/partial-stepped: x difference 8.45789909362793e-05 exceeds 1e-05"
+        ],
+        "reports": {
+          "Fill-single-101": {
+            "exact_checkpoints": {},
+            "cameras": {
+              "camera-initial-env0": {
+                "rigid_pixels": 35410,
+                "max_rigid_bound_violation_m": 0.0014653322067091912,
+                "particle_pixels": 1262,
+                "visible_particles": 226,
+                "max_surface_error_m": 0.0015480025122622735,
+                "median_surface_error_m": 0.0004848182231410921,
+                "failures": []
+              },
+              "camera-reconfigured-env0": {
+                "rigid_pixels": 35410,
+                "max_rigid_bound_violation_m": 0.0014653322067091912,
+                "particle_pixels": 1262,
+                "visible_particles": 226,
+                "max_surface_error_m": 0.0015480025122622735,
+                "median_surface_error_m": 0.0004848182231410921,
+                "failures": []
+              }
+            }
+          },
+          "Fill-single-17": {
+            "exact_checkpoints": {},
+            "cameras": {
+              "camera-initial-env0": {
+                "rigid_pixels": 35398,
+                "max_rigid_bound_violation_m": 0.001348028484904909,
+                "particle_pixels": 1280,
+                "visible_particles": 234,
+                "max_surface_error_m": 0.0015049038963031564,
+                "median_surface_error_m": 0.0005229196131294495,
+                "failures": []
+              },
+              "camera-reconfigured-env0": {
+                "rigid_pixels": 35398,
+                "max_rigid_bound_violation_m": 0.001348028484904909,
+                "particle_pixels": 1280,
+                "visible_particles": 234,
+                "max_surface_error_m": 0.0015049038963031564,
+                "median_surface_error_m": 0.0005229196131294495,
+                "failures": []
+              }
+            }
+          },
+          "Fill-batch": {
+            "exact_checkpoints": {
+              "partial-unchosen": [],
+              "fresh-unchosen": [],
+              "count-unchosen": [],
+              "partial-selected": [],
+              "count-selected": [],
+              "flat-env0": [],
+              "flat-env1": []
+            },
+            "cameras": {
+              "camera-initial-env0": {
+                "rigid_pixels": 35410,
+                "max_rigid_bound_violation_m": 0.0014656652884353916,
+                "particle_pixels": 1262,
+                "visible_particles": 226,
+                "max_surface_error_m": 0.0015480025122622735,
+                "median_surface_error_m": 0.0004848182231410921,
+                "failures": []
+              },
+              "camera-initial-env1": {
+                "rigid_pixels": 35398,
+                "max_rigid_bound_violation_m": 0.001347999887893983,
+                "particle_pixels": 1280,
+                "visible_particles": 234,
+                "max_surface_error_m": 0.0015049038963031564,
+                "median_surface_error_m": 0.0005229196131294495,
+                "failures": []
+              },
+              "camera-partial-count-env0": {
+                "rigid_pixels": 35337,
+                "max_rigid_bound_violation_m": 0.0014178549200433363,
+                "particle_pixels": 925,
+                "visible_particles": 158,
+                "max_surface_error_m": 0.0014754399277583942,
+                "median_surface_error_m": 0.0005245080640727436,
+                "failures": []
+              },
+              "camera-partial-count-env1": {
+                "rigid_pixels": 35352,
+                "max_rigid_bound_violation_m": 0.0014116438505610354,
+                "particle_pixels": 1301,
+                "visible_particles": 218,
+                "max_surface_error_m": 0.0015248591910106374,
+                "median_surface_error_m": 0.00048500101862220327,
+                "failures": []
+              },
+              "camera-reconfigured-env0": {
+                "rigid_pixels": 35410,
+                "max_rigid_bound_violation_m": 0.0014656652884353916,
+                "particle_pixels": 1262,
+                "visible_particles": 226,
+                "max_surface_error_m": 0.0015480025122622735,
+                "median_surface_error_m": 0.0004848182231410921,
+                "failures": []
+              },
+              "camera-reconfigured-env1": {
+                "rigid_pixels": 35398,
+                "max_rigid_bound_violation_m": 0.001347999887893983,
+                "particle_pixels": 1280,
+                "visible_particles": 234,
+                "max_surface_error_m": 0.0015049038963031564,
+                "median_surface_error_m": 0.0005229196131294495,
+                "failures": []
+              }
+            }
+          },
+          "batch_vs_single": {
+            "env0/expected": {
+              "x": 0.00012529641389846802,
+              "v": 0.004901617765426636,
+              "F": 0.1387995481491089,
+              "C": 1.5391383171081543,
+              "vc": 0.10209311754442751,
+              "qpos": 2.384185791015625e-07,
+              "qvel": 9.648501873016357e-06,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "env0/flat-stepped": {
+              "x": 0.00012511759996414185,
+              "v": 0.004809640347957611,
+              "F": 0.1387958526611328,
+              "C": 1.5633063316345215,
+              "vc": 0.1020117870066315,
+              "qpos": 2.384185791015625e-07,
+              "qvel": 9.63360071182251e-06,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "env0/partial-stepped": {
+              "x": 0.00012526661157608032,
+              "v": 0.004902258515357971,
+              "F": 0.13879859447479248,
+              "C": 1.5390658378601074,
+              "vc": 0.10210038186050951,
+              "qpos": 2.384185791015625e-07,
+              "qvel": 9.59634780883789e-06,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "env1/expected": {
+              "x": 1.963973045349121e-05,
+              "v": 0.0010907799005508423,
+              "F": 0.0299222469329834,
+              "C": 0.5210108757019043,
+              "vc": 0.011981301475316286,
+              "qpos": 1.4901161193847656e-08,
+              "qvel": 3.688037395477295e-07,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "env1/flat-stepped": {
+              "x": 1.963973045349121e-05,
+              "v": 0.0010845735669136047,
+              "F": 0.0299222469329834,
+              "C": 0.5208382606506348,
+              "vc": 0.011978375259786844,
+              "qpos": 1.4901161193847656e-08,
+              "qvel": 3.594905138015747e-07,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "env1/partial-stepped": {
+              "x": 8.45789909362793e-05,
+              "v": 0.004947293549776077,
+              "F": 0.03288358449935913,
+              "C": 0.7483331058174372,
+              "vc": 0.0016534850001335144,
+              "qpos": 2.9802322387695312e-08,
+              "qvel": 3.1013041734695435e-06,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            }
+          }
+        },
+        "scope": "Genuine N2 Fill task sharing one native PhysxGpuSystem and one MPMGPUWorld, exactly25 shared rigid steps per control and4MPM substeps, independent seeds/actions versus separate N1 cases, per-scene observations/counts/masks and actual solver arrays, exact unselected checkpoint isolation and selected particle/material/controller/drive/task restore, flat/full/partial/count reset and rebuild, physical camera geometry. Retain original short-task replay thresholds; not full episode success or full port parity.",
+        "full_port_complete": false
+      },
+      "source_audit": {
+        "public_head": "ff8412136ea312210b54ffa016aa1fc8a31fe604",
+        "source_inventory_changes_from": "gpu-batch-v1",
+        "changed_files": {
+          "mani_skill/envs/sapien_env.py": "be4a99d473a21084296e044af8620b8823e65f87b0082a5560c1a7b3e1ab4aa0",
+          "mani_skill/envs/scene.py": "8a05c649f7b304b6ec80da29b6fee47a71be6275bec4b3a36a1fa1a0318aaef4",
+          "mani_skill/envs/softbody/batch.py": "8943f7057d95ca3f53c49377a4c10d5d7212278fb7a70e0a7b6fffd4ac41894d"
+        },
+        "probe_unchanged": true,
+        "gates_unchanged": true,
+        "reason": "Select only reset native rigid/root poses; keep full joint-buffer calls because pinned SAPIEN indexed joint API ignores the supplied indices. Reject invalid partial reconfiguration before failing live world.",
+        "mount_placeholder": "Empty warp.so mount target unchanged; runner verifies and mounts the previously built library by SHA256."
+      }
+    },
+    "gpu-batch-v3": {
+      "archive_sha256": "e369da27e18240bbc83077f784d3cc7e563d85acc61cdf53edb45e90ac0435e1",
+      "protocol": {
+        "declared_at_utc": "2026-09-08T16:54:32.534014+00:00",
+        "input_sha256": "7567e3c06b830b1215bc2ef7fa857c50484bad2425b24a3ac7f0693714b01973",
+        "request_sha256": "346df7f20d33bcd8629454331217810c22d6bcc2312c12888fdb6f3103803fa1",
+        "probe_sha256": "c5f13cf1da296a020cb0681dcaeb44c4520b3383bd95c0d5df65050fde4bba28",
+        "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "cases": [
+          {
+            "name": "Fill-origin-101",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101
+            ],
+            "action_scales": [
+              1.0
+            ],
+            "scene_offsets": [
+              [
+                -5.0,
+                -5.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Fill-origin-17",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              17
+            ],
+            "action_scales": [
+              -0.5
+            ],
+            "scene_offsets": [
+              [
+                0.0,
+                -5.0,
+                0.0
+              ]
+            ]
+          },
+          {
+            "name": "Fill-repeat-101a",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101
+            ],
+            "action_scales": [
+              1.0
+            ]
+          },
+          {
+            "name": "Fill-repeat-101b",
+            "task": "Fill",
+            "backend": "gpu",
+            "control_mode": "pd_joint_target_delta_pos",
+            "seeds": [
+              101
+            ],
+            "action_scales": [
+              1.0
+            ]
+          }
+        ],
+        "exact_checkpoint_groups": [
+          "mpm",
+          "mpm_material",
+          "mpm_meta",
+          "mpm_drives",
+          "controller",
+          "task"
+        ],
+        "replay_limits": {
+          "x": 1e-05,
+          "qpos": 1e-05,
+          "qvel": 0.0001,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0
+        },
+        "rendering": {
+          "minimum_particle_pixels": 10,
+          "surface_distance_error_limit_m": 0.003,
+          "require_visual_pool_checks": true,
+          "require_native_buffer_checks": true,
+          "require_rigid_visual_bounds": true,
+          "minimum_rigid_pixels": 10,
+          "rigid_bound_error_limit_m": 0.003
+        },
+        "scope": "Diagnostic only: two N1 runs with native origins matching the v2 N2 worlds, plus two byte-identical N1 seed101/action repeats at the default origin. Original v2 cross-batch 1e-5m trajectory failure remains a failure. Separate execution/rendering integrity checks and descriptive origin/repeat errors do not establish full port parity.",
+        "compare_batch_vs_single": false,
+        "baseline": {
+          "run": "gpu-batch-v2",
+          "archive_sha256": "6487ee7e3d74cc1b10016b145ff0bbdbfd52f707c3b8bfbde8786a9b5a306664",
+          "protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743"
+        },
+        "origin_pairs": [
+          {
+            "case": "Fill-origin-101",
+            "baseline_case": "Fill-batch",
+            "baseline_index": 0
+          },
+          {
+            "case": "Fill-origin-17",
+            "baseline_case": "Fill-batch",
+            "baseline_index": 1
+          }
+        ],
+        "repeat_pair": [
+          "Fill-repeat-101a",
+          "Fill-repeat-101b"
+        ]
+      },
+      "verdict": {
+        "integrity_passed": true,
+        "failures": [],
+        "comparisons": {
+          "Fill-origin-101": {
+            "errors": {
+              "initial": {
+                "x": 0.0,
+                "v": 0.0,
+                "F": 0.0,
+                "C": 0.0,
+                "vc": 0.0,
+                "qpos": 0.0,
+                "qvel": 0.0,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "warmup-1": {
+                "x": 1.1920928955078125e-07,
+                "v": 4.1425228118896484e-06,
+                "F": 1.52587890625e-05,
+                "C": 0.001705169677734375,
+                "vc": 3.337860107421875e-06,
+                "qpos": 0.0,
+                "qvel": 3.725290298461914e-09,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "warmup-2": {
+                "x": 3.4794211387634277e-06,
+                "v": 0.001316223293542862,
+                "F": 0.022063076496124268,
+                "C": 0.9094085693359375,
+                "vc": 0.02006887085735798,
+                "qpos": 0.0,
+                "qvel": 8.195638656616211e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "expected": {
+                "x": 0.00011824816465377808,
+                "v": 0.001935318112373352,
+                "F": 0.028243064880371094,
+                "C": 0.773529052734375,
+                "vc": 0.03870362043380737,
+                "qpos": 2.384185791015625e-07,
+                "qvel": 5.2675604820251465e-06,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            },
+            "native_model_inputs_equal": true,
+            "initial_rigid_translation_max_abs_m": 0.0,
+            "initial_rigid_rotation_max_abs": 0.0,
+            "within_original_final_limits": {
+              "x": false,
+              "qpos": true,
+              "qvel": true,
+              "drive_position": true,
+              "drive_velocity": true
+            }
+          },
+          "Fill-origin-17": {
+            "errors": {
+              "initial": {
+                "x": 0.0,
+                "v": 0.0,
+                "F": 0.0,
+                "C": 0.0,
+                "vc": 0.0,
+                "qpos": 0.0,
+                "qvel": 0.0,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "warmup-1": {
+                "x": 1.4901161193847656e-07,
+                "v": 3.2186508178710938e-06,
+                "F": 1.537799835205078e-05,
+                "C": 0.0013179779052734375,
+                "vc": 2.779066562652588e-06,
+                "qpos": 0.0,
+                "qvel": 3.725290298461914e-09,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "warmup-2": {
+                "x": 5.811452865600586e-06,
+                "v": 0.0017214193940162659,
+                "F": 0.0344504714012146,
+                "C": 0.7396535873413086,
+                "vc": 0.011881774291396141,
+                "qpos": 1.1920928955078125e-07,
+                "qvel": 2.952292561531067e-07,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "expected": {
+                "x": 2.1755695343017578e-05,
+                "v": 0.0020017772912979126,
+                "F": 0.023320257663726807,
+                "C": 0.7076687812805176,
+                "vc": 0.03214983269572258,
+                "qpos": 1.1920928955078125e-07,
+                "qvel": 7.636845111846924e-07,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            },
+            "native_model_inputs_equal": true,
+            "initial_rigid_translation_max_abs_m": 0.0,
+            "initial_rigid_rotation_max_abs": 0.0,
+            "within_original_final_limits": {
+              "x": false,
+              "qpos": true,
+              "qvel": true,
+              "drive_position": true,
+              "drive_velocity": true
+            }
+          },
+          "identical-input-repeats": {
+            "errors": {
+              "initial": {
+                "x": 0.0,
+                "v": 0.0,
+                "F": 0.0,
+                "C": 0.0,
+                "vc": 0.0,
+                "qpos": 0.0,
+                "qvel": 0.0,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "warmup-1": {
+                "x": 1.1920928955078125e-07,
+                "v": 2.950429916381836e-06,
+                "F": 1.5854835510253906e-05,
+                "C": 0.0013279914855957031,
+                "vc": 1.1622905731201172e-06,
+                "qpos": 0.0,
+                "qvel": 5.587935447692871e-09,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "warmup-2": {
+                "x": 4.649162292480469e-06,
+                "v": 0.0013373345136642456,
+                "F": 0.02213841676712036,
+                "C": 0.9083647727966309,
+                "vc": 0.08603017777204514,
+                "qpos": 0.0,
+                "qvel": 2.8312206268310547e-07,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "expected": {
+                "x": 4.71360981464386e-05,
+                "v": 0.0023142248392105103,
+                "F": 0.07478612661361694,
+                "C": 1.210993766784668,
+                "vc": 0.03700340155046433,
+                "qpos": 4.76837158203125e-07,
+                "qvel": 7.379800081253052e-06,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            },
+            "native_model_inputs_equal": true,
+            "initial_rigid_translation_max_abs_m": 0.0,
+            "initial_rigid_rotation_max_abs": 0.0,
+            "within_original_final_limits": {
+              "x": false,
+              "qpos": true,
+              "qvel": true,
+              "drive_position": true,
+              "drive_velocity": true
+            }
+          }
+        },
+        "retained_baseline_passed": false,
+        "retained_baseline_failures": [
+          "env0/expected: x difference 0.00012529641389846802 exceeds 1e-05",
+          "env0/flat-stepped: x difference 0.00012511759996414185 exceeds 1e-05",
+          "env0/partial-stepped: x difference 0.00012526661157608032 exceeds 1e-05",
+          "env1/expected: x difference 1.963973045349121e-05 exceeds 1e-05",
+          "env1/flat-stepped: x difference 1.963973045349121e-05 exceeds 1e-05",
+          "env1/partial-stepped: x difference 8.45789909362793e-05 exceeds 1e-05"
+        ],
+        "execution_and_rendering": {
+          "passed": true,
+          "failures": [],
+          "reports": {
+            "Fill-origin-101": {
+              "exact_checkpoints": {},
+              "cameras": {
+                "camera-initial-env0": {
+                  "rigid_pixels": 35410,
+                  "max_rigid_bound_violation_m": 0.0014656652884353916,
+                  "particle_pixels": 1262,
+                  "visible_particles": 226,
+                  "max_surface_error_m": 0.0015480025122622735,
+                  "median_surface_error_m": 0.0004848182231410921,
+                  "failures": []
+                },
+                "camera-reconfigured-env0": {
+                  "rigid_pixels": 35410,
+                  "max_rigid_bound_violation_m": 0.0014656652884353916,
+                  "particle_pixels": 1262,
+                  "visible_particles": 226,
+                  "max_surface_error_m": 0.0015480025122622735,
+                  "median_surface_error_m": 0.0004848182231410921,
+                  "failures": []
+                }
+              }
+            },
+            "Fill-origin-17": {
+              "exact_checkpoints": {},
+              "cameras": {
+                "camera-initial-env0": {
+                  "rigid_pixels": 35398,
+                  "max_rigid_bound_violation_m": 0.001347999887893983,
+                  "particle_pixels": 1280,
+                  "visible_particles": 234,
+                  "max_surface_error_m": 0.0015049038963031564,
+                  "median_surface_error_m": 0.0005229196131294495,
+                  "failures": []
+                },
+                "camera-reconfigured-env0": {
+                  "rigid_pixels": 35398,
+                  "max_rigid_bound_violation_m": 0.001347999887893983,
+                  "particle_pixels": 1280,
+                  "visible_particles": 234,
+                  "max_surface_error_m": 0.0015049038963031564,
+                  "median_surface_error_m": 0.0005229196131294495,
+                  "failures": []
+                }
+              }
+            },
+            "Fill-repeat-101a": {
+              "exact_checkpoints": {},
+              "cameras": {
+                "camera-initial-env0": {
+                  "rigid_pixels": 35410,
+                  "max_rigid_bound_violation_m": 0.0014653322067091912,
+                  "particle_pixels": 1262,
+                  "visible_particles": 226,
+                  "max_surface_error_m": 0.0015480025122622735,
+                  "median_surface_error_m": 0.0004848182231410921,
+                  "failures": []
+                },
+                "camera-reconfigured-env0": {
+                  "rigid_pixels": 35410,
+                  "max_rigid_bound_violation_m": 0.0014653322067091912,
+                  "particle_pixels": 1262,
+                  "visible_particles": 226,
+                  "max_surface_error_m": 0.0015480025122622735,
+                  "median_surface_error_m": 0.0004848182231410921,
+                  "failures": []
+                }
+              }
+            },
+            "Fill-repeat-101b": {
+              "exact_checkpoints": {},
+              "cameras": {
+                "camera-initial-env0": {
+                  "rigid_pixels": 35410,
+                  "max_rigid_bound_violation_m": 0.0014653322067091912,
+                  "particle_pixels": 1262,
+                  "visible_particles": 226,
+                  "max_surface_error_m": 0.0015480025122622735,
+                  "median_surface_error_m": 0.0004848182231410921,
+                  "failures": []
+                },
+                "camera-reconfigured-env0": {
+                  "rigid_pixels": 35410,
+                  "max_rigid_bound_violation_m": 0.0014653322067091912,
+                  "particle_pixels": 1262,
+                  "visible_particles": 226,
+                  "max_surface_error_m": 0.0015480025122622735,
+                  "median_surface_error_m": 0.0004848182231410921,
+                  "failures": []
+                }
+              }
+            }
+          },
+          "scope": "Diagnostic only: two N1 runs with native origins matching the v2 N2 worlds, plus two byte-identical N1 seed101/action repeats at the default origin. Original v2 cross-batch 1e-5m trajectory failure remains a failure. Separate execution/rendering integrity checks and descriptive origin/repeat errors do not establish full port parity.",
+          "full_port_complete": false
+        },
+        "scope": "Diagnostic only: two N1 runs with native origins matching the v2 N2 worlds, plus two byte-identical N1 seed101/action repeats at the default origin. Original v2 cross-batch 1e-5m trajectory failure remains a failure. Separate execution/rendering integrity checks and descriptive origin/repeat errors do not establish full port parity.",
+        "full_port_complete": false
+      },
+      "source_audit": {
+        "source_identical_to": "gpu-batch-v2",
+        "changed_runtime_files": [],
+        "probe_sha256": "c5f13cf1da296a020cb0681dcaeb44c4520b3383bd95c0d5df65050fde4bba28",
+        "reason": "Only diagnostic probe changes: report actual native scene offsets, optionally set specified origins before any body exists. Original scene-local task/model/particle/controller inputs unchanged. Isolate origin rounding and self-repeatability; original strict v2 verdict retained."
+      }
+    }
+  },
+  "visual_qa": {
+    "frames": [
+      "gpu-batch-v2/Fill-batch/camera-partial-count-env0.png",
+      "gpu-batch-v2/Fill-batch/camera-partial-count-env1.png"
+    ],
+    "observation": "Both robot/bucket poses and particle clusters visually consistent with their independently verified native geometry; selected env0 has352 particles, untouched env1 has704. No benchmark-success claim."
+  }
+}

@@ -1,0 +1,119 @@
+{
+  "declared_at_utc": "2026-09-08T16:54:32.534014+00:00",
+  "input_sha256": "7567e3c06b830b1215bc2ef7fa857c50484bad2425b24a3ac7f0693714b01973",
+  "request_sha256": "346df7f20d33bcd8629454331217810c22d6bcc2312c12888fdb6f3103803fa1",
+  "probe_sha256": "c5f13cf1da296a020cb0681dcaeb44c4520b3383bd95c0d5df65050fde4bba28",
+  "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "cases": [
+    {
+      "name": "Fill-origin-101",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        101
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "scene_offsets": [
+        [
+          -5.0,
+          -5.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "name": "Fill-origin-17",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        17
+      ],
+      "action_scales": [
+        -0.5
+      ],
+      "scene_offsets": [
+        [
+          0.0,
+          -5.0,
+          0.0
+        ]
+      ]
+    },
+    {
+      "name": "Fill-repeat-101a",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        101
+      ],
+      "action_scales": [
+        1.0
+      ]
+    },
+    {
+      "name": "Fill-repeat-101b",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_joint_target_delta_pos",
+      "seeds": [
+        101
+      ],
+      "action_scales": [
+        1.0
+      ]
+    }
+  ],
+  "exact_checkpoint_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_meta",
+    "mpm_drives",
+    "controller",
+    "task"
+  ],
+  "replay_limits": {
+    "x": 1e-05,
+    "qpos": 1e-05,
+    "qvel": 0.0001,
+    "drive_position": 0.0,
+    "drive_velocity": 0.0
+  },
+  "rendering": {
+    "minimum_particle_pixels": 10,
+    "surface_distance_error_limit_m": 0.003,
+    "require_visual_pool_checks": true,
+    "require_native_buffer_checks": true,
+    "require_rigid_visual_bounds": true,
+    "minimum_rigid_pixels": 10,
+    "rigid_bound_error_limit_m": 0.003
+  },
+  "scope": "Diagnostic only: two N1 runs with native origins matching the v2 N2 worlds, plus two byte-identical N1 seed101/action repeats at the default origin. Original v2 cross-batch 1e-5m trajectory failure remains a failure. Separate execution/rendering integrity checks and descriptive origin/repeat errors do not establish full port parity.",
+  "compare_batch_vs_single": false,
+  "baseline": {
+    "run": "gpu-batch-v2",
+    "archive_sha256": "6487ee7e3d74cc1b10016b145ff0bbdbfd52f707c3b8bfbde8786a9b5a306664",
+    "protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743"
+  },
+  "origin_pairs": [
+    {
+      "case": "Fill-origin-101",
+      "baseline_case": "Fill-batch",
+      "baseline_index": 0
+    },
+    {
+      "case": "Fill-origin-17",
+      "baseline_case": "Fill-batch",
+      "baseline_index": 1
+    }
+  ],
+  "repeat_pair": [
+    "Fill-repeat-101a",
+    "Fill-repeat-101b"
+  ]
+}

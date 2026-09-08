@@ -88,7 +88,10 @@ library remain separate prerequisites under their original licenses.
   stages failed by 0.683 m; the immediate second image passed without a physics
   step. v7 fixes that first-image upload ordering and passes all twelve frames.
 
-This remains a single-environment task integration. Particle updates still copy
+These rendering runs use single-environment tasks. The separate
+[Fill batching suite](gpu-batching.md) verifies N2 scene ownership, partial reset
+and camera geometry while retaining strict particle-trajectory failures.
+Particle updates still copy
 positions through CPU memory and update individual entity poses. The render-only
 CUDA registration currently supports SAPIEN 3.0; SAPIEN 3.1 is rejected explicitly.
 Live scenes with IDs beyond the shader's representable range need a wider

@@ -1,4 +1,4 @@
-"""Experimental single-scene MPM integration with the ManiSkill 3 lifecycle."""
+"""Experimental MPM integration with the ManiSkill 3 lifecycle."""
 
 import copy
 import numpy as np
@@ -9,6 +9,7 @@ from mani_skill.envs.sapien_env import BaseEnv
 from mani_skill.utils import common
 from .mpm import MPMCoupler, wp
 from .gpu_coupling import MPMGPUWorld
+from .particle_visuals import ParticleVisualPool
 
 MATERIAL_FIELDS = ('particle_mass', 'particle_vol', 'particle_mu_lam_ys',
                    'particle_friction_cohesion', 'particle_type')
@@ -21,17 +22,23 @@ class MPMBaseEnv(BaseEnv):
     during _initialize_episode, after setting their reset poses. Both engines
     retain their own state; only reaction forces cross the coupling boundary.
     GPU robot controllers must supply a fresh complete mpm_baseline_qf buffer.
-    Multiple task instances in one native GPU world remain unsupported here.
+    Tasks can opt into a shared native GPU world with per-scene particle state.
+    The single-environment checkpoint layout remains unchanged.
     """
 
     SUPPORTED_OBS_MODES = ("state", "state_dict", "none", "sensor_data", "any_textures", "pointcloud")
     max_checkpoint_particles = 65536
     PARTICLE_CHECKPOINT_GROUPS = ('mpm', 'mpm_material')
+    _supports_mpm_batch = False
+    _batch_particle_capacity = 32768
 
     def __init__(self, *args, mpm_device="cuda", mpm_dt=.0005,
-                 num_envs=1, sim_backend="physx_cpu", **kwargs):
-        if num_envs != 1:
-            raise NotImplementedError("MPM task lifecycle currently supports one PhysX scene")
+                 num_envs=1, sim_backend=None, mpm_batch_particle_capacity=None, **kwargs):
+        sim_backend = sim_backend or ('physx_cpu' if num_envs == 1 else 'physx_cuda')
+        if num_envs != 1 and not self._supports_mpm_batch:
+            raise NotImplementedError("This MPM task does not yet support batched lifecycle")
+        if num_envs != 1 and (mpm_device != 'cuda' or sim_backend.split(':')[0] not in ('gpu', 'cuda', 'physx_cuda')):
+            raise ValueError('Batched MPM requires CUDA MPM and native GPU PhysX')
         if mpm_device not in ("cpu", "cuda"):
             raise ValueError("mpm_device must be cpu or cuda")
         self.mpm_device = mpm_device
@@ -48,13 +55,29 @@ class MPMBaseEnv(BaseEnv):
         self._particle_visual_components = []
         self._particle_visual_specs = []
         self._particle_render_poses = None
+        self._particle_visuals = None
         self._mpm_initial_checkpoint = None
+        self._mpm_batch = None
+        if num_envs != 1:
+            from .batch import MPMBatchRuntime
+            capacity = self._batch_particle_capacity if mpm_batch_particle_capacity is None else mpm_batch_particle_capacity
+            if type(capacity) is not int or not 0 < capacity <= self.max_checkpoint_particles:
+                raise ValueError('Invalid batched particle capacity')
+            self._mpm_batch = MPMBatchRuntime(self, num_envs, capacity)
+        elif mpm_batch_particle_capacity is not None:
+            raise ValueError('mpm_batch_particle_capacity only applies to multi-environment tasks')
         if sim_backend.split(':')[0] in ('gpu', 'cuda', 'physx_cuda') and not sapien.physx.is_gpu_enabled():
             sapien.physx.enable_gpu()
         wp.init()
-        super().__init__(*args, num_envs=1, sim_backend=sim_backend, **kwargs)
+        super().__init__(*args, num_envs=num_envs, sim_backend=sim_backend, **kwargs)
+
+    @property
+    def mpm_couplers(self):
+        return self._mpm_batch.couplers if self._mpm_batch is not None else [self.mpm_coupler]
 
     def reset(self, *, seed=None, options=None):
+        if self._mpm_batch is not None:
+            return self._mpm_batch.reset(seed, options)
         options = dict(options or {})
         restore = options.pop('reset_to_env_states', None)
         self._mpm_initial_checkpoint = None
@@ -84,8 +107,10 @@ class MPMBaseEnv(BaseEnv):
             raise RuntimeError('Initial state selection is only allowed during reset')
         self._mpm_initial_checkpoint = state
 
-    def rebuild_mpm(self, builder, bodies):
+    def rebuild_mpm(self, builder, bodies, env_idx=0):
         """Build fresh buffers during reset, including clearing prior failures."""
+        if self._mpm_batch is not None:
+            return self._mpm_batch.rebuild(builder, bodies, env_idx)
         if not self._mpm_reset_active:
             raise RuntimeError("MPM rebuilding is only allowed during reset")
         dt = self.scene.sub_scenes[0].get_timestep()
@@ -109,52 +134,21 @@ class MPMBaseEnv(BaseEnv):
         self._setup_particle_rendering()
 
     def _setup_particle_rendering(self):
+        if self._mpm_batch is not None:
+            return self._mpm_batch.setup_visuals()
         if not self.scene.can_render():
             return
-        scene = self.scene.sub_scenes[0]
-        count = self.mpm_coupler.model.struct.n_particles
-        # Minimal shaders omit PointCloudComponent. Sphere visuals populate
-        # normal camera color/depth/segmentation. They have no physics component
-        # and do not enter the simulation state registry. Separate entities are
-        # required because attached render-shape local poses are immutable.
-        # Keep identities across resets. Recreating every visual monotonically
-        # consumes scene IDs, overflowing minimal shaders' signed-16-bit labels
-        # even for the 19,404-particle Write task after only one reset.
-        colors = np.asarray(self.mpm_coupler.model.mpm_particle_colors[:count], dtype=np.float32)
-        radius = self.mpm_coupler.model.struct.particle_radius
-        specs = [(radius, *color) for color in colors]
-        changed = count != len(self._particle_entities) or any(
-            previous != current for previous, current in zip(self._particle_visual_specs, specs))
+        if self._particle_visuals is None:
+            self._particle_visuals = ParticleVisualPool(self.scene.sub_scenes[0])
+        pool = self._particle_visuals
+        changed = pool.needs_change(self.mpm_coupler.model)
         if changed and self.gpu_sim_enabled:
             self._invalidate_particle_render_groups()
-        prototypes = {}
-        for i, color in enumerate(colors):
-            if i < len(self._particle_visual_pool) and self._particle_visual_specs[i] == specs[i]:
-                self._particle_visual_components[i].visibility = 1.
-                continue
-            key = tuple(color)
-            if key not in prototypes:
-                material = sapien.render.RenderMaterial(base_color=[*key, 1.], roughness=.8)
-                prototypes[key] = sapien.render.RenderShapeSphere(radius, material)
-            component = sapien.render.RenderBodyComponent()
-            component.attach(prototypes[key].clone())
-            if i < len(self._particle_visual_pool):
-                entity = self._particle_visual_pool[i]
-                entity.remove_component(self._particle_visual_components[i])
-                entity.add_component(component)
-                self._particle_visual_components[i] = component
-                self._particle_visual_specs[i] = specs[i]
-            else:
-                entity = sapien.Entity()
-                entity.name = f'mpm_particle_visual_only_{i}'
-                entity.add_component(component)
-                scene.add_entity(entity)
-                self._particle_visual_pool.append(entity)
-                self._particle_visual_components.append(component)
-                self._particle_visual_specs.append(specs[i])
-        for component in self._particle_visual_components[count:]:
-            component.visibility = 0.
-        self._particle_entities = self._particle_visual_pool[:count]
+        pool.configure(self.mpm_coupler.model)
+        self._particle_visual_pool = pool.entities
+        self._particle_visual_components = pool.components
+        self._particle_visual_specs = pool.specs
+        self._particle_entities = pool.active
         if self.gpu_sim_enabled and (changed or self._particle_render_poses is None):
             self._particle_render_poses = torch.zeros((len(self._particle_visual_pool), 7),
                                                       dtype=torch.float32, device=self.device)
@@ -174,10 +168,10 @@ class MPMBaseEnv(BaseEnv):
         self.scene._human_render_cameras_initialized = False
 
     def _update_particle_rendering(self):
+        if self._mpm_batch is not None:
+            return self._mpm_batch.update_visuals()
         if self._particle_entities:
-            positions = self.mpm_coupler.states[0].struct.particle_q.numpy()[:len(self._particle_entities)]
-            for entity, position in zip(self._particle_entities, positions):
-                entity.pose = sapien.Pose(position)
+            positions = self._particle_visuals.update(self.mpm_coupler)
             if self._particle_render_poses is not None:
                 self._particle_render_poses[:len(positions), :3] = torch.as_tensor(positions, device=self.device)
 
@@ -190,7 +184,7 @@ class MPMBaseEnv(BaseEnv):
 
     def _before_simulation_step(self):
         super()._before_simulation_step()
-        if self.mpm_coupler is None:
+        if any(c is None for c in self.mpm_couplers):
             raise RuntimeError("Task reset did not build an MPM model")
         if self.gpu_sim_enabled:
             baseline = self.agent.mpm_baseline_qf if self.agent is not None else None
@@ -199,8 +193,11 @@ class MPMBaseEnv(BaseEnv):
             self.mpm_coupler.prepare_step()
 
     def _after_simulation_step(self):
-        self.last_coupling_step = (self.mpm_gpu_world.complete_step()[0] if self.gpu_sim_enabled
-                                   else self.mpm_coupler.complete_step())
+        if self.gpu_sim_enabled:
+            details = self.mpm_gpu_world.complete_step()
+            self.last_coupling_step = details if self._mpm_batch is not None else details[0]
+        else:
+            self.last_coupling_step = self.mpm_coupler.complete_step()
         super()._after_simulation_step()
 
     def rigid_pose(self, body):
@@ -244,18 +241,23 @@ class MPMBaseEnv(BaseEnv):
         return super()._get_obs_agent() if self.agent is not None else {}
 
     def _mpm_tensors(self):
+        if self._mpm_batch is not None:
+            return self._mpm_batch.padded()
         if self.mpm_coupler is None:
             raise RuntimeError("Task reset did not build an MPM model")
         return {key: torch.as_tensor(value, device=self.device).unsqueeze(0)
                 for key, value in self.mpm_coupler.particle_state().items()}
 
     def _mpm_material_tensors(self):
+        if self._mpm_batch is not None:
+            return self._mpm_batch.padded(True)
         model = self.mpm_coupler.model
         return {key: torch.as_tensor(getattr(model.struct, key).numpy()[:model.struct.n_particles],
                                      device=self.device).unsqueeze(0) for key in MATERIAL_FIELDS}
 
     def _get_obs_extra(self, info):
-        return {**super()._get_obs_extra(info), "mpm": self._mpm_tensors()}
+        metadata = {'mpm_meta': self._mpm_batch.metadata()} if self._mpm_batch is not None else {}
+        return {**super()._get_obs_extra(info), "mpm": self._mpm_tensors(), **metadata}
 
     def _flatten_raw_obs(self, obs):
         if self.obs_mode == "state":
@@ -268,6 +270,8 @@ class MPMBaseEnv(BaseEnv):
                 for key, value in state.items()}
 
     def get_state_dict(self):
+        if self._mpm_batch is not None:
+            return self._mpm_batch.state_dict()
         state = super().get_state_dict() if self.agent is not None else self.scene.get_sim_state()
         if self.agent is not None:
             # Native CPU drive targets and controller memory are separate from
@@ -290,6 +294,8 @@ class MPMBaseEnv(BaseEnv):
         return torch.cat(list(leaves.values()), dim=1)
 
     def set_state_dict(self, state, env_idx=None):
+        if self._mpm_batch is not None:
+            return self._mpm_batch.restore(state, env_idx)
         if not self._mpm_reset_active:
             raise RuntimeError("Soft-body state assignment is only allowed during reset")
         if self.mpm_coupler is None:
@@ -410,6 +416,8 @@ class MPMBaseEnv(BaseEnv):
         self.rebuild_mpm(builder, self.mpm_coupler.bodies)
 
     def set_state(self, state, env_idx=None):
+        if self._mpm_batch is not None:
+            return self._mpm_batch.restore_flat(state, env_idx)
         if not self._mpm_reset_active:
             raise RuntimeError('Soft-body state assignment is only allowed during reset')
         state = torch.as_tensor(state, device=self.device)
@@ -446,7 +454,10 @@ class MPMBaseEnv(BaseEnv):
         self.set_state_dict(restored, env_idx)
 
     def _clear(self):
+        if self._mpm_batch is not None:
+            self._mpm_batch.clear()
         self._particle_render_poses = None
+        self._particle_visuals = None
         self._particle_entities = []
         self._particle_visual_pool = []
         self._particle_visual_components = []

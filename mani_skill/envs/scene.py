@@ -1002,21 +1002,53 @@ class ManiSkillScene:
             self.px.gpu_update_articulation_kinematics()
             self._gpu_fetch_all()
 
-    def _gpu_apply_all(self):
+    def _gpu_apply_all(self, env_idx=None):
         """
-        Calls gpu_apply to update all body data, qpos, qvel, qf, and root poses
+        Apply simulation buffers, restricting physical poses to selected scenes.
+
+        Reapplying an untouched root pose can change its rounded native pose.
+        Joint buffers keep the full apply path: SAPIEN 3.0.3's indexed joint
+        methods ignore the supplied indices and apply a prefix instead.
         """
         assert (
             not self._needs_fetch
         ), "Once _gpu_apply_all is called, you must call _gpu_fetch_all before calling _gpu_apply_all again\
             as otherwise there is undefined behavior that is likely impossible to debug"
         assert isinstance(self.px, physx.PhysxGpuSystem)
-        self.px.gpu_apply_rigid_dynamic_data()
+        mask = self._reset_mask
+        if env_idx is not None:
+            indices = torch.as_tensor(env_idx, device=self.device)
+            if (indices.ndim != 1 or indices.dtype not in (torch.int8, torch.int16, torch.int32, torch.int64, torch.uint8)
+                    or not indices.numel() or indices.unique().numel() != indices.numel()
+                    or torch.any((indices < 0) | (indices >= len(mask)))):
+                raise ValueError("Expected unique in-range integer environment indices")
+            mask = torch.zeros_like(mask)
+            mask[indices.long()] = True
+        selected = not bool(mask.all())
+        if selected:
+            def gather(objects, field):
+                rows = [getattr(obj, field)[mask[obj._scene_idxs]] for obj in objects]
+                return (torch.cat(rows).unique().to(torch.int32).contiguous() if rows
+                        else torch.empty(0, dtype=torch.int32, device=self.device))
+            rigid = gather(self.non_static_actors, "_body_data_index")
+            articulation = gather(self.articulations.values(), "_data_index")
+            # CudaArray borrows these pointers; retain their storage through fetch.
+            self._gpu_reset_index_buffers = (rigid, articulation)
+            if rigid.numel():
+                self.px.gpu_apply_rigid_dynamic_data(sapien.CudaArray(rigid))
+        else:
+            self.px.gpu_apply_rigid_dynamic_data()
         self.px.gpu_apply_articulation_qpos()
         self.px.gpu_apply_articulation_qvel()
         self.px.gpu_apply_articulation_qf()
-        self.px.gpu_apply_articulation_root_pose()
-        self.px.gpu_apply_articulation_root_velocity()
+        if selected:
+            if articulation.numel():
+                handle = sapien.CudaArray(articulation)
+                self.px.gpu_apply_articulation_root_pose(handle)
+                self.px.gpu_apply_articulation_root_velocity(handle)
+        else:
+            self.px.gpu_apply_articulation_root_pose()
+            self.px.gpu_apply_articulation_root_velocity()
         self.px.gpu_apply_articulation_target_position()
         self.px.gpu_apply_articulation_target_velocity()
         self._needs_fetch = True

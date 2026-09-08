@@ -953,10 +953,6 @@ class BaseEnv(gym.Env):
                     self._initialize_episode(env_idx, options)
             else:
                 self._initialize_episode(env_idx, options)
-        # reset the reset mask back to all ones so any internal code in maniskill can continue to manipulate all scenes at once as usual
-        self.scene._reset_mask = torch.ones(
-            self.num_envs, dtype=torch.bool, device=self.device
-        )
         if self.gpu_sim_enabled:
             # ensure all updates to object poses and configurations are applied on GPU after task initialization
             self.scene._gpu_apply_all()
@@ -970,6 +966,13 @@ class BaseEnv(gym.Env):
                     controller.reset()
             else:
                 self.agent.controller.reset()
+
+        # Controllers also use the reset mask to preserve target memory in
+        # environments that were not reset. Restore the all-environment mask
+        # only after their reset has finished.
+        self.scene._reset_mask = torch.ones(
+            self.num_envs, dtype=torch.bool, device=self.device
+        )
 
         info = self.get_info()
         if reset_to_env_states_obs is None:
@@ -1309,7 +1312,7 @@ class BaseEnv(gym.Env):
         """
         self.scene.set_sim_state(state, env_idx)
         if self.gpu_sim_enabled:
-            self.scene._gpu_apply_all()
+            self.scene._gpu_apply_all(env_idx)
             self.scene.px.gpu_update_articulation_kinematics()  # pyright: ignore[reportAttributeAccessIssue]
             self.scene._gpu_fetch_all()
 
