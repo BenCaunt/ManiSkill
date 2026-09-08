@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "observed_at_utc": "2026-09-08T23:39:31.096769+00:00",
+  "passed": true,
+  "checks": {
+    "all_declared_recovery_checks": true,
+    "declared_driver_unchanged": true,
+    "declared_config_unchanged": true,
+    "frozen_harness_unchanged": true,
+    "trusted_inputs_unchanged": true,
+    "candidate_runtime_unchanged_since_job": true,
+    "one_coding_start": true,
+    "coding_log_unchanged": true,
+    "same_remote_deadline": true,
+    "same_worker_start_and_birth": true,
+    "replay_live_before_crash": true,
+    "worker_live_after_crash": true,
+    "one_new_remote_job": true,
+    "no_remote_job_removed": true,
+    "archive_hash_valid": true,
+    "comparison_reproduced_exactly": true,
+    "worker_time_charged_once": true,
+    "worker_reservation_released": true,
+    "lease_timer_active": true,
+    "no_running_containers": true
+  },
+  "job_id": "c0b96d26adb44e3681c6e115eee780cf",
+  "coding_events": {
+    "thread.started": 1,
+    "turn.started": 1,
+    "item.completed": 23,
+    "item.started": 18,
+    "turn.completed": 1
+  },
+  "coding_non_json_lines": 2,
+  "worker": {
+    "binary_sha256": "4217eff2d7ff0d2f3b32fec72a10d73366f0cae99a0a35d9d4ed29cecd750d64",
+    "container": "softbody-replay-c0b96d26adb44e3681c6e115eee780cf",
+    "error": null,
+    "finished_at_epoch": 1788910501.8274262,
+    "phase": "complete",
+    "pid": 215422,
+    "pid_birth": "6478272",
+    "started_at_epoch": 1788910435.4590738,
+    "updated_at_epoch": 1788910501.8277466,
+    "wall_time_s": 66.36835312843323
+  },
+  "result_archive_sha256": "baa657e1e367824fbc9cc38ff234029855ab1795a9e48fb25c891f330f374e04",
+  "result_receipt_sha256": "854aba8a934d457d6b88b3a5027a2b643c776b72a4a9686c8a206ace8b681e18",
+  "original_remote_job_inventory": [
+    "04453852abdf44ee9a457996e1c91bdf",
+    "3f43ea02f1ac4e4694ca0c3d2c3eabbf",
+    "841451d15f1c49e68b594b8aee9fe42f",
+    "b58208a29b6c4ac49d351bf7a3b4290c"
+  ],
+  "final_remote_job_inventory": {
+    "observed_at_epoch": 1788910770.9732451,
+    "jobs": [
+      "04453852abdf44ee9a457996e1c91bdf",
+      "3f43ea02f1ac4e4694ca0c3d2c3eabbf",
+      "841451d15f1c49e68b594b8aee9fe42f",
+      "b58208a29b6c4ac49d351bf7a3b4290c",
+      "c0b96d26adb44e3681c6e115eee780cf"
+    ],
+    "timer": "active",
+    "containers": []
+  },
+  "original_loop_deadline_epoch": 1788910949.944772,
+  "final_loop_deadline_epoch": 1788910949.944772,
+  "worker_deadline_epoch": 1788910723.905899,
+  "physics_passed": false,
+  "physics_failures": [
+    {
+      "step": 0,
+      "metric": "initial_position_m",
+      "value": 3.5762786865234375e-07,
+      "limit": 1e-08
+    },
+    {
+      "step": 0,
+      "metric": "initial_quaternion_component",
+      "value": 1.7881393432617188e-07,
+      "limit": 1e-08
+    }
+  ]
+}

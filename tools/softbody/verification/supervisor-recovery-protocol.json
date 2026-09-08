@@ -1,0 +1,15 @@
+{
+  "declared_at_utc": "2026-09-08T23:31:23.472272+00:00",
+  "driver_sha256": "c3762dae2bbd218f2ea0f573877df87cd090a72193be2e3ac74244ccf4e653b2",
+  "config_sha256": "62fd3d1b08d14b66528d1a46c67dce75a832da1dd40568db93902be466f67818",
+  "phase_at_declaration": "Coding still active; no remote job prepared",
+  "invariants": [
+    "Kill only the Popen-owned local supervisor after recorded successful coding and a live remote manager plus running Docker replay.",
+    "Same remote job ID, manager PID/birth and original deadline across restart.",
+    "One coding run and one remote job; unchanged coding log and verified successful coding exit.",
+    "Result collected and numeric trace validated; original independent comparison retained.",
+    "Remote worker elapsed time charged exactly once; no pending reservation after collection.",
+    "Frozen reference, protocol and fixture inventories remain unchanged."
+  ],
+  "scope": "Process-level local supervisor SIGKILL and production --resume. Does not simulate full laptop reboot, network loss, interrupted coding or install an automatic restart service."
+}

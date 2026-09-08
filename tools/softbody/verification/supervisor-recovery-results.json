@@ -1,0 +1,248 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-08T23:41:56.386286+00:00",
+  "full_port_complete": false,
+  "scope": "Live local-supervisor SIGKILL during actual Docker replay, followed by production --resume. First external observer parse failure retained; same live process/job observed by continuation controller. No laptop power loss, coding-process crash or automatic restart-service test.",
+  "runtime_commit": "71696fd5b0e73983ff28293478877271b10e6610",
+  "job_id": "c0b96d26adb44e3681c6e115eee780cf",
+  "recovery_checks": {
+    "collected": true,
+    "no_pending_charge": true,
+    "one_case": true,
+    "one_iteration": true,
+    "permissions": true,
+    "same_agent_record": true,
+    "same_coding_log": true,
+    "same_deadline": true,
+    "same_job_id": true,
+    "same_remote_manager": true,
+    "same_start": true,
+    "terminal": true,
+    "worker_charge_once": true,
+    "worker_completed": true
+  },
+  "independent_audit_checks": {
+    "all_declared_recovery_checks": true,
+    "declared_driver_unchanged": true,
+    "declared_config_unchanged": true,
+    "frozen_harness_unchanged": true,
+    "trusted_inputs_unchanged": true,
+    "candidate_runtime_unchanged_since_job": true,
+    "one_coding_start": true,
+    "coding_log_unchanged": true,
+    "same_remote_deadline": true,
+    "same_worker_start_and_birth": true,
+    "replay_live_before_crash": true,
+    "worker_live_after_crash": true,
+    "one_new_remote_job": true,
+    "no_remote_job_removed": true,
+    "archive_hash_valid": true,
+    "comparison_reproduced_exactly": true,
+    "worker_time_charged_once": true,
+    "worker_reservation_released": true,
+    "lease_timer_active": true,
+    "no_running_containers": true
+  },
+  "coding": {
+    "error": null,
+    "exit_code": 0,
+    "log_sha256": "bb504d3d7bdde4db45096572793ba9e1db5e094030218f3423d305b9be150627",
+    "status": "completed",
+    "wall_time_s": 473.4695149170002,
+    "event_counts": {
+      "thread.started": 1,
+      "turn.started": 1,
+      "item.completed": 23,
+      "item.started": 18,
+      "turn.completed": 1
+    },
+    "non_json_log_lines": 2,
+    "runtime_source_changed": false,
+    "changed_baseline_file": "tools/softbody/packaging.md",
+    "new_diagnostic_files": [
+      "tools/softbody/inspect_installation.py",
+      "tools/softbody/test_inspect_installation.py"
+    ]
+  },
+  "worker": {
+    "binary_sha256": "4217eff2d7ff0d2f3b32fec72a10d73366f0cae99a0a35d9d4ed29cecd750d64",
+    "container": "softbody-replay-c0b96d26adb44e3681c6e115eee780cf",
+    "error": null,
+    "finished_at_epoch": 1788910501.8274262,
+    "phase": "complete",
+    "pid": 215422,
+    "pid_birth": "6478272",
+    "started_at_epoch": 1788910435.4590738,
+    "updated_at_epoch": 1788910501.8277466,
+    "wall_time_s": 66.36835312843323
+  },
+  "images": {
+    "reference": "sha256:25b2bc053ba866f88f9d80bcde63b77954401212f9acd1da1eb5ebffdae16cca",
+    "candidate": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3"
+  },
+  "deadlines": {
+    "loop_before": 1788910949.944772,
+    "loop_after": 1788910949.944772,
+    "worker_before": 1788910723.905899,
+    "worker_after": 1788910723.905899
+  },
+  "accounting": {
+    "worker_wall_time_s": 66.36835312843323,
+    "reserved_s": 0.0,
+    "loop_status": "iteration_budget_exhausted"
+  },
+  "payload_sha256": "4eea88be6c506374ccd30415068d58a5288778018c47e5f0353851c720f1e403",
+  "request_sha256": "0399d3b76d2075bdeeabda48313fa7d91edfe864c75e2863e0f2d26e2b97d70f",
+  "result_archive_sha256": "baa657e1e367824fbc9cc38ff234029855ab1795a9e48fb25c891f330f374e04",
+  "physics": {
+    "passed": false,
+    "failures": [
+      {
+        "limit": 1e-08,
+        "metric": "initial_position_m",
+        "step": 0,
+        "value": 3.5762786865234375e-07
+      },
+      {
+        "limit": 1e-08,
+        "metric": "initial_quaternion_component",
+        "step": 0,
+        "value": 1.7881393432617188e-07
+      }
+    ],
+    "max_errors": {
+      "C_max_abs": 0.002208709716796875,
+      "F_max_abs": 1.621246337890625e-05,
+      "com_distance_m": 2.9802322387695312e-08,
+      "drive_position_max_abs": 0.0,
+      "drive_velocity_max_abs": 0.0,
+      "mass_abs_kg": 0.0,
+      "qpos_max_abs": 0.0,
+      "qvel_max_abs": 1.8379068933427334e-08,
+      "reward_abs": 2.289096148744285e-08,
+      "rigid_pose_max_abs": 3.5762786865234375e-07,
+      "rigid_velocity_max_abs": 1.068110577762127e-08,
+      "root_pose_max_abs": 1.1920928955078125e-07,
+      "root_velocity_max_abs": 0.0,
+      "scene_actor_pose_max_abs": 0.0,
+      "scene_actor_velocity_max_abs": 0.0,
+      "task_state_max_abs": 0.0,
+      "v_max_abs": 3.016553819179535e-06,
+      "vc_max_abs": 5.628913640975952e-06,
+      "x_max_abs": 1.1920928955078125e-07
+    },
+    "protocol_sha256": "554fd48055d1fc2564d6001a87ec367121f795d959cd7199039d15e1feb1ab66"
+  },
+  "standalone_supervisor": {
+    "directory": "../supervisor",
+    "tests_passed": 130,
+    "initial_test_failures": 3,
+    "initial_test_failure": "Omitted task_checks module; included its unchanged outcome dependencies and reran the same tests.",
+    "reproduced_saved_verdict_exactly": true,
+    "source_manifest_sha256": "dc365c09bd96c141ab1b4b0e22a9ba582f5970f6d92b53fee6d54e602943dc21",
+    "live_transport_sha256": "fa5459e2ce20d4cf63b05fd1fbf4572661f5e6ad68c9be0d563da1a7c1e82f98",
+    "published_transport_sha256": "a2904ee4d1321692b68b9ba99468f1831702d25172a550477a0c0d590bcaa8ee",
+    "transport_regression_tests_passed": 64,
+    "corrected_transport_live_test": false
+  },
+  "diagnostic": {
+    "tests_passed": 13,
+    "inspector_sha256": "993c42bda524c33fde612b7b252cbdda77f74fd36b820c778481492de17fc5a2",
+    "tests_sha256": "b4bdf8b53df0bf72489435727ad0b4fee3f8651209c5b4fa912c69ccb0d11778",
+    "native_wheel_sha256": "99235cd8639a8196c55a5675e2a1a87641526d88497b4ae370b14edde4e435d2",
+    "source_wheel_sha256": "1c7ebc3bbdd2c3e348745cd046ba51b4c4df6a396b6629707dea815f76bc2f8c",
+    "inspections": {
+      "native-v1": {
+        "ok": false,
+        "installation": "native-bundle",
+        "checked_files": 497,
+        "errors": [
+          "mani_skill/agents/robots/_template/template_robot.py: [Errno 2] No such file or directory: '/Users/bencaunt/Documents/ChatGPT/sim-infra/artifacts/softbody/supervisor-live-resume-v1/unpacked-native-wheel/mani_skill/agents/robots/_template'",
+          "warp_maniskill/CHANGELOG.md: [Errno 2] No such file or directory: '/Users/bencaunt/Documents/ChatGPT/sim-infra/artifacts/softbody/supervisor-live-resume-v1/unpacked-native-wheel/warp_maniskill/CHANGELOG.md'"
+        ],
+        "build_only_sources": [],
+        "abi": {
+          "extension_suffix": ".cpython-310-x86_64-linux-gnu.so",
+          "matches_inspector": false,
+          "platform": "linux_x86_64",
+          "python_tag": "cpython-310"
+        }
+      },
+      "native-v2": {
+        "ok": true,
+        "installation": "native-bundle",
+        "checked_files": 495,
+        "errors": [],
+        "build_only_sources": [
+          {
+            "path": "mani_skill/agents/robots/_template/template_robot.py",
+            "reason": "Robot-authoring scaffold outside the discovered Python packages.",
+            "sha256": "427d3be0e3360d6ea686351bc3827bfe64b4f8ed9d9925772918d95aa0f40b9d"
+          },
+          {
+            "path": "warp_maniskill/CHANGELOG.md",
+            "reason": "Build-tree changelog outside the declared Warp package data.",
+            "sha256": "ff5d5666319ab9396d85a736f425ee19aabfa74050a8b2419dcf9ea540ece327"
+          }
+        ],
+        "abi": {
+          "extension_suffix": ".cpython-310-x86_64-linux-gnu.so",
+          "matches_inspector": false,
+          "platform": "linux_x86_64",
+          "python_tag": "cpython-310"
+        }
+      },
+      "source-v2": {
+        "ok": true,
+        "installation": "source-only",
+        "checked_files": 10,
+        "errors": [],
+        "build_only_sources": [],
+        "abi": null
+      },
+      "source-require-native-v2": {
+        "ok": false,
+        "installation": "source-only",
+        "checked_files": 10,
+        "errors": [
+          "a native bundle is required, but this installation is source-only"
+        ],
+        "build_only_sources": [],
+        "abi": null
+      }
+    }
+  },
+  "evidence_sha256": {
+    "protocol.json": "db7d5a82770158084edb22fb79aa19c22bc2df1a39e81eccf99bc7c6da5fdf31",
+    "baseline.json": "f5518e13d9d7134b7e608c9652623871924b28c7363bc7f9034d692e7c32719f",
+    "config.json": "62fd3d1b08d14b66528d1a46c67dce75a832da1dd40568db93902be466f67818",
+    "drive_fault.py": "c3762dae2bbd218f2ea0f573877df87cd090a72193be2e3ac74244ccf4e653b2",
+    "continue_fault.py": "d6dec00d372319215d64f65d2e49c34a3c6455996263ef487552f94a6af0c470",
+    "audit_recovery.py": "e8460af61ff31640212aec3a0aee61663fcce4db10198e97ac9d61357dcbd022",
+    "driver.log": "195f4d098bd071e2416074d39eee0aea8ec96b762fe26c3fb8d407c894facdf4",
+    "continue-driver.log": "f69b236a4882c7f73ea51b4d5425c8be20ae01af00f68119bcbc64123e73aa76",
+    "fault-events.json": "903bc81a5abb46e0639aa8979fa2278d3c73434607d4fa0d4d121adb00fda934",
+    "before-crash.json": "ef4f424a8b6284e83d1bb8539610967fb894ce746ee39d5f4ebd46a962e84f3b",
+    "after-crash-remote.json": "de29892abe5396cf15a51eecc9da7deebdd896e72c052c5b4f1ac12bf7a9d343",
+    "recovery-verdict.json": "77d43cabf41da5c30f808689acd96f961345d6d2e8b4655a2ab12e2c27f99672",
+    "independent-audit.json": "c39f589b5c84eab2ab4a8b7184c5f72d5addb45a67a15d67407b83974a5c21a1",
+    "remote-job-inventory-final.json": "56b66af532364023281f3d680fdaff558e64aa0cf3c0ebb4fdd1523271eca4b8",
+    "output/state.json": "db37326d62b0c1fe0db512e9b7c88b96938e3d5fcd6a5fe9bd2b6ba65a5a3803",
+    "output/report.json": "036565cd9712d44716ae9a858236864aeef3b56d42e4885d419c919ddaf93fe5",
+    "output/permissions.json": "db7224c9a79c39e55c9cedb0fa9cc82997f0ba36d91d78768f81ca067c961f82",
+    "output/iteration-0000/codex.jsonl": "bb504d3d7bdde4db45096572793ba9e1db5e094030218f3423d305b9be150627",
+    "output/iteration-0000/codex.process.json": "eefbc32ee8ce658b79027c61490590479a4a59e30267a3ce243c703e4daad834",
+    "output/iteration-0000/fill-portable-v2/remote-job.json": "a6ff7990ed7521fc5a05c8f9cc15aea8552538c2a1df2d4d3ef0575dd3b6b129",
+    "output/iteration-0000/fill-portable-v2/collection-receipt.json": "854aba8a934d457d6b88b3a5027a2b643c776b72a4a9686c8a206ace8b681e18",
+    "transport-tests.log": "d9e2dfb0c9e9486a7111d5527d5e434a5a8909998da5422abbac7a0783cd38c7",
+    "packaged-supervisor-tests-v1.json": "a55f9126d0f52b2e606ec921afa6ef3f0eb0a09982c6c812d0c5d3818a103a99",
+    "packaged-supervisor-tests-v2.log": "e8693743efcf3cd240cf071034443d68905e9d9a9d5ec0c7694f804a95fb1ce4",
+    "packaged-supervisor-verdict.json": "569167462892a607d3ab9688dc12449c399872099b32b1942fcee2cca134d724",
+    "inspector-native-v1.json": "49bf94584dc9e8da6a1089fad5ba59cb01821b907ea6139620b809c070b38164",
+    "inspector-native-v2.json": "1894a9a8b265e13f4765e6e64c64a52558e2f697d6f202404dc15f3c7afe1b4a",
+    "inspector-source-v2.json": "754ff0d5e5eb71f9e9aa90e4ba4eaecca54bda709147aebea747ea1931377005",
+    "inspector-source-require-native-v2.json": "82f554336779c6c8eb31ed72732b3165238699d3f48b452a6b0fd9165dbf8535",
+    "packaged-supervisor-tests-v3.log": "69cd2ca842d9bd7a5070043c83c1af76dc3b2eabda186880023090a63bf75e9f"
+  },
+  "evidence_scope": "Local evidence under artifacts/softbody/supervisor-live-resume-v1. Raw configuration, coding logs and reference traces are retained locally. This public manifest records their hashes; it does not contain credentials or original benchmark assets."
+}

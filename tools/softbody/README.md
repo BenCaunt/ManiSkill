@@ -5,6 +5,9 @@ coupling adapter and `MPMBaseEnv`. Tested configurations include one CPU PhysX
 scene with CPU or CUDA MPM and short single-scene GPU PhysX task runs with CUDA
 MPM. Source and Linux native [wheel builds](packaging.md) are available for
 this experimental integration.
+The [local coding and remote verification supervisor](supervisor/README.md)
+has [live crash/resume evidence](supervisor-recovery.md) that retains the
+independent physics verdict and original resource limits.
 `Fill-v0`, `Excavate-v0`, `Hang-v0`, `Pour-v0`, `Write-v0`, and `Pinch-v0` now run with their legacy robot, material initialization, SDF contacts,
 success/reward equations, and particle sphere visuals. Full reference parity is
 still unverified. The [GPU task suite](gpu-tasks.md) records short rollouts for

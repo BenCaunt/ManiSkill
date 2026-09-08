@@ -57,6 +57,27 @@ wrong Python/platform, symlinked files, checksum mismatches or non-x86_64 ELF
 libraries. It is not an implicit scan of build outputs. The native package is
 experimental and has not been published to PyPI.
 
+To inspect an installed tree without importing its packages, run
+`python -I -S tools/softbody/inspect_installation.py --site-packages /path/to/site-packages`
+from this checkout. The standard-library-only tool prints JSON with installation
+type, expected files, SHA-256 results, recorded native ABI/build metadata,
+inspecting-interpreter ABI and license provenance. Source-only installs normally
+exit 0; `--require-native` makes them exit 1. Missing/corrupt bundles also exit 1.
+An ABI mismatch with the inspecting interpreter is reported, so a foreign tree
+can still be inspected. Success establishes only static file integrity, not
+dependency/loader compatibility, CUDA availability or physics support/parity.
+Source-only checks cover key source/license files; locally compiled Warp is
+unverified. Use a trusted tree that is not being modified during inspection;
+reads are bounded to 1 MiB for JSON, 256 MiB per file and 1 GiB in total.
+The native manifest includes build-tree inputs as well as installed files. The
+inspector reports the upstream robot-authoring template and Warp changelog in
+`build_only_sources`, with their recorded hashes and exclusion reasons; neither
+is wheel package data. All other declared source and native files are checked.
+The initial diagnostic incorrectly reported those two omissions as missing
+runtime files. The corrected diagnostic passes on the actual native wheel and
+source installation, with 13 focused tests. This correction does not rebuild or
+change the tested wheels.
+
 ## Evidence and limits
 
 The source wheel and a wheel rebuilt from its sdist each pass an independent

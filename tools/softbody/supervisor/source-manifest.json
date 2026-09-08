@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "files": {
+    "softbody_lab/__init__.py": {
+      "sha256": "e9b1ee7d67fa556938e9615e946fe97b1d0e34cb8fd0c62264ce17af9f839486",
+      "live_run_sha256": "2211cd5ccf8cbef018d0772012c7ebfb7345d8a5da745ec3f994c6a2fd1f6722",
+      "identical_to_live_run": false,
+      "change": "Removed an extra blank line at EOF; SCHEMA_VERSION is unchanged."
+    },
+    "softbody_lab/__main__.py": {
+      "sha256": "682b38e8681824b69f75b7fd05f66b3689f64c48d6c7060675507100144cc06b",
+      "live_run_sha256": "682b38e8681824b69f75b7fd05f66b3689f64c48d6c7060675507100144cc06b",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/artifacts.py": {
+      "sha256": "59b96ab16a51870ce51467d2980db1a502d572d6ed31833d8497098bf2558339",
+      "live_run_sha256": "59b96ab16a51870ce51467d2980db1a502d572d6ed31833d8497098bf2558339",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/coding_runner.py": {
+      "sha256": "fe248e75ff6d99b896c69c861a38603cfd4375d80d992035bc74a4eb5b6f73ed",
+      "live_run_sha256": "fe248e75ff6d99b896c69c861a38603cfd4375d80d992035bc74a4eb5b6f73ed",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/compare.py": {
+      "sha256": "98fb4548d87ecf38ae4b752e7b15f27082c1f72e55977cbd852298465f15d0f0",
+      "live_run_sha256": "98fb4548d87ecf38ae4b752e7b15f27082c1f72e55977cbd852298465f15d0f0",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/cooked_extensions.py": {
+      "sha256": "06a6e33e1c8f06c53b79a77281ba91be243576523c2d66bfa26e8baa49ab5434",
+      "live_run_sha256": "06a6e33e1c8f06c53b79a77281ba91be243576523c2d66bfa26e8baa49ab5434",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/fixtures.py": {
+      "sha256": "c6d8f868eb3d8472e5c62ba79ad9f4106e7d7fd7350b9589ff107fd214ed41b4",
+      "live_run_sha256": "c6d8f868eb3d8472e5c62ba79ad9f4106e7d7fd7350b9589ff107fd214ed41b4",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/gpu_job.py": {
+      "sha256": "18ed814f57cf75a5b6fb947b283374219d34a0f7057712b9776e3b6f920b3867",
+      "live_run_sha256": "18ed814f57cf75a5b6fb947b283374219d34a0f7057712b9776e3b6f920b3867",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/job_archive.py": {
+      "sha256": "b389bd820e89ff127d85f02852fed2c0a88e48870627d4abb2a0e448a89690b0",
+      "live_run_sha256": "b389bd820e89ff127d85f02852fed2c0a88e48870627d4abb2a0e448a89690b0",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/loop.py": {
+      "sha256": "84fe0f5f8dae871bc5d026f208e47e2689e12263d42a37c4debee13638d57ae4",
+      "live_run_sha256": "84fe0f5f8dae871bc5d026f208e47e2689e12263d42a37c4debee13638d57ae4",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/native_extensions.py": {
+      "sha256": "a8aff1c5b3d689142892a6fb9cdde15bd8e8b7f05204f07f495cb2bc5203fc85",
+      "live_run_sha256": "a8aff1c5b3d689142892a6fb9cdde15bd8e8b7f05204f07f495cb2bc5203fc85",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/remote.py": {
+      "sha256": "145d2439aef820f6096f165838ef6d9dbb885144c8ed41e9a9fb254443567aa9",
+      "live_run_sha256": "145d2439aef820f6096f165838ef6d9dbb885144c8ed41e9a9fb254443567aa9",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/remote_replay.py": {
+      "sha256": "a2904ee4d1321692b68b9ba99468f1831702d25172a550477a0c0d590bcaa8ee",
+      "live_run_sha256": "fa5459e2ce20d4cf63b05fd1fbf4572661f5e6ad68c9be0d563da1a7c1e82f98",
+      "identical_to_live_run": false
+    },
+    "softbody_lab/runner.py": {
+      "sha256": "19eb8063f93cbb628e179051020a9acd90cb31778a7dc6ccb621937e709839cf",
+      "live_run_sha256": "19eb8063f93cbb628e179051020a9acd90cb31778a7dc6ccb621937e709839cf",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/telemetry.py": {
+      "sha256": "cd8a02fb3923f7f5d4e39a335718a74b32a01368d1bddb54ea78201cc35fe326",
+      "live_run_sha256": "cd8a02fb3923f7f5d4e39a335718a74b32a01368d1bddb54ea78201cc35fe326",
+      "identical_to_live_run": true
+    },
+    "tests/test_loop.py": {
+      "sha256": "a64e79f8e2ab603788df1f42f39dc7dc624a960a5b38850a4e62d9b96a9dc914",
+      "source": "sim-infra/softbody_lab/tests/test_loop.py"
+    },
+    "tests/test_remote_jobs.py": {
+      "sha256": "d3a8afd14782364f65394ffd9384f62529d0a057be2669afa26e24d48b0ddb46",
+      "source": "sim-infra/softbody_lab/tests/test_remote_jobs.py"
+    },
+    "tests/test_evaluator.py": {
+      "sha256": "886e9fe1bf648bb396781ccc3c47312d594f9c8fe09240bc8b2e0ca752f4ef01",
+      "source": "sim-infra/softbody_lab/tests/test_evaluator.py"
+    },
+    "tests/test_telemetry.py": {
+      "sha256": "74cdf9eaba3e3c9cd56859f2b237d698403023bb3cb8faa44029440c12f9ef29",
+      "source": "sim-infra/softbody_lab/tests/test_telemetry.py"
+    },
+    "softbody_lab/task_checks.py": {
+      "sha256": "718d8de95308bbac54ac732d206d9c73d9f6c9d183759adce03c93643a595ee7",
+      "live_run_sha256": "718d8de95308bbac54ac732d206d9c73d9f6c9d183759adce03c93643a595ee7",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/pinch_checks.py": {
+      "sha256": "d01fa2e8b52c3f59cbb2aad6086007f936259dee003bd0b021a0c0ed58732cb3",
+      "live_run_sha256": "d01fa2e8b52c3f59cbb2aad6086007f936259dee003bd0b021a0c0ed58732cb3",
+      "identical_to_live_run": true
+    },
+    "softbody_lab/write_checks.py": {
+      "sha256": "617357f1f989f66a40d2104bfae6f7ba8d0111ff3431f8b62b80b765f887b3e8",
+      "live_run_sha256": "617357f1f989f66a40d2104bfae6f7ba8d0111ff3431f8b62b80b765f887b3e8",
+      "identical_to_live_run": true
+    }
+  },
+  "scope": "Snapshot of the standalone controller and required capture/evaluator modules. remote_replay.py has the post-run malformed-status-response correction tested locally; __init__.py only loses trailing whitespace. All other modules match the live run. Original reference outcomes, private configuration, credentials and external assets are not included."
+}
