@@ -1,0 +1,240 @@
+{
+  "scope": "GPU force projection and primitive two-way MPM contact; not full task batching or parity",
+  "articulations": {
+    "passed": true,
+    "failures": [],
+    "errors": {
+      "cpu-force": {
+        "idle_state_max_abs": 0.0
+      },
+      "cpu-joint": {
+        "idle_state_max_abs": 0.0,
+        "qpos_max_abs": 9.313225746154785e-10,
+        "qvel_max_abs": 5.960464477539063e-08,
+        "virtual_power_abs_W": 6.597835883349196e-07,
+        "unrelated_branch_force_abs": 0.0,
+        "baseline_only_force_abs": 0.0
+      },
+      "gpu-joint": {
+        "idle_state_max_abs": 0.0,
+        "qpos_max_abs": 9.313225746154785e-10,
+        "qvel_max_abs": 3.2782554626464844e-07,
+        "virtual_power_abs_W": 6.79535304165535e-07,
+        "unrelated_branch_force_abs": 0.0,
+        "baseline_only_force_abs": 0.0
+      }
+    },
+    "limits": {
+      "qpos_max_abs": 2e-06,
+      "qvel_max_abs": 5e-05,
+      "virtual_power_abs_W": 2e-05,
+      "idle_state_max_abs": 0.0,
+      "unrelated_branch_force_abs": 0.0,
+      "baseline_only_force_abs": 0.0
+    },
+    "scope": "Multi-joint branched fixed-base force projection on actual native CPU/GPU dynamics. Full MPM and task parity remain unverified.",
+    "full_port_complete": false
+  },
+  "coupling": {
+    "passed": false,
+    "failures": [
+      "cpu: idle_particle_position_error_m=1.1175870895385742e-08",
+      "cpu: idle_particle_velocity_m_s=1.9221470211050473e-06",
+      "gpu: idle_particle_position_error_m=1.1175870895385742e-08",
+      "gpu: idle_particle_velocity_m_s=1.7682206134850276e-06"
+    ],
+    "reports": {
+      "cpu": {
+        "errors": {
+          "momentum_error_kg_m_s": 1.0379911074295697e-07,
+          "rigid_impulse_error_kg_m_s": 1.899898158612627e-10,
+          "slider_impulse_error_kg_m_s": 2.2538006313674308e-10,
+          "hinge_impulse_error_kg_m2_s": 1.773726387391695e-11,
+          "idle_particle_position_error_m": 1.1175870895385742e-08,
+          "idle_particle_velocity_m_s": 1.9221470211050473e-06,
+          "idle_rigid_velocity_m_s": 0.0
+        },
+        "displacements_m": [
+          0.009330330846030667,
+          0.009366486221551895,
+          0.006008186826558256
+        ],
+        "peak_force_N": [
+          0.4092195825419458,
+          0.4098551273360878,
+          0.4142698022584856
+        ],
+        "minimum_grid_clearance_m": 0.1846055269241333
+      },
+      "gpu": {
+        "errors": {
+          "momentum_error_kg_m_s": 1.0388962380239003e-07,
+          "rigid_impulse_error_kg_m_s": 3.278255973204743e-10,
+          "slider_impulse_error_kg_m_s": 3.539025786834793e-10,
+          "hinge_impulse_error_kg_m2_s": 7.500867185402174e-11,
+          "idle_particle_position_error_m": 1.1175870895385742e-08,
+          "idle_particle_velocity_m_s": 1.7682206134850276e-06,
+          "idle_rigid_velocity_m_s": 0.0
+        },
+        "displacements_m": [
+          0.009330331759819389,
+          0.009366512298583984,
+          0.0060078172062226175
+        ],
+        "peak_force_N": [
+          0.4092192247445841,
+          0.40984922647626826,
+          0.4142716203618638
+        ],
+        "minimum_grid_clearance_m": 0.18460415601730346
+      }
+    },
+    "descriptive_cpu_gpu_max_errors": {
+      "x": 3.2335519790649414e-06,
+      "v": 0.0001342296600341797,
+      "rigid": 8.392333984375e-05,
+      "joint": 8.356571197509766e-05,
+      "wrenches": 0.0001461803913116455
+    },
+    "limits": {
+      "momentum_error_kg_m_s": 2e-06,
+      "rigid_impulse_error_kg_m_s": 2e-07,
+      "slider_impulse_error_kg_m_s": 2e-07,
+      "hinge_impulse_error_kg_m2_s": 2e-08,
+      "minimum_displacement_m": 1e-05,
+      "minimum_grid_clearance_m": 0.02,
+      "idle_particle_position_error_m": 0.0,
+      "idle_particle_velocity_m_s": 0.0,
+      "idle_rigid_velocity_m_s": 0.0
+    },
+    "scope": "Analytic contact/impulse checks for shared native GPU PhysX with independent MPM models. Cross-backend trajectories descriptive, not calibrated task parity.",
+    "full_port_complete": false
+  },
+  "articulation_archive_sha256": "4fd91b6c17359757fe2ad0e7a91836d5f82d660d70e37df6d81ea439a16637ff",
+  "coupling_archive_sha256": "38380d07b68287de562d2909bf8960a056d37a9c4b73694d8bb14f9c0bbdaf9a",
+  "coupling_input_sha256": "87fd32f48dc8c2d68025d4cbec48d4483e6667f602a52aecfb4989f37b56d772",
+  "tested_source_files": {
+    "mani_skill/envs/softbody/gpu_coupling.py": "92eb96fc93b2d67cdc65de2b062658b3a19b9feca8302cddb7bdd4c4e9470ab4",
+    "mani_skill/envs/softbody/gpu_wrenches.py": "5a496e1522bfb9e7704757f28af586ca0e7529c13d125e673a32d84a20dc7703",
+    "mani_skill/envs/softbody/mpm.py": "8e8f143ca45888cd9da20e914ff54440d402284f62b4a1e90f56a56afb30bf0f"
+  },
+  "changes_since_test": "mpm.py module/class documentation only",
+  "retained_failures": [
+    "gpu-coupling-v2 missing slider/hinge MPM reactions and idle drift",
+    "gpu-coupling-v3 idle particle position and velocity exceed unchanged zero limits in both backends"
+  ],
+  "full_port_complete": false,
+  "rest_diagnostic": {
+    "scope": "Measure original solver rest drift and identity SVD directly. No acceptance-limit changes. Rest pose, velocity, F and C recorded before and after each group of four MPM steps; no native rigid engine or coupling.",
+    "archive_sha256": "07cec1d84ff71c4497b796bfdab310ebb4942e7bf5f489e48a68343cbd79d696",
+    "roles": {
+      "reference": {
+        "max_position_drift_m": 1.1175870895385742e-08,
+        "max_velocity_m_s": 1.8391561980024562e-06,
+        "first_group_velocity_m_s": 4.617490674263536e-07,
+        "initial_singular_values": [
+          [
+            0.9999998211860657,
+            0.9999995827674866,
+            0.9999997615814209
+          ]
+        ],
+        "initial_rotation": [
+          [
+            0.9999996423721313,
+            1.0221774715546417e-07,
+            1.7881393432617188e-07
+          ],
+          [
+            -1.1254441290020623e-07,
+            0.9999997615814209,
+            0.0
+          ],
+          [
+            -1.7881389169360773e-07,
+            -1.911845519137617e-14,
+            0.9999998211860657
+          ]
+        ],
+        "initial_stress": [
+          [
+            0.0007152557373046875,
+            -0.0002044354914687574,
+            -0.00035762786865234375
+          ],
+          [
+            0.00022508882102556527,
+            0.000476837158203125,
+            0.0
+          ],
+          [
+            0.0003576277813408524,
+            3.823691016591191e-11,
+            0.00035762786865234375
+          ]
+        ],
+        "arrays_sha256": "60fe4532d79269474a561cfbe031ecc2085a34083f233c1506be429b4e027a83",
+        "native_library_sha256": "c6f30cdf6e338b4f5da8249766fb71209a95d58390fd1f4fb80390f359fbda8c",
+        "high_precision_product_stress_difference": 1.8038356586203008e-05,
+        "host_stress_from_recorded_rotation_max_error": 0.0,
+        "svd_rotation_reconstruction_max_error": 9.019178293101504e-09
+      },
+      "candidate": {
+        "max_position_drift_m": 1.1175870895385742e-08,
+        "max_velocity_m_s": 1.8391561980024562e-06,
+        "first_group_velocity_m_s": 4.617490674263536e-07,
+        "initial_singular_values": [
+          [
+            0.9999998211860657,
+            0.9999995827674866,
+            0.9999997615814209
+          ]
+        ],
+        "initial_rotation": [
+          [
+            0.9999996423721313,
+            1.0221774715546417e-07,
+            1.7881393432617188e-07
+          ],
+          [
+            -1.1254441290020623e-07,
+            0.9999997615814209,
+            0.0
+          ],
+          [
+            -1.7881389169360773e-07,
+            -1.911845519137617e-14,
+            0.9999998211860657
+          ]
+        ],
+        "initial_stress": [
+          [
+            0.0007152557373046875,
+            -0.0002044354914687574,
+            -0.00035762786865234375
+          ],
+          [
+            0.00022508882102556527,
+            0.000476837158203125,
+            0.0
+          ],
+          [
+            0.0003576277813408524,
+            3.823691016591191e-11,
+            0.00035762786865234375
+          ]
+        ],
+        "arrays_sha256": "60fe4532d79269474a561cfbe031ecc2085a34083f233c1506be429b4e027a83",
+        "native_library_sha256": "0ff79cd2e307e3cce8825e4319d2c52d684ce188e22095e46f1fd5cd140857d8",
+        "high_precision_product_stress_difference": 1.8038356586203008e-05,
+        "host_stress_from_recorded_rotation_max_error": 0.0,
+        "svd_rotation_reconstruction_max_error": 9.019178293101504e-09
+      }
+    },
+    "acceptance_limits_changed": false,
+    "full_port_complete": false,
+    "conclusion": "Original pinned MPM solver and port both develop rest drift without any rigid engine or coupling adapter. Raw identity SVD produces a nonidentity rotation and nonzero elastic stress in both. This establishes an intrinsic numerical contribution; it does not calibrate limits or prove complete multi-scene isolation.",
+    "reference_candidate_npz_byte_identical": true,
+    "arithmetic_note": "The host float32 stress computed from recorded native R matches exactly. High-precision U times V-transpose differs slightly from native float32 matrix multiplication; its resulting stress difference is descriptive, not a changed acceptance threshold."
+  }
+}

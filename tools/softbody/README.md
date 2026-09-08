@@ -128,7 +128,11 @@ call their superclass so coupling runs once per PhysX timestep.
 applies world-frame force and torque about each body's COM. ManiSkill then steps
 PhysX. `complete_step` publishes the final MPM buffer. Runtime stepping never
 assigns robot or object poses. GPU MPM currently transfers state/wrenches through
-the CPU; this is not a GPU PhysX adapter or a throughput claim.
+the CPU. The separate `MPMGPUWorld` adapter now couples primitive contacts to
+shared native GPU PhysX, with branched articulation force projection. Its contact
+impulse checks pass, while original exact-zero idle-particle gates still fail.
+The task classes continue to use the CPU PhysX path; see
+[GPU coupling evidence and limits](gpu-coupling.md).
 
 Reset replay supports a changed particle count for uniform-color particle recipes,
 with fixed rigid/task topology and the same solid/fluid state layout. Dictionary

@@ -5,8 +5,8 @@ state, integrate MPM substeps, average reaction wrenches, apply forces, step
 PhysX, and rotate the MPM state buffers. All wrenches are in world coordinates;
 torques are about each body's center of mass, as produced by the MPM kernels.
 
-This module is intentionally explicit about its current CPU PhysX scope. MPM
-may run on CUDA or CPU. GPU PhysX needs a different force/synchronization adapter.
+MPM may run on CUDA or CPU. The default adapter owns one CPU PhysX scene;
+GPU PhysX uses the explicit shared-world scheduler in gpu_coupling.py.
 """
 
 from dataclasses import dataclass
@@ -74,16 +74,18 @@ class CouplingStep:
 
 
 class MPMCoupler:
-    """A single CPU-PhysX scene coupled to a legacy MPM model.
+    """A legacy MPM model with native or explicitly adapted rigid coupling.
 
     Call step() once per PhysX timestep. For an environment integration, pass its
     before_simulation_step callback so drive targets/forces retain legacy order.
+    With a rigid_adapter, an external world owns prepare/complete and stepping.
     Pose/state assignment belongs to environment reset, never this step method.
     """
 
-    def __init__(self, scene, model, states, bodies, *, mpm_dt, rigid_dt=None):
-        if not isinstance(scene.physx_system, physx.PhysxCpuSystem):
-            raise NotImplementedError("This adapter requires CPU PhysX; GPU force coupling is not implemented here")
+    def __init__(self, scene, model, states, bodies, *, mpm_dt, rigid_dt=None, rigid_adapter=None):
+        if rigid_adapter is None and not isinstance(scene.physx_system, physx.PhysxCpuSystem):
+            raise NotImplementedError("GPU coupling requires an explicit shared-world rigid adapter")
+        self.rigid_adapter = rigid_adapter
         self.scene = scene
         self.model = model
         self.states = list(states)
@@ -118,10 +120,13 @@ class MPMCoupler:
             raise RuntimeError("Complete the pending PhysX step before preparing another")
         if not np.isclose(self.scene.get_timestep(), self.rigid_dt, rtol=1e-7, atol=1e-10):
             raise RuntimeError("PhysX timestep changed after coupling was configured")
-        poses = np.asarray([warp_pose(b.entity_pose) for b in self.bodies], dtype=np.float32).reshape(-1, 7)
-        twists = np.asarray([np.r_[b.angular_velocity, b.linear_velocity]
-                             if isinstance(b, physx.PhysxRigidBodyComponent) else np.zeros(6)
-                             for b in self.bodies], dtype=np.float32).reshape(-1, 6)
+        if self.rigid_adapter is None:
+            poses = np.asarray([warp_pose(b.entity_pose) for b in self.bodies], dtype=np.float32).reshape(-1, 7)
+            twists = np.asarray([np.r_[b.angular_velocity, b.linear_velocity]
+                                 if isinstance(b, physx.PhysxRigidBodyComponent) else np.zeros(6)
+                                 for b in self.bodies], dtype=np.float32).reshape(-1, 6)
+        else:
+            poses, twists = self.rigid_adapter.read_rigid_state()
         if not np.isfinite(poses).all() or not np.isfinite(twists).all():
             self.failed = True
             raise RuntimeError("Non-finite rigid state")
@@ -147,9 +152,12 @@ class MPMCoupler:
             mean = wrenches.mean(axis=0)
             if before_physx is not None:
                 before_physx()
-            for body, wrench in zip(self.bodies, mean):
-                if isinstance(body, physx.PhysxRigidBodyComponent) and not getattr(body, "kinematic", False):
-                    body.add_force_torque(wrench[3:], wrench[:3], mode="force")
+            if self.rigid_adapter is None:
+                for body, wrench in zip(self.bodies, mean):
+                    if isinstance(body, physx.PhysxRigidBodyComponent) and not getattr(body, "kinematic", False):
+                        body.add_force_torque(wrench[3:], wrench[:3], mode="force")
+            else:
+                self.rigid_adapter.apply_wrenches(mean)
         except BaseException:
             self.failed = True
             raise
@@ -166,6 +174,8 @@ class MPMCoupler:
         return detail
 
     def step(self, before_physx=None):
+        if self.rigid_adapter is not None:
+            raise RuntimeError('An external rigid adapter owns the shared world step')
         self.prepare_step(before_physx)
         try:
             self.scene.step()
