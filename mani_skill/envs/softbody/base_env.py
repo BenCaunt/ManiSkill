@@ -175,8 +175,11 @@ class MPMBaseEnv(BaseEnv):
         return copy_tree(state)
 
     def get_state(self):
-        # Particle tensors have more dimensions than the base rigid-state flattener.
-        return common.flatten_state_dict(self._flat_leaves(self.get_state_dict()), use_torch=True, device=self.device)
+        # Checkpoints must preserve float64 task inputs. The observation-oriented
+        # common flattener casts nested float64 leaves to float32. Concatenating
+        # leaves directly promotes dtypes without rounding those saved inputs.
+        leaves = common.flatten_dict_keys(self._flat_leaves(self.get_state_dict()))
+        return torch.cat(list(leaves.values()), dim=1)
 
     def set_state_dict(self, state, env_idx=None):
         if not self._mpm_reset_active:

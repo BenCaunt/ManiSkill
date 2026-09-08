@@ -7,6 +7,7 @@ import numpy as np
 import torch
 
 from .fill import FillEnv
+from .excavate import ExcavateEnv
 from .base_env import MATERIAL_FIELDS
 
 
@@ -26,22 +27,29 @@ def numeric_tree(value, *, unbatch=False):
 
 class CaptureAdapter:
     def __init__(self, env_id, *, control_mode, env_kwargs):
-        if env_id != 'Fill-v0':
+        tasks = {'Fill-v0': FillEnv, 'Excavate-v0': ExcavateEnv}
+        if env_id not in tasks:
             raise NotImplementedError(f'Native task capture is not yet implemented for {env_id}')
         self.control_mode = control_mode
-        self.env = FillEnv(obs_mode='none', control_mode=control_mode, **env_kwargs)
+        self.env_id = env_id
+        self.env = tasks[env_id](obs_mode='none', control_mode=control_mode, **env_kwargs)
 
     def _physical_actors(self):
         env = self.env
-        if sorted(env.scene.actors) != ['ground', 'target_beaker']:
-            raise RuntimeError('Unexpected Fill physical actor set')
+        expected = ['ground', 'target_beaker'] if self.env_id == 'Fill-v0' else ['ground', 'wall_0', 'wall_1', 'wall_2', 'wall_3']
+        if sorted(env.scene.actors) != expected:
+            raise RuntimeError('Unexpected physical actor set')
         if env.agent.robot._objs[0].root.joint.type != 'fixed':
-            raise RuntimeError('Portable Fill requires a fixed-base robot')
-        return [env.ground._bodies[0], env.beaker_body]
+            raise RuntimeError('Portable bucket tasks require a fixed-base robot')
+        return [env.scene.actors[name]._bodies[0] for name in expected]
 
     def reset(self, *, seed, reset_kwargs, replay=None):
         env = self.env
-        options = dict(reset_kwargs)
+        # The recorder stores keyword arguments to gym.Env.reset. Match the
+        # reference's options nesting; never silently ignore task reset options.
+        if set(reset_kwargs) - {'options'}:
+            raise ValueError('Unsupported reset keyword arguments')
+        options = dict(reset_kwargs.get('options') or {})
         env.reset(seed=seed, options=options)
         if replay is not None:
             state, fixture, material = replay
@@ -58,15 +66,17 @@ class CaptureAdapter:
             checkpoint['mpm_material'] = {k: torch.as_tensor(material[k])[None] for k in MATERIAL_FIELDS}
             robot = np.r_[state['root_pose'][0], state['root_velocity'][0], state['qpos'], state['qvel']]
             checkpoint['articulations'][env.agent.robot.name] = torch.as_tensor(robot)[None]
-            beaker = np.r_[state['scene_actor_pose'][1], state['scene_actor_velocity'][1]]
-            checkpoint['actors'][env.target_beaker.name] = torch.as_tensor(beaker)[None]
+            for i, body in enumerate(self._physical_actors()[1:], 1):
+                actor = np.r_[state['scene_actor_pose'][i], state['scene_actor_velocity'][i]]
+                checkpoint['actors'][body.name] = torch.as_tensor(actor)[None]
             checkpoint['mpm_drives'] = {k: torch.as_tensor(state['drive_'+k])[None] for k in ('position', 'velocity')}
             def batched(value):
                 return {k: batched(v) for k, v in value.items()} if isinstance(value, dict) else torch.as_tensor(value, dtype=torch.float32)[None]
             controller = batched(fixture['controller_state'])
             if controller:
                 checkpoint['controller'] = controller
-            checkpoint['task']['beaker_xy'] = torch.as_tensor(state['task_state'], dtype=torch.float64)[None]
+            task_key = 'beaker_xy' if self.env_id == 'Fill-v0' else 'target_num'
+            checkpoint['task'][task_key] = torch.as_tensor(state['task_state'], dtype=torch.float64)[None]
             env.reset(seed=seed, options={**options, 'reset_to_env_states': {'env_states': checkpoint}})
         return self.snapshot()
 
@@ -76,7 +86,7 @@ class CaptureAdapter:
         robot = env.agent.robot._objs[0]
         root = robot.root
         joints = robot.active_joints
-        bodies = [env.bucket, env.beaker_body]
+        bodies = env.mpm_coupler.bodies
         actors = self._physical_actors()
         return {**env.mpm_coupler.particle_state(),
                 'mass': model.struct.particle_mass.numpy()[:model.struct.n_particles].copy(),
@@ -92,8 +102,9 @@ class CaptureAdapter:
                 'root_velocity': np.asarray([np.r_[root.linear_velocity, root.angular_velocity]]),
                 'scene_actor_pose': np.asarray([np.r_[b.entity_pose.p, b.entity_pose.q] for b in actors]),
                 'scene_actor_velocity': np.asarray([np.zeros(6, dtype=np.float32),
-                                                    np.r_[env.beaker_body.linear_velocity, env.beaker_body.angular_velocity]]),
-                'task_state': np.asarray([env.beaker_x, env.beaker_y], dtype=np.float64)}
+                                                    *[np.r_[a.linear_velocity, a.angular_velocity] for a in actors[1:]]]),
+                'task_state': np.asarray([env.beaker_x, env.beaker_y] if self.env_id == 'Fill-v0'
+                                         else [env.target_num], dtype=np.float64)}
 
     def description(self):
         env = self.env
@@ -104,7 +115,8 @@ class CaptureAdapter:
                 'static_ke', 'static_kd', 'static_mu', 'static_ka')
         return {'additional_state_fields': [],
                 'initial_state_contract': dict(version=2, derived_rigid_indices=[0], root_kind='fixed',
-                    scene_actor_names=['ground', 'target_beaker'], scene_actor_types=['static', 'kinematic']),
+                    scene_actor_names=[a.name for a in self._physical_actors()],
+                    scene_actor_types=['static'] + ['kinematic']*(len(self._physical_actors())-1)),
                 'controller_state': numeric_tree(env.agent.get_controller_state(), unbatch=True),
                 'control_mode': self.control_mode, 'control_dt': float(env.control_timestep),
                 'rigid_dt': float(env.scene.px.timestep), 'mpm_dt': float(env.mpm_dt),

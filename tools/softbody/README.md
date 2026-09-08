@@ -3,9 +3,9 @@
 This branch preserves ManiSkill 2 v0.5.3's MPM solver and adds a SAPIEN 3
 coupling adapter and `MPMBaseEnv`. The tested configuration uses one CPU PhysX
 scene with either CPU or CUDA MPM. This is an editable-checkout prototype.
-`Fill-v0` now runs with its legacy robot, material initialization, SDF contacts,
+`Fill-v0` and `Excavate-v0` now run with their legacy robot, material initialization, SDF contacts,
 success/reward equations, and particle sphere visuals. Full reference parity is
-still unverified. The other five task ports, GPU PhysX batching, and distributable
+still unverified. The other four task ports, GPU PhysX batching, and distributable
 wheel packaging remain under development.
 
 The copied runtime has separate terms in
@@ -57,9 +57,16 @@ the open SDF used by particles.
 export MANISKILL_LEGACY_ASSET_DIR=/path/to/ManiSkill2/mani_skill2/assets
 python tools/softbody/probe_fill.py --output /tmp/fill-001
 python tools/softbody/probe_fill_lifecycle.py --output /tmp/fill-lifecycle-001
+python tools/softbody/probe_fill.py --env-id Excavate-v0 --output /tmp/excavate-001
+python tools/softbody/probe_fill_lifecycle.py --env-id Excavate-v0 --output /tmp/excavate-lifecycle-001
 ```
 
 Import `mani_skill.envs.softbody.fill` explicitly to register `Fill-v0` with Gym.
+Import `mani_skill.envs.softbody.excavate` for `Excavate-v0`. Both reuse
+`LegacyBucketEnv` and `LegacyPandaBucket`; Excavate retains the original Perlin
+terrain recipe, four wall colliders, target particle count, and reward/success
+equations. Its seed-101 initialization has 11,056 particles, 4.146 kg total mass,
+and a target of 1,113 lifted particles. These are benchmark simulation inputs.
 The current mesh extraction needs a SAPIEN renderer even for state-only Fill
 rollouts. The recorded task runs use Linux, CUDA MPM, and CPU PhysX. Cameras use
 visual-only sphere entities at actual particle positions, with no physics or
@@ -94,12 +101,14 @@ Reset replay currently assumes the same particle topology.
 Reset builds the model before restoring state, including after reconfiguration.
 Checkpoints contain all five particle material arrays, controller memory, and native drive targets; restoring them
 does not invoke a controller reset afterward. The current schema requires these
-fields for robot checkpoints. Camera observations are recomputed after restore.
+fields for robot checkpoints. Flat checkpoints preserve float64 task inputs;
+state observations keep their normal observation dtype. Camera observations are
+recomputed after restore.
 The lifecycle probe changes the reset recipe's density before restoring a checkpoint
 and checks that the saved masses and material arrays replace the new recipe.
 
-`mani_skill.envs.softbody.capture.CaptureAdapter` exposes Fill to the independent
-`softbody_lab` recorder. Version 2 fixtures use explicit physical actor, fixed-root,
+`mani_skill.envs.softbody.capture.CaptureAdapter` exposes both bucket tasks to the
+independent `softbody_lab` recorder. Version 2 fixtures use explicit physical actor, fixed-root,
 joint, controller, task, and particle fields for portable reset. Each engine's
 actual native state buffer is also recorded, but its serialization is not assumed
 to match another engine's. The adapter does not import ManiSkill 2 or reference
@@ -111,3 +120,15 @@ limits passed. The overall strict verdict **failed**: derived initial position
 and quaternion component differences were 3.58e-7 m and 1.79e-7, above the existing
 1e-8 limits. These limits were not widened. This result establishes working
 capture/replay, not full reference parity or successful manipulation.
+
+The corresponding Excavate fixture also matched its portable input hash and all
+one-step trajectory/reward limits. Its strict verdict failed the same two initial
+derived-pose gates (3.71e-7 m and 1.79e-7). A separate 20-control no-op capture
+completed with finite states, matching reference joint positions, and zero spilled
+particles. It is a settling diagnostic, not a calibrated full-episode parity pass
+or proof that the robot can scoop material successfully.
+
+Excavate reward membership uses the first actual rigid collision hull, as in the
+legacy evaluator, separately from the open visual SDF used for particle contacts.
+That hull is cooked by the native PhysX version; exact cross-version hull and
+reward membership equivalence under manipulation remain to be verified.

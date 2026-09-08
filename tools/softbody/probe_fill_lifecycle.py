@@ -10,16 +10,18 @@ import torch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from mani_skill.envs.softbody.fill import FillEnv
+from mani_skill.envs.softbody.excavate import ExcavateEnv
 from mani_skill.envs.softbody.mpm import wp
 
 
-def run(output):
+def run(output, env_id='Fill-v0'):
     wp.config.kernel_cache_dir = str(output.parent / 'warp-cache')
-    env = FillEnv(control_mode='pd_joint_target_delta_pos', obs_mode='state_dict', render_backend='gpu')
+    env_type = {'Fill-v0': FillEnv, 'Excavate-v0': ExcavateEnv}[env_id]
+    env = env_type(control_mode='pd_joint_target_delta_pos', obs_mode='state_dict', render_backend='gpu')
     try:
         obs, _ = env.reset(seed=101)
         assert obs['extra']['tcp_pose'].shape == (1, 7)
-        assert obs['extra']['target'].shape == (1, 2)
+        assert obs['extra']['target'].shape == (1, 2 if env_id == 'Fill-v0' else 1)
         before = env.get_state_dict()
         env.render_rgb_array()
         camera = env.scene.human_render_cameras['render_camera']
@@ -49,9 +51,10 @@ def run(output):
         trials = []
         for kind, state, reconfigure in [('dict', checkpoint, False), ('flat', flat, False), ('reconfigure', checkpoint, True)]:
             obs, _ = env.reset(seed=101, options={'reconfigure': reconfigure,
+                        **({'target_num': 601} if env_id == 'Excavate-v0' else {}),
                         'reset_to_env_states': {'env_states': state}})
             restored = env.get_state_dict()
-            for key in ('mpm', 'mpm_drives'):
+            for key in ('mpm', 'mpm_material', 'mpm_drives', 'task'):
                 assert all(torch.equal(restored[key][k], v) for k, v in checkpoint[key].items()), f'{kind}: {key} restore mismatch'
             assert torch.equal(env.agent.controller.get_state()['arm']['target_qpos'], target)
             assert torch.equal(obs['agent']['controller']['arm']['target_qpos'], target)
@@ -70,7 +73,7 @@ def run(output):
         except ValueError:
             rejected = True
         assert rejected, 'Non-finite controller state was accepted'
-        return dict(passed=True, scope='checkpoint and camera lifecycle, not reference parity',
+        return dict(passed=True, env_id=env_id, scope='checkpoint and camera lifecycle, not reference parity',
                     particle_pixels=count, particle_depth_range_mm=[int(depths.min()), int(depths.max())],
                     target_memory_exercised=True, invalid_controller_rejected=rejected, trials=trials)
     finally:
@@ -80,11 +83,12 @@ def run(output):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output', type=Path, required=True)
+    parser.add_argument('--env-id', default='Fill-v0', choices=['Fill-v0', 'Excavate-v0'])
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=False)
     report = {'passed': False}
     try:
-        report = run(args.output)
+        report = run(args.output, args.env_id)
     except BaseException as exc:
         report['error'] = f'{type(exc).__name__}: {exc}'
         raise

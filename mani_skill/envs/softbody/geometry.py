@@ -31,6 +31,20 @@ def visual_meshes(body):
     return meshes
 
 
+def convex_collision_meshes(body):
+    """Read actual cooked hulls in body coordinates for legacy reward geometry."""
+    meshes = []
+    for shape in body.get_collision_shapes():
+        if not isinstance(shape, sapien.physx.PhysxCollisionShapeConvexMesh):
+            raise NotImplementedError('Expected convex triangle-mesh collision geometry')
+        mesh = trimesh.Trimesh(shape.vertices * shape.scale, shape.triangles)
+        mesh.apply_transform(shape.local_pose.to_transformation_matrix())
+        meshes.append(mesh)
+    if not meshes:
+        raise ValueError('Missing convex collision geometry')
+    return meshes
+
+
 def mesh_signature(meshes):
     digest = hashlib.sha256(b'maniskill2-v0.5.3-sdf-v2')
     for mesh in meshes:
