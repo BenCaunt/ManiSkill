@@ -1,6 +1,6 @@
 # Legacy soft-body code
 
-`fill.py`, `bucket.py`, `excavate.py`, `hang.py`, `pour.py`, `legacy_base.py`, `legacy_panda.py`,
+`fill.py`, `bucket.py`, `excavate.py`, `hang.py`, `pour.py`, `legacy_base.py`, `legacy_panda.py`, `controllers.py`,
 and `geometry.py` adapt the task equations, initialization, and SDF
 algorithm from ManiSkill 2 v0.5.3, commit
 `493be36121a9dd06071a57172274babe617b789f`, by the ManiSkill authors:
@@ -10,6 +10,7 @@ algorithm from ManiSkill 2 v0.5.3, commit
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/hang_env.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/pour_env.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/agents/configs/panda/defaults.py
+- https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/agents/controllers/pd_ee_pose.py
 - https://github.com/mani-skill/ManiSkill/blob/493be36121a9dd06071a57172274babe617b789f/mani_skill2/envs/mpm/utils.py
 
 The original README places soft-body environments under the NVIDIA Source Code

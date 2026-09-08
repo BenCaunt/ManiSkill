@@ -28,13 +28,7 @@ BOTTLE_COLLISION_SHA256 = '6f2f689d65dcbb036e407b2350a4aad10d5ce47f8f17f24551628
 
 
 class LegacyPourPanda(LegacyPanda):
-    @property
-    def _controller_configs(self):
-        configs = super()._controller_configs
-        arm = configs['pd_ee_pose']['arm']
-        arm.pos_lower, arm.pos_upper = -100., 100.
-        arm.rot_lower, arm.rot_upper = -np.pi, np.pi
-        return configs
+    legacy_absolute_pose = True
 
 
 @register_env('Pour-v0', max_episode_steps=350)

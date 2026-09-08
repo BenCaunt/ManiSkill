@@ -83,6 +83,9 @@ class HangEnv(LegacyMPMEnv):
                                     axangle2quat([0, 0, 1], -angle)))
         nominal = np.array([0., np.pi/16, 0., -np.pi*5/6, 0., np.pi-.2, np.pi/4, 0., 0.])
         self.agent.reset(torch.as_tensor(nominal, dtype=torch.float32, device=self.device)[None])
+        # ManiSkill 2 agent.reset also resets controller memory. Capture that
+        # nominal target before restoring the recorded grasp below.
+        self.agent.controller.reset()
         self.agent.robot.set_pose(sapien.Pose([-.46, 0., 0.]))
         builder = MPMModelBuilder()
         builder.set_mpm_domain([.5, .5, .5], grid_length=.015)

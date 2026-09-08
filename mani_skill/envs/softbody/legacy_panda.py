@@ -2,11 +2,13 @@
 
 The parameter values are reference simulation inputs, not physical measurements.
 """
+from copy import deepcopy
 from pathlib import Path
 import sapien
 
 from mani_skill.agents.robots.panda.panda import Panda
 from mani_skill.utils import sapien_utils
+from .controllers import legacy_arm_configs
 
 
 class LegacyPanda(Panda):
@@ -60,12 +62,11 @@ class LegacyPanda(Panda):
 
     @property
     def _controller_configs(self):
-        configs = super()._controller_configs
-        for config in configs.values():
-            config['balance_passive_force'] = False
-            for key in ('arm', 'gripper'):
-                config[key].friction = 0.
-        return configs
+        gripper = super()._controller_configs['pd_joint_pos']['gripper']
+        gripper.friction = 0.
+        return {key:dict(arm=value,gripper=deepcopy(gripper),balance_passive_force=False)
+                for key,value in legacy_arm_configs(self.arm_joint_names,self.ee_link_name,
+                    absolute_pose=getattr(self,'legacy_absolute_pose',False)).items()}
 
     def before_simulation_step(self):
         robot = self.robot._objs[0]

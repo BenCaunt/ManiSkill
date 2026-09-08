@@ -8,8 +8,8 @@ import json
 import sapien
 
 from mani_skill.agents.base_agent import BaseAgent
-from mani_skill.agents.controllers import PDJointPosControllerConfig
 from .legacy_base import LegacyMPMEnv
+from .controllers import legacy_arm_configs
 
 
 class LegacyPandaBucket(BaseAgent):
@@ -43,13 +43,8 @@ class LegacyPandaBucket(BaseAgent):
     @property
     def _controller_configs(self):
         names = [f'panda_joint{i}' for i in range(1, 8)]
-        def config(delta, target=False):
-            return dict(arm=PDJointPosControllerConfig(names, -.1 if delta else None,
-                        .1 if delta else None, 1000., 100., force_limit=100.,
-                        friction=0., use_delta=delta, use_target=target,
-                        normalize_action=delta), balance_passive_force=False)
-        return {'pd_joint_delta_pos': config(True), 'pd_joint_pos': config(False),
-                'pd_joint_target_delta_pos': config(True, True)}
+        return {key:dict(arm=value,balance_passive_force=False)
+                for key,value in legacy_arm_configs(names,'bucket').items()}
 
     def before_simulation_step(self):
         # Legacy CPU controller cancels gravity AND Coriolis/centrifugal loads.

@@ -3,9 +3,9 @@
 This branch preserves ManiSkill 2 v0.5.3's MPM solver and adds a SAPIEN 3
 coupling adapter and `MPMBaseEnv`. The tested configuration uses one CPU PhysX
 scene with either CPU or CUDA MPM. This is an editable-checkout prototype.
-`Fill-v0`, `Excavate-v0`, and `Hang-v0` now run with their legacy robot, material initialization, SDF contacts,
+`Fill-v0`, `Excavate-v0`, `Hang-v0`, and `Pour-v0` now run with their legacy robot, material initialization, SDF contacts,
 success/reward equations, and particle sphere visuals. Full reference parity is
-still unverified. The other three task ports, GPU PhysX batching, and distributable
+still unverified. The Pinch/Write task ports, GPU PhysX batching, and distributable
 wheel packaging remain under development.
 
 The copied runtime has separate terms in
@@ -41,6 +41,39 @@ particles, not a validated material. No successful manipulation policy is
 claimed by these probes.
 
 ## Task integration
+
+The soft-body agents expose all eleven original Panda arm control modes and
+retain `pd_joint_delta_pos` as their default. The bucket exposes only the arm;
+Hang and Pour also expose the original paired-finger control, and Pour adds
+unnormalized absolute `pd_ee_pose`. End-effector commands use legacy rotation
+vectors, positive norm-clipped rotation scaling, and the original `ee`, `base`
+and `ee_align` frame composition. Their IK model comes from the actual SAPIEN 3
+articulation after reference joint frames have been applied. Actions set joint
+drive targets; they do not assign physical poses.
+
+Target-relative modes save their target pose in checkpoints. Hang initializes
+nominal controller memory before restoring its recorded rope grasp, matching
+the original reset sequence. The current IK adapter explicitly requires one
+CPU PhysX scene; GPU MPM remains supported. The original controller's decoding
+and this adapter agree exactly in action values and quaternions across 21 cases,
+with target-position differences at most 2.99e-8 m. This checks conventions,
+not reference dynamics parity. `probe_control_modes.py` exercises actual IK,
+physical steps, and dictionary/flat checkpoint restoration; its Hang and Pour
+packs are mounted at `/legacy-data/hang` and `/legacy-data/pour`.
+The September 8 suite passes 17 trials, including default-mode checks for all
+three robot/task variants. Every tested end-effector IK request succeeds; saved
+particle/material/drive/controller values restore exactly. Subsequent joint
+replay differences reach 7.307e-5 rad in Pour.
+
+Seven additional isolated reference/port comparisons use identical frozen
+initial-state hashes and three nonzero actions each: all five Fill end-effector
+modes at seed 101 and two Hang modes at seed 17. Maximum joint-position difference
+is 6.083e-5 rad, drive-target difference 9.183e-5 rad, particle-position difference
+9.015e-5 m, and COM separation 1.267e-5 m. These are uncalibrated short-run
+measurements, not successful full tasks or a reference-parity verdict.
+The existing Fill, Excavate, Hang and Pour lifecycle regressions also pass with
+the controller changes, including rendered particle checks and count-changing
+fluid checkpoints.
 
 The Fill prototype requires the assets from the pinned ManiSkill 2 v0.5.3 checkout.
 They are not included here and are not downloaded implicitly. Their separate
@@ -155,8 +188,13 @@ the unchanged requirement of fewer than 20 spilled particles; the amount and
 settling checks pass. Independent NumPy recomputation agrees with every recorded
 success label. Maximum joint error is 0.000452 rad and COM separation 0.001628 m,
 while particle-identity separation reaches 0.268717 m. This unsuccessful transfer
-is retained for diagnosis; reference repeatability and full-episode aggregate
-parity are not established. The source demonstration is episode 0 at dataset
+is retained for diagnosis; full-episode aggregate parity is not established.
+Three subsequent independent reference processes replaying the exact portable
+fixture finish with 892, 1,017 and 781 lifted particles; two succeed and one fails
+the amount criterion. All three spill zero particles. The port's spill failure
+therefore remains outside the observed reference range. These three repeats are
+descriptive evidence, not statistical confidence or calibrated acceptance bounds.
+The source demonstration is episode 0 at dataset
 revision `0c367447d26e4e2de13fbf5e5d2ab09a258187da`, with HDF5 SHA-256
 `4a6baa93d40d82cedf54ee7ae28add84d84aa90373f1f5fdb622fe3f54387b8b`.
 
