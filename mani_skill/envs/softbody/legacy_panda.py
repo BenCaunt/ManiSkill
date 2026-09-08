@@ -30,9 +30,10 @@ def apply_reference_robot_parameters(robot, parameters):
 
 class LegacyPanda(Panda):
     uid = 'legacy_mpm_panda'
+    legacy_urdf_name = 'panda_v2.urdf'
 
     def __init__(self, *args, legacy_asset_dir, robot_parameters, **kwargs):
-        self.urdf_path = str(Path(legacy_asset_dir) / 'descriptions/panda_v2.urdf')
+        self.urdf_path = str(Path(legacy_asset_dir) / 'descriptions' / self.legacy_urdf_name)
         if not Path(self.urdf_path).is_file():
             raise FileNotFoundError(self.urdf_path)
         self._reference_parameters = robot_parameters

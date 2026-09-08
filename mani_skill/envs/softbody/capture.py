@@ -11,6 +11,7 @@ from .excavate import ExcavateEnv
 from .hang import HangEnv
 from .pour import PourEnv
 from .write import WriteEnv
+from .pinch import PinchEnv
 from .base_env import MATERIAL_FIELDS
 
 
@@ -30,7 +31,7 @@ def numeric_tree(value, *, unbatch=False):
 
 class CaptureAdapter:
     def __init__(self, env_id, *, control_mode, env_kwargs):
-        tasks = {'Fill-v0': FillEnv, 'Excavate-v0': ExcavateEnv, 'Hang-v0': HangEnv, 'Pour-v0': PourEnv, 'Write-v0': WriteEnv}
+        tasks = {'Fill-v0': FillEnv, 'Excavate-v0': ExcavateEnv, 'Hang-v0': HangEnv, 'Pour-v0': PourEnv, 'Write-v0': WriteEnv, 'Pinch-v0': PinchEnv}
         if env_id not in tasks:
             raise NotImplementedError(f'Native task capture is not yet implemented for {env_id}')
         self.control_mode = control_mode
@@ -41,7 +42,7 @@ class CaptureAdapter:
         env = self.env
         expected = {'Fill-v0': ['ground', 'target_beaker'], 'Excavate-v0': ['ground', 'wall_0', 'wall_1', 'wall_2', 'wall_3'],
                     'Write-v0': ['ground', 'wall_0', 'wall_1', 'wall_2', 'wall_3'],
-                    'Hang-v0': ['ground', 'rod'], 'Pour-v0': ['ground', 'bottle', 'target_beaker']}[self.env_id]
+                    'Pinch-v0': ['ground'], 'Hang-v0': ['ground', 'rod'], 'Pour-v0': ['ground', 'bottle', 'target_beaker']}[self.env_id]
         if sorted(env.scene.actors) != sorted(expected):
             raise RuntimeError('Unexpected physical actor set')
         if env.agent.robot._objs[0].root.joint.type != 'fixed':
@@ -86,6 +87,12 @@ class CaptureAdapter:
             controller = batched(fixture['controller_state'])
             if controller:
                 checkpoint['controller'] = controller
+            if self.env_id == 'Pinch-v0':
+                checkpoint['task_particles']['goal']=torch.as_tensor(state['task_state'][2:].reshape(-1,3),dtype=torch.float32)[None]
+                checkpoint['task']={key:torch.as_tensor(state['task_state'][:2] if key=='deformed_distance' else state[key])[None]
+                                    for key in checkpoint['task']}
+                env.reset(seed=seed,options={**options,'reset_to_env_states':{'env_states':checkpoint}})
+                return self.snapshot()
             task_key = {'Fill-v0': 'beaker_xy', 'Excavate-v0': 'target_num', 'Hang-v0': 'selected_indices', 'Pour-v0': 'fill_heights', 'Write-v0': 'goal_points'}[self.env_id]
             value = state['task_state'].reshape(-1,3) if self.env_id == 'Write-v0' else state['task_state']
             dtype = torch.float32 if self.env_id == 'Write-v0' else torch.float64
@@ -119,8 +126,12 @@ class CaptureAdapter:
                 'task_state': np.asarray([env.beaker_x, env.beaker_y] if self.env_id == 'Fill-v0'
                                          else [env.target_num] if self.env_id == 'Excavate-v0'
                                          else [env.h1, env.h2] if self.env_id == 'Pour-v0'
+                                         else np.r_[env.total_deformed_distance,env.goal_particle_points.reshape(-1)] if self.env_id == 'Pinch-v0'
                                          else env.goal_points.reshape(-1) if self.env_id == 'Write-v0'
                                          else env.selected_indices, dtype=np.float64)}
+        if self.env_id == 'Pinch-v0':
+            state.update({key:env.goal_data[key].copy() for key in
+                          ('goal_depths','goal_rgbs','goal_cam_pos','goal_cam_rot','goal_cam_intrinsic')})
         if self.env_id == 'Write-v0':
             env._compute_iou()
             state.update(goal_height_mm=env.goal_image.numpy(),current_height_mm=env.current_image.numpy())
@@ -134,7 +145,7 @@ class CaptureAdapter:
                 'body_ke', 'body_kd', 'body_mu', 'body_ka', 'body_sticky', 'ground_sticky',
                 'static_ke', 'static_kd', 'static_mu', 'static_ka')
         return {'additional_state_fields': ['vol'] if self.env_id == 'Pour-v0' else [],
-                'initial_state_contract': dict(version=2, derived_rigid_indices=list(range(13)) if self.env_id == 'Hang-v0' else [] if self.env_id == 'Pour-v0' else [0], root_kind='fixed',
+                'initial_state_contract': dict(version=2, derived_rigid_indices=[0,1,2] if self.env_id=='Pinch-v0' else list(range(13)) if self.env_id == 'Hang-v0' else [] if self.env_id == 'Pour-v0' else [0], root_kind='fixed',
                     scene_actor_names=[a.name for a in self._physical_actors()],
                     scene_actor_types=['static', 'dynamic', 'kinematic'] if self.env_id == 'Pour-v0' else ['static'] + ['kinematic']*(len(self._physical_actors())-1)),
                 'controller_state': numeric_tree(env.agent.get_controller_state(), unbatch=True),

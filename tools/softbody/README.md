@@ -3,9 +3,9 @@
 This branch preserves ManiSkill 2 v0.5.3's MPM solver and adds a SAPIEN 3
 coupling adapter and `MPMBaseEnv`. The tested configuration uses one CPU PhysX
 scene with either CPU or CUDA MPM. This is an editable-checkout prototype.
-`Fill-v0`, `Excavate-v0`, `Hang-v0`, `Pour-v0`, and `Write-v0` now run with their legacy robot, material initialization, SDF contacts,
+`Fill-v0`, `Excavate-v0`, `Hang-v0`, `Pour-v0`, `Write-v0`, and `Pinch-v0` now run with their legacy robot, material initialization, SDF contacts,
 success/reward equations, and particle sphere visuals. Full reference parity is
-still unverified. The Pinch task port, original Write benchmark validation, GPU PhysX batching, and distributable
+still unverified. Original Pinch/Write benchmark validation, GPU PhysX batching, and distributable
 wheel packaging remain under development.
 
 The copied runtime has separate terms in
@@ -460,3 +460,82 @@ port frozen-action replays both finish at 93/137 = 0.678832. Every recorded
 success label and rounded IoU passes the external audit. All three remain
 unsuccessful. Both experiments are retained; neither is a benchmark success
 or calibrated physics parity result.
+
+## Native Pinch task
+
+`mani_skill.envs.softbody.pinch.PinchEnv` loads the original Panda Pinch URDF,
+three hand/finger contact bodies, original inertial parameters and per-level
+numeric initial state, materials and goals. The gripper upper target is 0.06 m.
+Rigid gravity remains the normal scene gravity; the original MPM gravity is
+`[0, 0, -1] m/s²`. Contact stiffness, damping, friction, radius, sticky ground and
+non-sticky robot contacts retain the pinned source values.
+
+`tools/softbody/export_pinch_assets.py` runs only in the pinned reference image.
+It converts the reference's native flat initial state and trusted SDF cache into
+explicit numeric fields. The candidate never unpickles or interprets an old
+native state buffer. Robot/contact manifest SHA256 is
+`fca566f8d96f8c1ff2f1a7c60e93ad34ae71e89294c3179bf2b519257f25858d`.
+Each separately supplied level NPZ is checksum-pinned by `levels/levels.json`;
+`level_file` retains the original HDF5 basename. The pack retains original model
+notices; it is not a redistribution grant for third-party assets.
+
+The task preserves the source's nominal controller initialization followed by
+restoration of the level's physical state. Dictionary and flat checkpoints also
+preserve target points, four camera goal inputs, initial deformation distances,
+robot drives and controller memory. A variable-size particle goal participates
+in flat checkpoint size decoding, including restoration across particle counts.
+The isolated count-change probe is a serialization test, not a manipulated task
+with adjusted mass. Camera observations follow ManiSkill 3's float32 convention;
+raw camera inputs and the double-precision projection remain available internally.
+
+The original custom CUDA kernel computes squared nearest-point distances. The
+task squares those values again, averages in float32, then takes a fourth root
+with explicit float64 scalar promotion. It keeps the original strict threshold
+`distance < .3 * initial_distance`. The CPU fallback uses nearest-neighbor search
+and float32 norms; bitwise agreement with CUDA arithmetic is not claimed.
+
+Validation uses three CC0 authored diagnostic recipes from sim-infra catalog ID
+`goals/softbody_pinch`: X squeeze, Y squeeze and X shear. Each has 3,072 particles
+and 1.1520000696 kg float32 total mass. Material values are explicitly uncalibrated
+assumptions borrowed from Write, chosen before trials, and are not represented as
+the original Pinch level materials. Camera goal images are sparse geometric
+projections, not rendered demonstrations. Original official level acquisition
+remains unresolved; these inputs establish API coverage only.
+
+The native lifecycle probe has verified exact initial particle/joint/material/goal
+values, live particle camera pixels, physical stepping, both state observation
+modes, controller checkpoints, reconfiguration and particle-count restoration.
+Dictionary/flat/reconfigured replay particle error was `8.94e-8 m`, with zero
+joint error in this probe. The camera projection itself matches the exported
+reference exactly; 3,035 visible particle pixels were detected. Earlier root-velocity
+export, static-ground checkpoint and observation-dtype failures are retained.
+The first strict portable replay rejected only boolean contact metadata encoded as
+integers; every numeric state digest already matched. The port now preserves
+the original Python boolean types without changing the CUDA flag values. Full physical manipulation success,
+official level coverage and calibrated trajectory parity are still required.
+
+
+The first complete short Pinch suite preserved exact input hashes and all task
+labels but exposed 3.9 mm excess finger closing for a negative requested target.
+The arm-only joint error in the joint-delta case was 7.45e-9 rad; the larger generic
+joint metric came from prismatic finger coordinates in meters. Original failure
+traces remain retained. PhysX 4.1 clamps limited-joint drive targets internally,
+while keeping their public requested values; the old port did not. The legacy
+base now applies that source-backed solver clamp immediately before native
+physics and restores the requested targets afterward. It records the actual
+applied targets separately in `legacy_applied_drive_targets`. No qpos/qvel,
+particle state, gains, physical limits, or reported outcomes are substituted.
+See [pinned NVIDIA source](https://github.com/NVIDIAGameWorks/PhysX/blob/a2c0428acab643e60618c681b501e86f7fd558cc/physx/source/lowleveldynamics/src/DyFeatherstoneArticulation.cpp#L2491-L2497).
+
+After the drive correction, all nine four-control captures (three reference
+captures, three independent reference replays and three native replays) preserve
+identical initial input hashes, camera inputs and actions. Every progress value
+and success label passes the independent host audit. Maximum reference/native
+finger error falls from 3.9 mm to `2.24e-8 m`; arm-joint error is at most
+`3.55e-5 rad`, particle error `1.49e-7 m`, and float64 COM distance `1.67e-9 m`.
+These short runs do not solve a Pinch goal. Derived initial robot link poses still
+differ by about `3e-7 m`, outside the older strict `1e-8 m` gate; no calibrated
+parity verdict is promoted. All five existing task lifecycle regressions and the
+expanded Pinch checkpoint/observation probe pass after the shared drive change.
+The isolated three-target closing probe matches reference finger positions
+exactly and differs in finger velocity by at most `2.98e-8 m/s`.

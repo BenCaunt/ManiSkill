@@ -20,6 +20,43 @@ class LegacyMPMEnv(MPMBaseEnv):
         kwargs.setdefault('control_mode', 'pd_joint_delta_pos')
         super().__init__(*args, **kwargs)
 
+    def _restore_requested_drives(self):
+        for joint, target in getattr(self, '_legacy_requested_drives', ()):
+            joint.set_drive_target(target)
+        self._legacy_requested_drives = ()
+
+    def reset(self, *args, **kwargs):
+        self._restore_requested_drives()
+        return super().reset(*args, **kwargs)
+
+    def _before_simulation_step(self):
+        super()._before_simulation_step()
+        # PhysX 4.1 clamps limited-joint drive positions while constructing
+        # its constraints, without changing the public requested target.
+        # Reproduce that solver input using real native PD drives; never
+        # change qpos/qvel or spoof a readback. Restore the requested targets
+        # after stepping so controller memory/checkpoints retain their meaning.
+        # Source: NVIDIAGameWorks/PhysX 4.1, DyFeatherstoneArticulation.cpp,
+        # angular lines2353-2357 and linear lines2493-2497.
+        self._legacy_requested_drives = []
+        joints = self.agent.robot._objs[0].active_joints
+        applied = []
+        for joint in joints:
+            target = float(np.asarray(joint.drive_target).reshape(-1)[0])
+            lower, upper = np.asarray(joint.limits).reshape(-1, 2)[0]
+            clipped = float(np.clip(target, lower, upper))
+            if clipped != target:
+                self._legacy_requested_drives.append((joint, target))
+                joint.set_drive_target(clipped)
+            applied.append(float(np.asarray(joint.drive_target).reshape(-1)[0]))
+        self.legacy_applied_drive_targets = np.asarray(applied)
+
+    def _after_simulation_step(self):
+        try:
+            super()._after_simulation_step()
+        finally:
+            self._restore_requested_drives()
+
 
     @property
     def _default_sim_config(self):

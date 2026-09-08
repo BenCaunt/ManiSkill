@@ -57,3 +57,11 @@ joint-frame parameters. That derived pack retains the source asset restrictions.
 Goal HDF5 files are separate inputs with their own provenance and licenses; the
 port does not bundle official goal data. Diagnostic targets used during porting
 were procedurally authored, and are not the original Write benchmark levels.
+
+Pinch adapts `mani_skill2/envs/mpm/pinch_env.py` at the same pinned revision.
+`tools/softbody/export_pinch_assets.py` converts the original Pinch robot's
+contact and inertial inputs and explicitly supplied level initial states to
+numeric NPZ files. Those separately supplied model derivatives retain their
+original terms. The native task never loads legacy pickles or native flat state
+buffers. Diagnostic catalog asset `goals/softbody_pinch` is independently authored
+CC0 material/goal data; it is not the unavailable official Pinch level dataset.

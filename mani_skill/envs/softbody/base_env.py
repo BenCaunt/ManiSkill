@@ -23,6 +23,7 @@ class MPMBaseEnv(BaseEnv):
 
     SUPPORTED_OBS_MODES = ("state", "state_dict", "none", "sensor_data", "any_textures", "pointcloud")
     max_checkpoint_particles = 65536
+    PARTICLE_CHECKPOINT_GROUPS = ('mpm', 'mpm_material')
 
     def __init__(self, *args, mpm_device="cuda", mpm_dt=.0005,
                  num_envs=1, sim_backend="physx_cpu", **kwargs):
@@ -317,7 +318,7 @@ class MPMBaseEnv(BaseEnv):
         template = self.get_state_dict()
         live_count = self.mpm_coupler.model.struct.n_particles
         particle_width = sum(int(np.prod(value.shape[2:]))
-                             for group in ('mpm', 'mpm_material') for value in template[group].values())
+                             for group in self.PARTICLE_CHECKPOINT_GROUPS for value in template[group].values())
         flat_size = sum(value.numel() for value in common.flatten_dict_keys(template).values())
         particle_values = state.shape[1] - (flat_size - live_count*particle_width)
         if particle_values % particle_width:
@@ -330,7 +331,7 @@ class MPMBaseEnv(BaseEnv):
             result = {}
             for key, value in template.items():
                 if isinstance(value, dict):
-                    result[key] = unpack(value, key in ('mpm', 'mpm_material'))
+                    result[key] = unpack(value, key in self.PARTICLE_CHECKPOINT_GROUPS)
                 else:
                     shape = (1, count, *value.shape[2:]) if particle_group else value.shape
                     size = int(np.prod(shape[1:]))
