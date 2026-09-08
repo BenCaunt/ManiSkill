@@ -21,6 +21,7 @@ from mani_skill.utils.structs.types import SimConfig
 
 
 class BallisticEnv(MPMBaseEnv):
+    diagnostic_density = 1000.
     @property
     def _default_sim_config(self):
         return SimConfig(sim_freq=500, control_freq=50)
@@ -31,7 +32,7 @@ class BallisticEnv(MPMBaseEnv):
         builder.add_mpm_grid(pos=(0., 0., .3), vel=(.05, 0., .1),
                              dim_x=2, dim_y=2, dim_z=2,
                              cell_x=.005, cell_y=.005, cell_z=.005,
-                             density=1000., mu_lambda_ys=(0., 0., 0.),
+                             density=self.diagnostic_density, mu_lambda_ys=(0., 0., 0.),
                              friction_cohesion=(0., 0., 0.), type=0, jitter=False)
         self.rebuild_mpm(builder, [])
 
@@ -91,10 +92,21 @@ def run(device, output):
             env.set_state_dict(midpoint)
         except RuntimeError:
             outside_reset_rejected = True
+        # A changed reset recipe must not silently replace checkpoint materials.
+        # This pressureless analytic fixture has no physical robot or grasp.
+        checkpoint = env.get_state_dict()
+        original_mass = checkpoint['mpm_material']['particle_mass']
+        env.diagnostic_density = 1200.
+        env.reset(seed=42)
+        assert not torch.equal(env.get_state_dict()['mpm_material']['particle_mass'], original_mass)
+        env.reset(seed=42, options={'reset_to_env_states': {'env_states': checkpoint}})
+        assert all(torch.equal(env.get_state_dict()['mpm_material'][k], v)
+                   for k, v in checkpoint['mpm_material'].items())
         report = {"probe": "maniskill3-mpm-environment-lifecycle", "device": device,
                   "passed": max_position_error < 3e-6 and max_velocity_error < 3e-5 and replay_error < 3e-6 and outside_reset_rejected,
                   "max_position_error_m": max_position_error, "max_velocity_error_m_s": max_velocity_error,
                   "reset_replay_error_m": replay_error, "outside_reset_assignment_rejected": outside_reset_rejected,
+                  "checkpoint_material_overrides_changed_reset_recipe": True,
                   "particles": 27, "control_steps": 5, "simulated_time_s": .1,
                   "fixture": {"creator": "sim-infra port work", "license": "Apache-2.0 for probe; bundled MPM has separate terms",
                               "source": "repo://ManiSkill/tools/softbody/probe_environment.py", "units": "m, kg, s",

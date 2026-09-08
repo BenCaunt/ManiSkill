@@ -8,6 +8,9 @@ from mani_skill.envs.sapien_env import BaseEnv
 from mani_skill.utils import common
 from .mpm import MPMCoupler, wp
 
+MATERIAL_FIELDS = ('particle_mass', 'particle_vol', 'particle_mu_lam_ys',
+                   'particle_friction_cohesion', 'particle_type')
+
 
 class MPMBaseEnv(BaseEnv):
     """CPU PhysX with CPU or CUDA MPM and particle sphere visualization.
@@ -137,6 +140,11 @@ class MPMBaseEnv(BaseEnv):
         return {key: torch.as_tensor(value, device=self.device).unsqueeze(0)
                 for key, value in self.mpm_coupler.particle_state().items()}
 
+    def _mpm_material_tensors(self):
+        model = self.mpm_coupler.model
+        return {key: torch.as_tensor(getattr(model.struct, key).numpy()[:model.struct.n_particles],
+                                     device=self.device).unsqueeze(0) for key in MATERIAL_FIELDS}
+
     def _get_obs_extra(self, info):
         return {**super()._get_obs_extra(info), "mpm": self._mpm_tensors()}
 
@@ -161,6 +169,7 @@ class MPMBaseEnv(BaseEnv):
                 'velocity': torch.as_tensor(np.array([j.drive_velocity_target for j in joints]).reshape(1, -1), device=self.device),
             }
         state["mpm"] = self._mpm_tensors()
+        state['mpm_material'] = self._mpm_material_tensors()
         def copy_tree(value):
             return {k: copy_tree(v) for k, v in value.items()} if isinstance(value, dict) else value.clone()
         return copy_tree(state)
@@ -185,6 +194,19 @@ class MPMBaseEnv(BaseEnv):
             if value.shape != (1, *initial.shape) or not np.isfinite(value).all():
                 raise ValueError(f"Invalid MPM state field: {key}")
             values[key] = value[0]
+        template = self._mpm_material_tensors()
+        if set(state.get('mpm_material', {})) != set(template):
+            raise ValueError('Restored state must contain the MPM material arrays')
+        materials = {}
+        for key, initial in template.items():
+            value = torch.as_tensor(state['mpm_material'][key]).detach().cpu().numpy()
+            if value.shape != initial.shape or not np.isfinite(value).all():
+                raise ValueError(f'Invalid MPM material array: {key}')
+            if key in ('particle_mass', 'particle_vol') and np.any(value <= 0):
+                raise ValueError(f'MPM {key} must be positive')
+            if key == 'particle_type' and np.any(value != np.floor(value)):
+                raise ValueError('MPM particle types must be integral')
+            materials[key] = value[0]
         drives = None
         if self.agent is not None:
             joints = self.agent.robot._objs[0].active_joints
@@ -204,12 +226,15 @@ class MPMBaseEnv(BaseEnv):
                     raise ValueError('Invalid controller state tensor')
                 return tensor.to(dtype=template.dtype).clone()
             controller = restore_controller(state.get('controller', {}), self.agent.get_controller_state())
-        super().set_state_dict({k: v for k, v in state.items() if k not in ('mpm', 'mpm_drives', 'controller')}, env_idx)
+        super().set_state_dict({k: v for k, v in state.items() if k not in ('mpm', 'mpm_material', 'mpm_drives', 'controller')}, env_idx)
         if drives is not None:
             self.agent.set_controller_state(controller)
             for i, joint in enumerate(joints):
                 joint.set_drive_target(float(drives['position'][0, i]))
                 joint.set_drive_velocity_target(float(drives['velocity'][0, i]))
+        for key, value in materials.items():
+            target = getattr(self.mpm_coupler.model.struct, key)
+            full = target.numpy(); full[:len(value)] = value; target.assign(full)
         for buffer in self.mpm_coupler.states:
             for key, field in (("x", "particle_q"), ("v", "particle_qd"), ("F", "particle_F"),
                                ("C", "particle_C"), ("vc", "particle_volume_correction")):
@@ -217,6 +242,8 @@ class MPMBaseEnv(BaseEnv):
                 full = target.numpy()
                 full[:len(values[key])] = values[key]
                 target.assign(full)
+            target = buffer.struct.particle_vol
+            full = target.numpy(); full[:len(materials['particle_vol'])] = materials['particle_vol']; target.assign(full)
             buffer.struct.error.zero_()
         self.mpm_coupler.failed = False
         self.mpm_coupler.pending_step = None

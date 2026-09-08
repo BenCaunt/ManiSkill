@@ -90,8 +90,24 @@ PhysX. `complete_step` publishes the final MPM buffer. Runtime stepping never
 assigns robot or object poses. GPU MPM currently transfers state/wrenches through
 the CPU; this is not a GPU PhysX adapter or a throughput claim.
 
-Reset replay currently assumes the same particle topology and material model.
+Reset replay currently assumes the same particle topology.
 Reset builds the model before restoring state, including after reconfiguration.
-Checkpoints contain controller memory and native drive targets; restoring them
+Checkpoints contain all five particle material arrays, controller memory, and native drive targets; restoring them
 does not invoke a controller reset afterward. The current schema requires these
 fields for robot checkpoints. Camera observations are recomputed after restore.
+The lifecycle probe changes the reset recipe's density before restoring a checkpoint
+and checks that the saved masses and material arrays replace the new recipe.
+
+`mani_skill.envs.softbody.capture.CaptureAdapter` exposes Fill to the independent
+`softbody_lab` recorder. Version 2 fixtures use explicit physical actor, fixed-root,
+joint, controller, task, and particle fields for portable reset. Each engine's
+actual native state buffer is also recorded, but its serialization is not assumed
+to match another engine's. The adapter does not import ManiSkill 2 or reference
+trajectories. Replay assignments go through the native reset path.
+
+The September 8 portable Fill check used three independent reference replays of
+one seed-101, one-action fixture. Input hashes matched and all trajectory/reward
+limits passed. The overall strict verdict **failed**: derived initial position
+and quaternion component differences were 3.58e-7 m and 1.79e-7, above the existing
+1e-8 limits. These limits were not widened. This result establishes working
+capture/replay, not full reference parity or successful manipulation.
