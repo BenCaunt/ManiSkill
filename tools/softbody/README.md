@@ -182,7 +182,17 @@ Three independent one-control reference replays calibrate the portable fixture.
 Its exact input hash matches, but **strict parity fails**: initial derived pose
 and velocity gates fail, and trajectory differences include 3.51e-6 m particle
 positions versus a 1e-6 m limit, and 7.82e-5 joint velocity versus 1e-5.
-Reward, mass, drive targets, rod state, and evaluation indices meet their limits.
-The limits were retained. Successful physical manipulation, other seeds,
+The initial implementation had an unintended SAPIEN 3 fixed tendon between the
+fingers. A separate gravity-free, zero-drive two-slider URDF probe showed that
+the new loader moved asymmetric fingers together, while SAPIEN 2 left them
+stationary. Disabling `build_mimic_joints` reproduced the reference probe; the
+task now uses that setting and retains the original paired PD drive targets.
+Against the same frozen fixture and calibration, joint-velocity error fell from
+7.82e-5 to 2.76e-7 and particle-position error to 3.58e-7 m. The strict verdict
+still fails four initialization gates and two trajectory gates: particle
+velocity 1.63e-5 versus 1e-5, and affine velocity matrix 0.001017 versus 0.001.
+The original failure remains recorded. Reward, mass, drive targets, rod state,
+and evaluation indices meet their limits. The limits were retained.
+Successful physical manipulation, other seeds,
 full-episode aggregate gates, and camera/checkpoint coverage beyond the current
 probe still require verification.

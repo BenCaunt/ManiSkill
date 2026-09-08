@@ -6,6 +6,7 @@ from pathlib import Path
 import sapien
 
 from mani_skill.agents.robots.panda.panda import Panda
+from mani_skill.utils import sapien_utils
 
 
 class LegacyPanda(Panda):
@@ -17,6 +18,29 @@ class LegacyPanda(Panda):
             raise FileNotFoundError(self.urdf_path)
         self._reference_parameters = robot_parameters
         super().__init__(*args, **kwargs)
+
+    def _load_articulation(self, initial_pose=None):
+        # SAPIEN 2 ignored the URDF's finger mimic tag; the original controller
+        # drives both joints to the same target without a physical tendon.
+        # The SAPIEN 3 default adds a 1e5-stiffness tendon, changing the forces
+        # on a grasped rope. Disable that extra constraint at construction.
+        if self.scene.num_envs != 1 or self.build_separate:
+            raise NotImplementedError('Legacy Panda currently requires one CPU scene')
+        loader = self.scene.create_urdf_loader()
+        loader.name = self.uid if self._agent_idx is None else f'{self.uid}-agent-{self._agent_idx}'
+        loader.fix_root_link = self.fix_root_link
+        loader.load_multiple_collisions_from_file = self.load_multiple_collisions
+        loader.disable_self_collisions = self.disable_self_collisions
+        config = sapien_utils.parse_urdf_config(self.urdf_config)
+        sapien_utils.check_urdf_config(config)
+        sapien_utils.apply_urdf_config(loader, config)
+        parsed = loader.parse(self.urdf_path)
+        if len(parsed['articulation_builders']) != 1 or parsed['actor_builders']:
+            raise ValueError('Legacy Panda must be one articulation')
+        builder = parsed['articulation_builders'][0]
+        builder.initial_pose = initial_pose
+        self.robot = builder.build(build_mimic_joints=False)
+        self.robot_link_names = [link.name for link in self.robot.links]
 
     def _after_loading_articulation(self):
         parameters = self._reference_parameters
