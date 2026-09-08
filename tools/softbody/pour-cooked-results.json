@@ -1,0 +1,110 @@
+{
+  "declared_scope": "Post-run descriptive comparison and independent task outcome audit, not a calibrated parity acceptance protocol.",
+  "recorded_at": "2026-09-08T22:46:18.104938+00:00",
+  "source_pack_manifest_sha256": "54d4c40bdfe3184788d5e1f1841c8806611cff1249f0aad8b5c9a150ab982710",
+  "source_backed_beaker_height_m": 0.07956741005182266,
+  "reference_trace_manifest_sha256": "a08c0353b177b77da4b028ffda4ad855e1dbab596940c05dd1d147e09f640044",
+  "candidate_trace_manifest_sha256": "54cad34710278e22df95b20c448b7c127659a4b07f69b14ef819b3983cbe72ac",
+  "candidate_result_sha256": "40577922c8ec6393c4075a99fc17b9a84e5e5bcc9f8d711e3c65edc6ab89889d",
+  "same_recorded_actions": true,
+  "samples": 300,
+  "reference": {
+    "env_id": "Pour-v0",
+    "seed": 1,
+    "scope": "Independent legacy outcome recomputation; not calibrated physics parity",
+    "recorded_labels_match": true,
+    "mismatched_steps": [],
+    "first_success_step": 297,
+    "successful_samples": 3,
+    "final": {
+      "step": 299,
+      "success": true,
+      "checks": {
+        "above_start": true,
+        "above_end": true,
+        "spill": true,
+        "upright": true,
+        "quiet": true
+      },
+      "above_start": 1417,
+      "above_end": 0,
+      "contained_particles": 3842,
+      "contained_mass_kg": 0.07161593437194824,
+      "spilled_particles": 20,
+      "spilled_mass_kg": 0.00037280545802786946,
+      "upright_z": 0.999996568295383
+    }
+  },
+  "candidate": {
+    "env_id": "Pour-v0",
+    "seed": 1,
+    "scope": "Independent legacy outcome recomputation; not calibrated physics parity",
+    "recorded_labels_match": true,
+    "mismatched_steps": [],
+    "first_success_step": 297,
+    "successful_samples": 3,
+    "final": {
+      "step": 299,
+      "success": true,
+      "checks": {
+        "above_start": true,
+        "above_end": true,
+        "spill": true,
+        "upright": true,
+        "quiet": true
+      },
+      "above_start": 1405,
+      "above_end": 0,
+      "contained_particles": 3842,
+      "contained_mass_kg": 0.07161593437194824,
+      "spilled_particles": 0,
+      "spilled_mass_kg": 0.0,
+      "upright_z": 0.9998178480535647
+    }
+  },
+  "uncalibrated_maximum_differences": {
+    "particle_distance_m": 0.7289105277849892,
+    "center_of_mass_distance_m": 0.0034618374109910187,
+    "joint_position_rad": 0.004725217819213867,
+    "joint_velocity_rad_s": 0.10947739146649837,
+    "current_volume_m3": 9.6358659185114e-07
+  },
+  "gpu_batch": {
+    "protocol": "gpu-batch-v18",
+    "passed": false,
+    "failures": {
+      "camera_visibility": 16,
+      "exact_selected_bottle_pose": 8
+    },
+    "native_pieces": 2304,
+    "max_hull_error_m": 1.2317345424259932e-16,
+    "collision_limit_m": 1e-06,
+    "input_sha256": "151d5875c7a510533429e65c5ce6fcb13eab78f4e83c417c2850378281db1330",
+    "result_sha256": "76167062a53ec4d474775b24641a53df30d2150f22692720bcabc9434fa1261a"
+  },
+  "initial_visibility_diagnostic": {
+    "passed": true,
+    "comparisons": 12,
+    "min_particle_pixels": 1467,
+    "max_particle_pixels": 1648,
+    "maximum_surface_error_m": 0.0015019946934439203,
+    "min_explained_fraction": 1.0,
+    "scope": "Diagnostic visibility intervention only; ordinary camera and physical parity gates remain separate.",
+    "restored_camera_tensors_exact": true,
+    "physical_state_and_native_buffers_exact": true,
+    "result_sha256": "e8f2f015fce5e09c60e9150a6f47b6a72a23fb6262defa8d86e59664483b4300",
+    "ordinary_protocol_passed": false,
+    "ordinary_failures": 24
+  },
+  "final_runtime_gpu_validation": {
+    "label": "gpu-batch-v20",
+    "complete_cases": 4,
+    "ordinary_failures": 24,
+    "ordinary_failure_list_unchanged": true,
+    "visibility_comparisons": 12,
+    "visibility_passed": true,
+    "input_sha256": "0d305f69c036c0569976119546aa960d296c8cc5dc8fe0d24afcfcb5634cb1ad",
+    "result_sha256": "cb3cf1333f3e4996390e1c3c307f67651425911175f91aac241fc3813a2f184c",
+    "change": "Restrict native actor dependency to MPM scenes, including scene reconfiguration."
+  }
+}

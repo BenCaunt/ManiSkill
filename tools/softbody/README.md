@@ -14,7 +14,11 @@ comparison still fails. [Excavate batching](gpu-excavate-batching.md) adds
 independent terrain/count/target lifecycles and documents the selected-wall
 restore failure found by its stronger actor checks. [Hang batching](gpu-hang-batching.md)
 adds independent recorded rope grasps, rod targets, Panda controllers and
-verified partial resets. The remaining three tasks' batched lifecycle,
+verified partial resets. [Write batching](gpu-write-batching.md) and
+[Pinch batching](gpu-pinch-batching.md) pass GPU task, controller, lifecycle,
+rendering and RNG checks, while exact original model-frame comparisons fail.
+[Pour batching](gpu-pour-batching.md) uses verified cooked bottle walls and
+retains camera visibility and selected-pose failures. Broader
 original Pinch/Write benchmark validation and distributable
 wheel packaging remain under development.
 
@@ -66,7 +70,10 @@ nominal controller memory before restoring its recorded rope grasp, matching
 the original reset sequence. The IK adapter now builds one model per native
 articulation and preserves per-environment targets during partial reset; see the
 [shared-world controller suite](gpu-controller-batching.md). Fill, Excavate and
-Hang support batched task lifecycles; the other three task classes require one environment. The [native GPU lifecycle suite](gpu-lifecycle.md) covers all
+Hang support verified batched task lifecycles. Write and Pinch support separate
+goals and selected resets in GPU batches; their original exact model-frame gates
+remain failures. Pour also opts into batching, with strict selected-pose and
+visibility failures retained. The [native GPU lifecycle suite](gpu-lifecycle.md) covers all
 eleven original arm modes on Fill and additional end-effector modes across the
 other five tasks. Its 23 CPU/GPU cases pass 69 exact checkpoint restore trials,
 including dictionary, flat and rebuilt-scene states. The separate GPU task
@@ -332,35 +339,40 @@ Pinocchio runtime. Fresh seed-101 particles match the reference exactly (8,534
 particles, 0.245670289 kg); fresh IK joint positions differ by up to 1.92e-5 rad.
 Portable replay restores the explicitly recorded independent robot inputs.
 
-The trusted SAPIEN 2.2.2 reference exporter and optional local preparation tool
-produce restricted external model data. Neither is a runtime dependency:
+The trusted SAPIEN 2.2.2 reference exporter produces restricted external model
+data. The cooked wall pack is also an explicit external input; its preparation
+pipeline is currently retained with the host evidence. Build the pinned
+[native cooked loader](native/cooked/README.md) before running Pour:
 
 ```sh
 # Inside the pinned reference environment; its SDF cache must be writable.
 python tools/softbody/export_pour_assets.py --source /path/to/ManiSkill2 --output /tmp/pour-pack
-# In a separate preparation environment with coacd==1.0.14, trimesh, scipy, rtree.
-python tools/softbody/prepare_pour_collision.py --pack /tmp/pour-pack --output /tmp/pour-pack/collision
 # Inside the native ManiSkill 3 environment.
 export MANISKILL_LEGACY_MPM_DATA=/tmp/pour-pack
 export MANISKILL_LEGACY_ASSET_DIR=/path/to/ManiSkill2/mani_skill2/assets
+export MANISKILL_BOTTLE_COLLISION_DIR=/path/to/verified-bottle-wall-pack
+export PYTHONPATH=/path/to/cooked-adapter-build:$PYTHONPATH
 python tools/softbody/probe_pour.py --output /tmp/pour-native-001
 ```
 
 The model manifest SHA256 is
 `54d4c40bdfe3184788d5e1f1841c8806611cff1249f0aad8b5c9a150ab982710`;
-the bottle collision NPZ SHA256 is
-`6f2f689d65dcbb036e407b2350a4aad10d5ce47f8f17f24551628d4bf9fc593e`.
+the cooked bottle pack manifest SHA256 is
+`57ca9d867a663651257e8318df3ef70aca1fae40127ef29d25944461b3db43bc`.
 Candidate runs receive only `export.json`, the two `body-*.npz` files, the
 collision pack and original notices/provenance, plus original mesh assets.
 Separate initial-readback diagnostics stay with the verifier.
 
 Both containers retain the original open fluid SDFs. Their rigid collisions use
-an open bottle decomposition and an open beaker triangle mesh instead of the
+384 cooked original bottle-wall cells and an open beaker triangle mesh instead of the
 original closed hulls. Bottle mass, COM and inertia remain the original explicit
-simulation inputs. All 128 native cooked bottle components pass a 6 mm radius
-clearance probe through the cavity. CoACD hit its hull limit and warned that the
-requested 0.5 mm concavity threshold was not attained. This is a documented
-geometry approximation, not verified exterior-contact equivalence. The reward's
+simulation inputs. The current bottle partition follows the original visual
+surface and retains an open cavity. Its 384 native meshes and cached geometry
+pass independent Linux CPU/GPU checks. Pour GPU v18 checks 2,304 initial pieces
+and exact matching after reconfiguration, with maximum hull error 1.24e-16 m under the
+unchanged 1e-6 m limit. The earlier 128-piece CoACD approximation and its geometry
+failures remain historical evidence; `prepare_pour_collision.py` produces that
+older format and is not the current runtime pack builder. The reward's
 geometric targets retain the exported reference bounds.
 
 The 20-control native diagnostic stays finite. Dictionary, flat and rebuilt-scene
@@ -379,7 +391,7 @@ No Pour parity protocol was promoted. Candidate one-control differences include
 0.0001583 m particle position, 5.57e-10 m3 current volume and 0.002069 rigid
 velocity. Full-episode aggregate behavior needs separate calibration.
 
-The official seed-1 Pour demonstration completes physically in both engines and
+The earlier CoACD seed-1 Pour demonstration completes physically in both engines and
 passes every original success predicate from control 297 through 299. An external
 NumPy evaluator recomputes the predicates from every frame and matches all labels.
 Final contained mass is 0.0737596 kg in the port versus 0.0716159 kg in the
@@ -388,6 +400,13 @@ Maximum full-episode particle-identity separation is 0.6659 m, COM separation
 0.003425 m, current-volume difference 9.72e-7 m3, joint position difference
 0.004738 rad and joint velocity difference 0.1154 rad/s. Success in this one
 recorded demonstration does not establish trajectory or real-fluid fidelity.
+
+The current cooked-wall loader also completes all 299 original controls. An
+independent audit matches all 300 success labels, with success from control 297
+in both engines. Both finish with 3,842 particles in the beaker (0.0716159 kg);
+spills are zero in the port versus 20 in the reference. Maximum particle-identity
+distance is 0.72891 m and COM separation is 0.003462 m. These are descriptive
+measurements, not a calibrated fidelity pass. See [the current evidence](gpu-pour-batching.md).
 
 Pour's state observations pad particle arrays to 16,384 entries and expose the
 live `particle_count`, so changing the sampled fluid height does not change the
@@ -398,10 +417,12 @@ and flat observation spaces were checked at seeds 1 and 101 with 8,032 and 8,534
 live particles respectively. Existing Fill, Excavate and Hang lifecycle probes
 also pass after the shared fluid-state changes.
 
-The pinned collision pack was prepared on macOS ARM64 with CoACD 1.0.14,
+The historical CoACD collision pack was prepared on macOS ARM64 with CoACD 1.0.14,
 NumPy 2.2.6, SciPy 1.18.1, trimesh 5.1.0 and rtree 1.4.1. Cross-platform
 bitwise reproducibility of decomposition is not established; the runtime checks
-the fixed pack checksum, and the GPU worker separately checks its cooked cavity.
+the historical records pin its checksum. The current wall pack instead stores
+the verified native cooked blobs, with independently checked native polygons and
+cached geometry on the worker. Full wheel packaging remains unfinished.
 
 ## Native Write task
 
@@ -467,8 +488,9 @@ Goal pixels match the actual raster readback. Its checkpoint replay maximum is
 1.193e-7 m in particles and zero in joints.
 
 Fill, Excavate, Hang and Pour lifecycle regression probes also pass with the
-shared reference robot-parameter helper used by Write. The Write runtime remains
-one CPU PhysX scene with CUDA MPM; GPU PhysX batching is not implemented.
+shared reference robot-parameter helper used by Write. The later
+[Write batch implementation](gpu-write-batching.md) preserves that recipe;
+shared-world GPU verification is still pending.
 
 The first full stroke has maximum native/reference particle displacement
 difference 1.579 mm, COM difference 3.717 micrometers and joint difference

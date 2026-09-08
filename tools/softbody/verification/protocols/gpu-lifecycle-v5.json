@@ -1,0 +1,34 @@
+{
+  "declared_at_utc": "2026-09-08T18:41:31.962208+00:00",
+  "input_sha256": "c4711b125a56ce980fa764570edc9dc3e34c213e2b926187743a152cd318e5a7",
+  "request_sha256": "a04e44cbfbd1dcca4c0484cc0c6464fce4f4c2755cd0cd724820fe088e85a572",
+  "probe_sha256": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+  "runner_sha256": "956f4962a88127da06b4ba1e02f8af7bbe3a8289dae64696835813bb846b198d",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+  "cases": [
+    {
+      "name": "Pour-pd_ee_pose-gpu",
+      "task": "Pour",
+      "backend": "gpu",
+      "control_mode": "pd_ee_pose"
+    },
+    {
+      "name": "Pour-pd_ee_pose-cpu",
+      "task": "Pour",
+      "backend": "cpu",
+      "control_mode": "pd_ee_pose"
+    }
+  ],
+  "checkpoint_exact_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_drives",
+    "controller",
+    "task",
+    "task_particles"
+  ],
+  "joint_replay_limit": 0.001,
+  "scope": "N1 Pour CPU/GPU dictionary, flat and rebuilt checkpoint regression after batching and ring lifecycle refactor. Same two case recipes, native probe and existing exact restore/joint1e-3 gates as lifecyclev4. Runtime identical to batchv10. Particle replay errors descriptive; no reference parity acceptance.",
+  "regression_reason": "Pour N1 initialization, observations, task state and target-ring reconstruction were refactored for batching; verify saved fluid counts and existing CPU/GPU behavior."
+}

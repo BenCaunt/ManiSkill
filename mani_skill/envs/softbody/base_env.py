@@ -75,6 +75,23 @@ class MPMBaseEnv(BaseEnv):
     def mpm_couplers(self):
         return self._mpm_batch.couplers if self._mpm_batch is not None else [self.mpm_coupler]
 
+    def _setup_scene(self):
+        super()._setup_scene()
+        # Install this requirement only for MPM, including after reconfigure.
+        self.scene._use_native_actor_reset = True
+
+    def _set_main_rng(self, seed):
+        batch = self._mpm_batch
+        if batch is not None and batch.partial_reset:
+            return batch.set_main_rng(seed)
+        return super()._set_main_rng(seed)
+
+    def _set_episode_rng(self, seed, env_idx):
+        batch = self._mpm_batch
+        if batch is not None and batch.partial_reset:
+            return batch.set_episode_rng(seed, env_idx)
+        return super()._set_episode_rng(seed, env_idx)
+
     def reset(self, *, seed=None, options=None):
         if self._mpm_batch is not None:
             return self._mpm_batch.reset(seed, options)

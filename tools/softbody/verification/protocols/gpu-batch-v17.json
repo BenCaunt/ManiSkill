@@ -1,0 +1,284 @@
+{
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "exact_checkpoint_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_meta",
+    "mpm_drives",
+    "controller",
+    "task",
+    "actors",
+    "task_particles"
+  ],
+  "rendering": {
+    "minimum_particle_pixels": 10,
+    "surface_distance_error_limit_m": 0.003,
+    "require_visual_pool_checks": true,
+    "require_native_buffer_checks": true,
+    "require_rigid_visual_bounds": true,
+    "minimum_rigid_pixels": 10,
+    "rigid_bound_error_limit_m": 0.003
+  },
+  "joint_replay_limit": 0.001,
+  "target_pose_limit": 1e-06,
+  "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+  "rng_contract": 1,
+  "declared_at_utc": "2026-09-08T22:18:31.352283+00:00",
+  "input_sha256": "560424ba5d1aa4ceddc740c9b042d748592e043a228a56388d7712435c66c2ae",
+  "request_sha256": "77dd6c64db9ccff01c4d8738a11fa6cf6fa9a02d070719ed0648548c51168e22",
+  "probe_sha256": "6ac2271ee6f6a10282df942fc5746a1ee9f4b9c1b405004ed0e162d577909fc4",
+  "runner_sha256": "505a0e91b721377e3aa28f10da45e266fb171c447f4b4396df28cb0012accd15",
+  "native_actor_extension": {
+    "build": "native-bridge-v2",
+    "sha256": "2c7ab84cdc9c6421be985164cf569f1630bbfea936dfab9d8e312c28e3b27feb",
+    "cpp_sha256": "d530564be7765406bb175540be22bcef98b9748621990542b20e4e73f4d28c9f"
+  },
+  "cases": [
+    {
+      "name": "Pinch-single-101",
+      "task": "Pinch",
+      "backend": "gpu",
+      "control_mode": "pd_joint_delta_pos",
+      "seeds": [
+        101
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "squeeze_y.h5"
+      ],
+      "fresh_level_file": "shear_x.h5"
+    },
+    {
+      "name": "Pinch-single-17",
+      "task": "Pinch",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose",
+      "seeds": [
+        17
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "squeeze_x.h5"
+      ],
+      "fresh_level_file": "squeeze_y.h5"
+    },
+    {
+      "name": "Pinch-single-1",
+      "task": "Pinch",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        1
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "shear_x.h5"
+      ],
+      "fresh_level_file": "squeeze_x.h5"
+    },
+    {
+      "name": "Pinch-batch-joint",
+      "task": "Pinch",
+      "backend": "gpu",
+      "control_mode": "pd_joint_delta_pos",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "squeeze_y.h5",
+        "squeeze_x.h5"
+      ],
+      "fresh_level_file": "shear_x.h5",
+      "capacity": 4096,
+      "reverse_flat_indices": true
+    },
+    {
+      "name": "Pinch-batch-delta",
+      "task": "Pinch",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose",
+      "seeds": [
+        17,
+        1
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "squeeze_x.h5",
+        "shear_x.h5"
+      ],
+      "fresh_level_file": "squeeze_y.h5",
+      "capacity": 4096,
+      "reverse_flat_indices": true
+    },
+    {
+      "name": "Pinch-batch-target",
+      "task": "Pinch",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        101,
+        1
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "squeeze_y.h5",
+        "shear_x.h5"
+      ],
+      "fresh_level_file": "squeeze_x.h5",
+      "capacity": 4096,
+      "reverse_flat_indices": true
+    }
+  ],
+  "compare_batch_vs_single": false,
+  "reward_limit": 1e-06,
+  "initial_pose_limit": 1e-06,
+  "scope": "Pinch N1/N2 task with exact selected RNG isolation, native buffers, seeded MS2 initial inputs, distinct goals, reversed flat/partial/count checkpoints, IK and camera checks. Existing directed-fourth-norm arithmetic and prior failed parity gates retained. Authored diagnostics only; no official-level/full-trajectory/performance acceptance.",
+  "pinch": {
+    "baseline": {
+      "files": {
+        "case-0/reference/trace/manifest.json": "9b9d70b1e62e924bbfef1cbe197ce709af79e07e91a2dc0dccffc8c6eefd2855",
+        "case-0/reference/trace/frames/000000.npz": "7f0bb725351321483a21cc0ad7b290dc624c62a34ab8ee45e40610074e46b128",
+        "case-0/reference/trace/material.npz": "2689adc0941985c2d49cea01691a2ef67f12b240ed49c0eef7bd7302a7cc9239",
+        "case-1/reference/trace/manifest.json": "9de3992f5df993795635054b54024e2d8e6a54343afca3930ce545146b90120c",
+        "case-1/reference/trace/frames/000000.npz": "d3923e74e75f3b310e4e2bab9fda1c09593fcea48ad93d2e1d1910058c13a604",
+        "case-1/reference/trace/material.npz": "2689adc0941985c2d49cea01691a2ef67f12b240ed49c0eef7bd7302a7cc9239",
+        "case-2/reference/trace/manifest.json": "cf63d9bc9178209270fab7ca4afee17eb1523fb1f206f846e729fb9d78a0bcc4",
+        "case-2/reference/trace/frames/000000.npz": "98cba4dcdb78837c4404a832aba36f44bedc33a7f736c639fddd5c6cf3cccb59",
+        "case-2/reference/trace/material.npz": "2689adc0941985c2d49cea01691a2ef67f12b240ed49c0eef7bd7302a7cc9239",
+        "case-3/reference/trace/manifest.json": "884b5f527094690893f697165fbe2ac491fe2af7e4a14cc96fd4c93fdc2c4c68",
+        "case-3/reference/trace/frames/000000.npz": "7f0bb725351321483a21cc0ad7b290dc624c62a34ab8ee45e40610074e46b128",
+        "case-3/reference/trace/material.npz": "2689adc0941985c2d49cea01691a2ef67f12b240ed49c0eef7bd7302a7cc9239",
+        "case-4/reference/trace/manifest.json": "6dcb5bd14344d987a2b4b8083154bcfd105961faa028f671eb182695d290563e",
+        "case-4/reference/trace/frames/000000.npz": "d3923e74e75f3b310e4e2bab9fda1c09593fcea48ad93d2e1d1910058c13a604",
+        "case-4/reference/trace/material.npz": "2689adc0941985c2d49cea01691a2ef67f12b240ed49c0eef7bd7302a7cc9239",
+        "case-5/reference/trace/manifest.json": "ff6f1d30da0efe22fea6386e852fcc44b8899e18bd4253592eed0b737ebe1be8",
+        "case-5/reference/trace/frames/000000.npz": "98cba4dcdb78837c4404a832aba36f44bedc33a7f736c639fddd5c6cf3cccb59",
+        "case-5/reference/trace/material.npz": "2689adc0941985c2d49cea01691a2ef67f12b240ed49c0eef7bd7302a7cc9239",
+        "case-6/reference/trace/manifest.json": "fdcd2e29a68fe5837192e63134328d42ef43ae492e01ae27aca26451114e90c5",
+        "case-6/reference/trace/frames/000000.npz": "7f0bb725351321483a21cc0ad7b290dc624c62a34ab8ee45e40610074e46b128",
+        "case-6/reference/trace/material.npz": "2689adc0941985c2d49cea01691a2ef67f12b240ed49c0eef7bd7302a7cc9239",
+        "case-7/reference/trace/manifest.json": "6705c21079bca9ee562a62e7ba56279ae94b92349270fdbdf3640da1d93a8abe",
+        "case-7/reference/trace/frames/000000.npz": "d3923e74e75f3b310e4e2bab9fda1c09593fcea48ad93d2e1d1910058c13a604",
+        "case-7/reference/trace/material.npz": "2689adc0941985c2d49cea01691a2ef67f12b240ed49c0eef7bd7302a7cc9239",
+        "case-8/reference/trace/manifest.json": "72332e2c03c1d682cbfbcc02a2e1382cc001ca62aabfc2a4a7c0e56ac2c0df39",
+        "case-8/reference/trace/frames/000000.npz": "98cba4dcdb78837c4404a832aba36f44bedc33a7f736c639fddd5c6cf3cccb59",
+        "case-8/reference/trace/material.npz": "2689adc0941985c2d49cea01691a2ef67f12b240ed49c0eef7bd7302a7cc9239"
+      },
+      "cases": [
+        {
+          "seed": 101,
+          "level_file": "squeeze_y.h5",
+          "control_mode": "pd_joint_delta_pos",
+          "snapshot": "case-0/reference/trace/frames/000000.npz",
+          "material": "case-0/reference/trace/material.npz"
+        },
+        {
+          "seed": 17,
+          "level_file": "squeeze_x.h5",
+          "control_mode": "pd_joint_delta_pos",
+          "snapshot": "case-1/reference/trace/frames/000000.npz",
+          "material": "case-1/reference/trace/material.npz"
+        },
+        {
+          "seed": 1,
+          "level_file": "shear_x.h5",
+          "control_mode": "pd_joint_delta_pos",
+          "snapshot": "case-2/reference/trace/frames/000000.npz",
+          "material": "case-2/reference/trace/material.npz"
+        },
+        {
+          "seed": 101,
+          "level_file": "squeeze_y.h5",
+          "control_mode": "pd_ee_delta_pose",
+          "snapshot": "case-3/reference/trace/frames/000000.npz",
+          "material": "case-3/reference/trace/material.npz"
+        },
+        {
+          "seed": 17,
+          "level_file": "squeeze_x.h5",
+          "control_mode": "pd_ee_delta_pose",
+          "snapshot": "case-4/reference/trace/frames/000000.npz",
+          "material": "case-4/reference/trace/material.npz"
+        },
+        {
+          "seed": 1,
+          "level_file": "shear_x.h5",
+          "control_mode": "pd_ee_delta_pose",
+          "snapshot": "case-5/reference/trace/frames/000000.npz",
+          "material": "case-5/reference/trace/material.npz"
+        },
+        {
+          "seed": 101,
+          "level_file": "squeeze_y.h5",
+          "control_mode": "pd_ee_target_delta_pose",
+          "snapshot": "case-6/reference/trace/frames/000000.npz",
+          "material": "case-6/reference/trace/material.npz"
+        },
+        {
+          "seed": 17,
+          "level_file": "squeeze_x.h5",
+          "control_mode": "pd_ee_target_delta_pose",
+          "snapshot": "case-7/reference/trace/frames/000000.npz",
+          "material": "case-7/reference/trace/material.npz"
+        },
+        {
+          "seed": 1,
+          "level_file": "shear_x.h5",
+          "control_mode": "pd_ee_target_delta_pose",
+          "snapshot": "case-8/reference/trace/frames/000000.npz",
+          "material": "case-8/reference/trace/material.npz"
+        }
+      ]
+    },
+    "pack_files": {
+      "PROVENANCE.json": "ca8751bc00040a298a006a591d8ba9bfd4f0f67322e9752eacc97e1a7f315473",
+      "UPSTREAM-README.md": "3d0e64b73bcdec663fabeaf00071af3c025bd9d1360b0a0fb4e8524e655fdcec",
+      "UPSTREAM-WARP-LICENSE.md": "d26cbb5a6241fb9516523ce9dcba9715d97002f9f1b6ab82ec8eaaab88bf1b2a",
+      "body-0.npz": "e58901e1082d62d26273f5b774ed2aad6905855fb2de92d861aa40dc025704d9",
+      "body-1.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "body-2.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "export.json": "fca566f8d96f8c1ff2f1a7c60e93ad34ae71e89294c3179bf2b519257f25858d",
+      "levels/levels.json": "e7c0afea30e19f18a5446da9d352079f6f5755a54a5839c56d6f4b2d4a5c3e04",
+      "levels/shear_x.npz": "97f351a64d09b8ac1a475f85dbac97cf84b9f6b5368d0b7d2319aace75b97863",
+      "levels/squeeze_x.npz": "848b9a8bf3a7085c78ac353d038d5c6c8fc59406ab9667d5632921c2744e3e88",
+      "levels/squeeze_y.npz": "6028e4d840520ec574dd43746f2835fe5d8004fdbb856ce61c0c777aba336c8a"
+    },
+    "reward_limit": 1e-06,
+    "projection_limit": 1e-07
+  }
+}

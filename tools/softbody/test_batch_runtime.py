@@ -120,3 +120,63 @@ def test_failed_deferred_restore_clears_pending_grasp_and_poisoned_world(runtime
     with pytest.raises(ValueError,match='bad grasp'):runtime.reset([101,17],{})
     assert env.mpm_gpu_world.failed and coupler.failed
     assert env._mpm_initial_checkpoint is None and not env._mpm_reset_active and runtime.reset_indices is None
+
+
+@pytest.mark.parametrize('flat',[False,True])
+def test_reversed_partial_restore_keeps_physical_particle_drive_and_controller_rows_together(monkeypatch,flat):
+    class Array:
+        def __init__(self,value):self.value=np.array(value,copy=True)
+        def numpy(self):return self.value.copy()
+        def assign(self,value):self.value[:]=value
+        def zero_(self):self.value[:]=0
+    env=SimpleNamespace(device=torch.device('cpu'),_mpm_reset_active=True)
+    runtime=MPMBatchRuntime(env,3,4);runtime.reset_indices=[2,0]
+    for i in range(3):
+        model=SimpleNamespace(n_particles=2,**{k:Array(np.full(shape,i+1,dtype=np.float32)) for k,shape in
+            [('particle_mass',(2,)),('particle_vol',(2,)),('particle_mu_lam_ys',(2,3)),('particle_friction_cohesion',(2,3))]})
+        model.particle_type=Array(np.zeros(2,np.int32))
+        buffers=[SimpleNamespace(struct=SimpleNamespace(particle_q=Array(np.full((2,3),i+1,np.float32)),
+            particle_vol=Array(np.full(2,i+1,np.float32)),error=Array([0]))) for _ in range(2)]
+        runtime.couplers[i]=SimpleNamespace(model=SimpleNamespace(struct=model),has_fluid_particles=False,
+            states=buffers,particle_state=lambda buffers=buffers:{'x':buffers[0].struct.particle_q.numpy()})
+    env.controller={'arm':{'target':torch.tensor([[1.],[2.],[3.]])}}
+    env.physical=torch.tensor([[1.],[2.],[3.]])
+    env.drives={'position':env.physical.clone(),'velocity':env.physical.clone()}
+    original_mask=torch.tensor([True,False,True]);env.scene=SimpleNamespace(_reset_mask=original_mask,
+        px=SimpleNamespace(gpu_apply_articulation_target_position=lambda:None,gpu_apply_articulation_target_velocity=lambda:None))
+    def set_drive(key,value):env.drives[key][env.scene._reset_mask]=value
+    env.agent=SimpleNamespace(get_controller_state=lambda:env.controller,
+        set_controller_state=lambda value:setattr(env,'controller',value),robot=SimpleNamespace(max_dof=1,active_joints=[object()],
+            set_joint_drive_targets=lambda value,joints:set_drive('position',value),
+            set_joint_drive_velocity_targets=lambda value,joints:set_drive('velocity',value)))
+    def set_physical(self,state,indices):
+        assert indices==[0,2]  # Native boolean-mask setter consumes sorted rows.
+        self.physical[indices]=state['articulations']['robot']
+    monkeypatch.setattr(BaseEnv,'set_state_dict',set_physical)
+    runtime.update_visuals=lambda:None
+    def checkpoint():
+        return dict(mpm=runtime.padded(),mpm_material=runtime.padded(True),mpm_meta=runtime.metadata(),
+            mpm_drives={k:v.clone() for k,v in env.drives.items()},controller={'arm':{'target':env.controller['arm']['target'].clone()}},
+            articulations={'robot':env.physical.clone()})
+    def select(tree):return {k:select(v) for k,v in tree.items()} if isinstance(tree,dict) else tree[[2,0]].clone()
+    state=select(checkpoint())
+    for row,value in enumerate([23.,17.]):
+        state['mpm']['x'][row,:2]=value
+        state['mpm_material']['particle_mass'][row,:2]=value
+        state['articulations']['robot'][row]=value
+        state['controller']['arm']['target'][row]=value
+        state['mpm_drives']['position'][row]=value
+        state['mpm_drives']['velocity'][row]=-value
+    if flat:
+        env.get_state_dict=checkpoint;env.set_state_dict=runtime.restore
+        def leaves(tree):return [leaf for v in tree.values() for leaf in (leaves(v) if isinstance(v,dict) else [v])]
+        runtime.restore_flat(torch.cat([v.reshape(2,-1) for v in leaves(state)],dim=1),[2,0])
+    else:runtime.restore(state,[2,0])
+    assert env.physical.flatten().tolist()==[17.,2.,23.]
+    assert env.controller['arm']['target'].flatten().tolist()==[17.,2.,23.]
+    assert env.drives['position'].flatten().tolist()==[17.,2.,23.]
+    assert env.drives['velocity'].flatten().tolist()==[-17.,2.,-23.]
+    assert env.scene._reset_mask is original_mask
+    for i,value in enumerate([17.,2.,23.]):
+        assert np.all(runtime.couplers[i].model.struct.particle_mass.numpy()==value)
+        for buffer in runtime.couplers[i].states:assert np.all(buffer.struct.particle_q.numpy()==value)

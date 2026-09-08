@@ -1,0 +1,26 @@
+{
+  "scope": "Native selected actor API and COM roundtrip diagnostic; does not supersede Pour v10 FAIL or establish task parity.",
+  "source_input": "gpu-batch-v10",
+  "source_input_sha256": "97a5f5263839e584eb40f99ee6e215c0fb174a47764bb8fcf322390b074a63ae",
+  "extension_sha256": "2c7ab84cdc9c6421be985164cf569f1630bbfea936dfab9d8e312c28e3b27feb",
+  "probe_sha256": "9e8e6769de777424eee21b95578c761084e6bd1ec62f2410c791722b0fc6f469",
+  "poses_source": "artifacts/softbody/lambda/evidence-gpu-batch-v10/Pour-batch-absolute/warmup-2.npz",
+  "poses_source_sha256": "1936453e40d32bd0d699f11505eba7db7fef2fc4bdc5412b5e6ba2524e929564",
+  "cases": [
+    "native-com",
+    "identity-com",
+    "identity-com-zero-origin"
+  ],
+  "selected_pose_max_abs": 2e-06,
+  "exact": [
+    "public and bridge native readback",
+    "all unselected actors",
+    "selected linear/angular velocities",
+    "rejected input leaves state unchanged"
+  ],
+  "descriptive_only": [
+    "selected repeated pose roundtrip",
+    "full apply repeated pose roundtrip"
+  ],
+  "explicit_steps_after_reset": 0
+}

@@ -9,6 +9,7 @@ import imageio.v2 as imageio
 import numpy as np
 import sapien
 import torch
+from scipy.spatial.transform import Rotation
 
 
 def flatten(value, prefix=''):
@@ -25,17 +26,60 @@ def take_rows(value, indices):
     return {k: take_rows(v, indices) for k, v in value.items()} if isinstance(value, dict) else value[indices].clone()
 
 
-def controller_actions(mode, qpos, scales):
+def visual_bounds(component):
+    """Body-local bounds from actual render geometry, including native primitives.
+
+    Capsule/cylinder axes follow pinned SAPIEN 3.0.3 render_shape.cpp (local X).
+    This capture helper does not change the mesh-only MPM SDF conversion.
+    """
+    bounds=[]
+    for shape in component.render_shapes:
+        matrix=shape.local_pose.to_transformation_matrix().astype(np.float64)
+        rotation=matrix[:3,:3];center=matrix[:3,3]
+        if isinstance(shape,sapien.render.RenderShapeTriangleMesh):
+            points=np.concatenate([part.vertices for part in shape.parts])*shape.scale
+            points=points@rotation.T+center
+            bounds.append(np.array([points.min(0),points.max(0)]));continue
+        if isinstance(shape,sapien.render.RenderShapeBox):
+            extent=abs(rotation)@np.asarray(shape.half_size)
+        elif isinstance(shape,sapien.render.RenderShapeSphere):
+            extent=np.full(3,shape.radius)
+        elif isinstance(shape,sapien.render.RenderShapeCapsule):
+            extent=abs(rotation[:,0])*shape.half_length+shape.radius
+        elif isinstance(shape,sapien.render.RenderShapeCylinder):
+            extent=abs(rotation[:,0])*shape.half_length+shape.radius*np.linalg.norm(rotation[:,1:],axis=1)
+        else:raise NotImplementedError('Unrecognized render primitive: '+type(shape).__name__)
+        bounds.append(np.array([center-extent,center+extent]))
+    if not bounds:raise ValueError('No native render geometry')
+    return np.array([np.min(np.array(bounds)[:,0],axis=0),np.max(np.array(bounds)[:,1],axis=0)])
+
+
+def rng_snapshot(env):
+    data={'rng/main_seed':env._main_seed.copy(),'rng/episode_seed':env._episode_seed.copy()}
+    for name,generators in [('main',env._batched_main_rng.rngs),('episode',env._batched_episode_rng.rngs),
+                            ('legacy_main',[env._main_rng])]:
+        states=[rng.get_state() for rng in generators]
+        if any(state[0]!='MT19937' for state in states):raise ValueError('Unexpected RNG algorithm')
+        for field,column in [('words',1),('cursor',2),('has_gauss',3),('gaussian',4)]:
+            data[f'rng/{name}/{field}']=np.array([state[column] for state in states])
+    return data
+
+
+def controller_actions(mode, qpos, scales, ee_poses=None):
     has_gripper = qpos.shape[1] == 9
     qpos = qpos[:, :7].astype(np.float64)
     actions = []
-    for q, scale in zip(qpos, scales):
+    for index, (q, scale) in enumerate(zip(qpos, scales)):
         if mode == 'pd_joint_pos':
             value = q + scale * np.array([.002, -.003, .001, -.002, .001, .002, -.001])
         elif mode == 'pd_joint_pos_vel':
             value = np.r_[q + scale * .002, np.full(7, scale * .02)]
         elif mode == 'pd_joint_delta_pos_vel':
             value = np.r_[np.full(7, scale * .01), np.full(7, scale * .02)]
+        elif mode == 'pd_ee_pose':
+            pose=ee_poses[index]
+            value=np.r_[pose[:3]+scale*np.array([.001,-.002,.001]),
+                Rotation.from_quat(pose[[4,5,6,3]]).as_rotvec()+scale*np.array([.002,-.001,.003])]
         elif 'ee' in mode:
             width = 3 if mode.endswith('_pos') else 6
             value = np.array([.01, -.02, .01, .03, -.02, .01])[:width] * scale
@@ -46,7 +90,8 @@ def controller_actions(mode, qpos, scales):
 
 
 def run(args):
-    case = json.loads(args.request.read_text())['cases'][args.case_index]
+    request = json.loads(args.request.read_text())
+    case = request['cases'][args.case_index]
     report = dict(case=case, complete=False, files={}, steps=[], renders=[],
                   probe_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
     env = None
@@ -56,8 +101,25 @@ def run(args):
         from mani_skill.envs.softbody.fill import FillEnv
         from mani_skill.envs.softbody.excavate import ExcavateEnv
         from mani_skill.envs.softbody.hang import HangEnv
+        from mani_skill.envs.softbody.pour import PourEnv
+        from mani_skill.envs.softbody.write import WriteEnv
+        from mani_skill.envs.softbody.pinch import PinchEnv
         from mani_skill.envs.softbody.geometry import visual_meshes, convex_collision_meshes
-        task_class = {'Fill': FillEnv, 'Excavate': ExcavateEnv, 'Hang': HangEnv}[case['task']]
+        if request.get('native_actor_extension') is not None:
+            import sapien303_actor_bridge as native_actor
+            loaded = Path(native_actor.__file__)
+            actual_sha = hashlib.sha256(loaded.read_bytes()).hexdigest()
+            if actual_sha != request['native_actor_extension']['sha256']:
+                raise ValueError('Loaded actor adapter differs from the frozen binary')
+            report['native_actor_extension'] = dict(sha256=actual_sha, path=str(loaded), abi=native_actor.abi())
+        if request.get('native_cooked_extension') is not None:
+            import sapien303_cooked_bridge as native_cooked
+            loaded=Path(native_cooked.__file__)
+            actual_sha=hashlib.sha256(loaded.read_bytes()).hexdigest()
+            if actual_sha!=request['native_cooked_extension']['sha256']:
+                raise ValueError('Loaded cooked-mesh adapter differs from the frozen binary')
+            report['native_cooked_extension']=dict(sha256=actual_sha,path=str(loaded),abi=native_cooked.abi())
+        task_class = {'Fill': FillEnv, 'Excavate': ExcavateEnv, 'Hang': HangEnv, 'Pour': PourEnv, 'Write': WriteEnv, 'Pinch': PinchEnv}[case['task']]
         count = len(case['seeds'])
         offsets = case.get('scene_offsets')
         if offsets is not None:
@@ -78,8 +140,14 @@ def run(args):
             kwargs['reward_mode'] = case['reward_mode']
         if count > 1:
             kwargs['mpm_batch_particle_capacity'] = case['capacity']
+        if case['task'] in ('Write','Pinch'):
+            kwargs['level_dir'] = '/levels'
+        if case['task']=='Pour' and request.get('native_cooked_extension') is not None:
+            kwargs['bottle_collision_dir']='/cooked-pack'
+        initial_options = dict(level_file=case['level_files']) if case['task'] in ('Write','Pinch') else {}
+        fresh_options = dict(level_file=case['fresh_level_file']) if case['task'] in ('Write','Pinch') else {}
         env = DiagnosticTaskEnv(**kwargs)
-        env.reset(seed=case['seeds'])
+        env.reset(seed=case['seeds'], options=initial_options)
         original_system = env.scene.px
         arm = env.agent.controller.controllers['arm']
         ik_calls = []
@@ -123,6 +191,50 @@ def run(args):
             report['files'][path.name] = hashlib.sha256(path.read_bytes()).hexdigest()
         def dump(label):
             state = flatten(env.get_state_dict(), 'state/')
+            if request.get('rng_contract') == 1:
+                state.update(rng_snapshot(env))
+            if case['task'] == 'Pinch':
+                info=env.evaluate();state.update(flatten(info,'reported/'))
+                state['reported/reward']=env.compute_dense_reward(None,None,info).cpu().numpy().copy()
+                extra=env._get_obs_extra(info)
+                for key in ('tcp_pose','target_rgb','target_depth','target_points'):
+                    state['reported/'+key]=extra[key].cpu().numpy().copy()
+                state['reported/chamfer']=np.array([env._compute_chamfer(i) for i in range(count)])
+                native_tcps=[next(link for link in robot.links if link.entity.name=='panda_hand_tcp') for robot in env.agent.robot._objs]
+                poses=[env.rigid_pose(body) for body in native_tcps]
+                state['tcp_pose']=np.array([np.r_[p.p,p.q] for p in poses])
+                state['tcp_matrix']=np.array([p.to_transformation_matrix() for p in poses])
+                state['tcp_gpu_indices']=np.array([body.gpu_pose_index for body in native_tcps])
+                report.setdefault('reset_level_provenance',{})[label]=dict(files=list(env.level_files),sha256=list(env.level_sha256s))
+            if case['task'] == 'Write':
+                info=env.evaluate();state.update(flatten(info,'reported/'))
+                extra=env._get_obs_extra(info)
+                state['reported/reward']=env.compute_dense_reward(None,None,info).cpu().numpy().copy()
+                state['reported/goal']=extra['goal'].cpu().numpy().copy()
+                state['reported/tcp_pose']=extra['tcp_pose'].cpu().numpy().copy()
+                state['goal_height_mm']=np.stack([g.image.numpy() for g in env._write_goals])
+                state['current_height_mm']=np.stack([g.current.numpy() for g in env._write_goals])
+                native_tcps=[next(link for link in robot.links if link.entity.name=='panda_hand_tcp')
+                             for robot in env.agent.robot._objs]
+                poses=[env.rigid_pose(body) for body in native_tcps]
+                state['tcp_pose']=np.array([np.r_[p.p,p.q] for p in poses])
+                state['tcp_matrix']=np.array([p.to_transformation_matrix() for p in poses])
+                state['tcp_gpu_indices']=np.array([body.gpu_pose_index for body in native_tcps])
+                report.setdefault('reset_level_provenance',{})[label]=dict(
+                    files=list(env.level_files),sha256=list(env.level_sha256s))
+            if case['task'] == 'Pour':
+                info=env.evaluate();state.update(flatten(info,'reported/'))
+                state['reported/reward']=env.compute_dense_reward(None,None,info).cpu().numpy().copy()
+                state['reported/target']=env._get_obs_extra(info)['target'].cpu().numpy().copy()
+                state['reported/task_counts']=np.array([env._task_counts(i) for i in range(count)])
+                state['reported/grasp']=np.array([env._check_grasp(i) for i in range(count)])
+                state['reset_ik_attempts']=env._reset_ik_attempts.copy()
+                for name,bodies in [('source',env.source_bodies),('beaker',env.beaker_bodies),('tcp',env.grasp_sites),('leftfinger',env.lfingers),('rightfinger',env.rfingers)]:
+                    poses=[env.rigid_pose(body) for body in bodies]
+                    state[name+'_pose']=np.array([np.r_[p.p,p.q] for p in poses])
+                    state[name+'_matrix']=np.array([p.to_transformation_matrix() for p in poses])
+                for name,link in [('left',env.agent.finger1_link),('right',env.agent.finger2_link)]:
+                    state['contact/'+name]=env.scene.get_pairwise_contact_impulses(link,env.source_container).cpu().numpy().copy()
             if case['task'] == 'Hang':
                 info = env.evaluate()
                 state.update(flatten(info, 'reported/'))
@@ -165,13 +277,14 @@ def run(args):
                              robot_com=np.array([[pose(b.cmass_local_pose) for b in r.links] for r in robots]),
                              joint_parent_pose=np.array([[pose(j.pose_in_parent) for j in r.joints] for r in robots]),
                              joint_child_pose=np.array([[pose(j.pose_in_child) for j in r.joints] for r in robots]))
-            if case['task'] == 'Excavate':
+            if case['task'] in ('Excavate','Write'):
                 bodies = [[wall._bodies[i] for wall in env.walls] for i in range(count)]
                 model.update(wall_mass=np.array([[b.mass for b in row] for row in bodies]),
                     wall_inertia=np.array([[b.inertia for b in row] for row in bodies]),
                     wall_com=np.array([[pose(b.cmass_local_pose) for b in row] for row in bodies]),
-                    wall_half_size=np.array([[b.collision_shapes[0].half_size for b in row] for row in bodies]),
-                    bucket_reward_hull=np.array([convex_collision_meshes(b)[0].vertices for b in env.buckets]),
+                    wall_half_size=np.array([[b.collision_shapes[0].half_size for b in row] for row in bodies]))
+            if case['task'] == 'Excavate':
+                model.update(bucket_reward_hull=np.array([convex_collision_meshes(b)[0].vertices for b in env.buckets]),
                     stored_reward_hull=np.array([v[:, :3] for v in env.vertices_mats]))
             if case['task'] == 'Hang':
                 model.update(rod_mass=np.array([b.mass for b in env.rod_bodies]),
@@ -179,41 +292,112 @@ def run(args):
                     rod_com=np.array([pose(b.cmass_local_pose) for b in env.rod_bodies]),
                     rod_half_size=np.array([b.collision_shapes[0].half_size for b in env.rod_bodies]),
                     robot_joint_limits=np.array([r.get_qlimits() for r in robots]))
+            if case['task'] == 'Pour':
+                for name,bodies in [('source',env.source_bodies),('beaker',env.beaker_bodies)]:
+                    model[name+'_mass']=np.array([b.mass for b in bodies])
+                    model[name+'_inertia']=np.array([b.inertia for b in bodies])
+                    model[name+'_com']=np.array([pose(b.cmass_local_pose) for b in bodies])
+                    model[name+'_shape_count']=np.array([len(b.collision_shapes) for b in bodies])
+                bottle_meshes=[convex_collision_meshes(b) for b in env.source_bodies]
+                for index in range(len(env.source_bodies[0].collision_shapes)):
+                    meshes=[row[index] for row in bottle_meshes]
+                    model[f'bottle_convex_{index}']=np.array([m.vertices for m in meshes])
+                if request.get('native_cooked_extension') is not None:
+                    report['bottle_cooked_pack']=dict(sha256=env.bottle_collision.manifest_sha256,
+                        leaves=list(env.bottle_collision.leaves))
+                    for i,body in enumerate(env.source_bodies):
+                        for j,shape in enumerate(body.collision_shapes):
+                            native=native_cooked.inspect(shape)
+                            for key in ('vertices','planes','polygon_indices','polygon_offsets','cached_vertices','cached_triangles','mesh_aabb'):
+                                model[f'cooked/{i}/{j}/'+key]=np.asarray(native[key])
+                            model[f'cooked/{i}/{j}/flags']=np.array([native['gpu_compatible'],native['cached_and_native_mesh_same']],bool)
+                            model[f'cooked/{i}/{j}/properties']=np.array([shape.density,shape.physical_material.static_friction,
+                                shape.physical_material.dynamic_friction,shape.physical_material.restitution])
+                            model[f'cooked/{i}/{j}/scale']=shape.scale
+                            model[f'cooked/{i}/{j}/pose']=np.r_[shape.local_pose.p,shape.local_pose.q]
+                for key in ('source_aabb','target_aabb','target_aabc'):
+                    model[key]=np.repeat(getattr(env,key)[None],count,axis=0)
+                model['target_radius']=np.full(count,env._target_radius)
+                model['target_height']=np.full(count,env._target_height)
             save(label, model)
-        def render(label):
+        def capture_render(label, *, diagnostic=False):
             before = flatten(env.get_state_dict(), 'checkpoint/')
+            if request.get('rng_contract') == 1:
+                before.update(rng_snapshot(env))
             before_rigid = env.scene.px.cuda_rigid_body_data.torch().cpu().numpy().copy()
             env.render_rgb_array()
             camera = env.scene.human_render_cameras['render_camera']
             pixels = {k: v.cpu().numpy().copy() for k, v in camera.get_obs().items()}
             params = {k: v.cpu().numpy().copy() for k, v in camera.get_params().items()}
             after = flatten(env.get_state_dict(), 'checkpoint/')
+            if request.get('rng_contract') == 1:
+                after.update(rng_snapshot(env))
             after_rigid = env.scene.px.cuda_rigid_body_data.torch().cpu().numpy().copy()
             for i, coupler in enumerate(env.mpm_couplers):
                 pool = env._mpm_batch.pools[i] if count > 1 else env._particle_visuals
                 particles = coupler.particle_state()['x']
-                ids, bounds, poses = [], [], []
-                for link in env.agent.robot._objs[i].links:
+                ids, bounds, poses, visibility = [], [], [], []
+                visual_bodies = list(env.agent.robot._objs[i].links)
+                if case['task'] == 'Pour':
+                    visual_bodies += [env.source_bodies[i],env.beaker_bodies[i]]
+                for link in visual_bodies:
                     component = link.entity.find_component_by_type(sapien.render.RenderBodyComponent)
                     if component is None or not component.render_shapes:
                         continue
-                    vertices = np.concatenate([m.vertices for m in visual_meshes(link)])
-                    ids.append(link.entity.per_scene_id); bounds.append([vertices.min(0), vertices.max(0)])
+                    ids.append(link.entity.per_scene_id); bounds.append(visual_bounds(component))
                     poses.append(env.rigid_pose(link).to_transformation_matrix())
+                    visibility.append(component.visibility)
                 arrays = {**{k: v[i:i+1] for k, v in pixels.items()}, **{k: v[i:i+1] for k, v in params.items()},
                           'particle_ids': np.array([e.per_scene_id for e in pool.active]),
                           'pool_ids': np.array([e.per_scene_id for e in pool.entities]), 'particle_x': particles,
                           'rigid_visual_ids': np.array(ids), 'rigid_visual_bounds': np.array(bounds), 'rigid_visual_poses': np.array(poses),
+                          'rigid_visual_visibility': np.array(visibility),
                           'before_native_rigid': before_rigid, 'after_native_rigid': after_rigid,
                           'before/mpm/x': particles[None].copy(), 'after/mpm/x': particles[None].copy(),
                           **{'before/' + k: v for k, v in before.items()}, **{'after/' + k: v for k, v in after.items()}}
+                if case['task'] == 'Pour':
+                    ring=env._rings[i]
+                    arrays.update(target_ring_id=np.array(ring.per_scene_id),
+                        task_visual_ids=np.array([env.source_bodies[i].entity.per_scene_id,env.beaker_bodies[i].entity.per_scene_id]),
+                        target_ring_pose=ring.pose.to_transformation_matrix(),
+                        target_beaker_pose=env.rigid_pose(env.beaker_bodies[i]).to_transformation_matrix(),
+                        target_ring_heights=np.array(env._height_pair(i)),target_radius=np.array(env._target_radius))
                 name = f'{label}-env{i}'; save(name, arrays)
                 imageio.imwrite(args.output / (name + '.png'), pixels['rgb'][i])
-                report['renders'].append(dict(label=label, index=i, file=name + '.npz'))
+                collection = report.setdefault('diagnostic_renders', []) if diagnostic else report['renders']
+                collection.append(dict(label=label, index=i, file=name + '.npz'))
+        def render(label):
+            capture_render(label)
+            if request.get('pour_visibility_diagnostic') != 1 or label != 'camera-initial':
+                return
+            if case['task'] != 'Pour':
+                raise ValueError('Pour visibility diagnostics require the Pour task')
+            # These explicitly labelled inspection views alter only render-body
+            # visibility. Preserve the original default-camera verdict. The
+            # captured native buffer and checkpoint must remain byte-identical.
+            bodies = [b for robot in env.agent.robot._objs for b in robot.links] + list(env.source_bodies)
+            components = [b.entity.find_component_by_type(sapien.render.RenderBodyComponent) for b in bodies]
+            components = [c for c in components if c is not None]
+            saved = [(c, c.visibility) for c in components]
+            try:
+                env._invalidate_particle_render_groups()
+                for body in env.source_bodies:
+                    body.entity.find_component_by_type(sapien.render.RenderBodyComponent).visibility = 0.
+                capture_render('inspection-bottle-hidden', diagnostic=True)
+                env._invalidate_particle_render_groups()
+                for component in components:
+                    component.visibility = 0.
+                capture_render('inspection-bottle-robot-hidden', diagnostic=True)
+            finally:
+                env._invalidate_particle_render_groups()
+                for component, visibility in saved:
+                    component.visibility = visibility
+            capture_render('inspection-visibility-restored', diagnostic=True)
         base_action = np.array([.02, -.04, .01, .03, -.01, .03, -.02], np.float32)
         action = np.array([base_action * scale for scale in case['action_scales']])
         if case.get('controller_lifecycle'):
-            action = controller_actions(case['control_mode'], env.agent.robot.get_qpos().cpu().numpy(), case['action_scales'])
+            ee=arm.ee_pose_at_base.raw_pose.cpu().numpy() if case['control_mode']=='pd_ee_pose' else None
+            action = controller_actions(case['control_mode'], env.agent.robot.get_qpos().cpu().numpy(), case['action_scales'],ee)
         report['action'] = action.tolist()
         def step(label):
             before = native_steps
@@ -247,10 +431,10 @@ def run(args):
         if count == 1:
             step('continued')
         else:
-            env.reset(seed=[33], options=dict(env_idx=torch.tensor([0], device=env.device),
+            env.reset(seed=[33], options=dict(**fresh_options,env_idx=torch.tensor([0], device=env.device),
                       reset_to_env_states=dict(env_states=take_rows(checkpoint, [0]))))
             dump('partial-restored'); step('partial-stepped')
-            env.reset(seed=[17], options=dict(env_idx=torch.tensor([1], device=env.device)))
+            env.reset(seed=[17], options=dict(**fresh_options,env_idx=torch.tensor([1], device=env.device)))
             dump('partial-fresh')
             reduced = take_rows(checkpoint, [0]); old_count = int(reduced['mpm_meta']['count'][0, 0])
             retained = np.arange(0,old_count,2)
@@ -260,18 +444,24 @@ def run(args):
                 reduced['task']['selected_indices'][0] = torch.as_tensor(np.searchsorted(retained,task_indices),device=env.device)
             new_count = len(retained)
             retained_tensor = torch.as_tensor(retained,device=env.device)
-            for group in ('mpm', 'mpm_material'):
+            groups=['mpm','mpm_material']+(['task_particles'] if case['task']=='Pinch' else [])
+            for group in groups:
                 for key, value in reduced[group].items():
                     target = torch.zeros_like(value); target[:, :new_count] = value[:, retained_tensor]; reduced[group][key] = target
             reduced['mpm_meta']['count'].fill_(new_count)
             reduced['mpm_meta']['mask'][:] = torch.arange(case['capacity'], device=env.device)[None] < new_count
             save('reduced-checkpoint', flatten(reduced, 'state/'))
-            env.reset(seed=[34], options=dict(env_idx=torch.tensor([0], device=env.device),
+            env.reset(seed=[34], options=dict(**fresh_options,env_idx=torch.tensor([0], device=env.device),
                       reset_to_env_states=dict(env_states=reduced)))
             dump('partial-count'); render('camera-partial-count'); step('count-stepped')
-            env.reset(seed=[31, 32], options=dict(reset_to_env_states=dict(env_states=flat)))
+            flat_options={}
+            restored_flat=flat
+            if case.get('reverse_flat_indices'):
+                flat_options['env_idx']=torch.arange(count-1,-1,-1,device=env.device)
+                restored_flat=flat.flip(0)
+            env.reset(seed=list(range(31,31+count)), options=dict(**fresh_options,**flat_options,reset_to_env_states=dict(env_states=restored_flat)))
             dump('flat-restored'); step('flat-stepped')
-        env.reset(seed=case['seeds'], options={'reconfigure': True})
+        env.reset(seed=case['seeds'], options={**initial_options,'reconfigure': True})
         report['replaced_native_system'] = env.scene.px is not original_system
         if original_models:
             rebuilt = env.agent.controller.controllers['arm']

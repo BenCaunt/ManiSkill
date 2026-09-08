@@ -1,0 +1,1403 @@
+{
+  "status": "Verified native selected-actor reset improvement; Pour batching remains unaccepted and unpublished",
+  "native_actor_probe": {
+    "passed": true,
+    "scope": "Native selected actor API and COM roundtrip diagnostic; does not supersede Pour v10 FAIL or establish task parity.",
+    "failures": [],
+    "cases": {
+      "native-com": {
+        "failures": [],
+        "selected_position_max_abs_m": 1.4901161193847656e-08,
+        "selected_quaternion_max_abs": 5.960464477539063e-08,
+        "selected_roundtrip_max_per_actor": [
+          0.0,
+          1.1920928955078125e-06,
+          0.0,
+          0.0
+        ],
+        "full_roundtrip_max_per_actor": [
+          1.4901161193847656e-07,
+          1.1920928955078125e-06,
+          0.0,
+          0.0
+        ]
+      },
+      "identity-com": {
+        "failures": [],
+        "selected_position_max_abs_m": 0.0,
+        "selected_quaternion_max_abs": 0.0,
+        "selected_roundtrip_max_per_actor": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "full_roundtrip_max_per_actor": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "identity-com-zero-origin": {
+        "failures": [],
+        "selected_position_max_abs_m": 0.0,
+        "selected_quaternion_max_abs": 0.0,
+        "selected_roundtrip_max_per_actor": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "full_roundtrip_max_per_actor": [
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "pour_strict": {
+    "passed": false,
+    "failures": [
+      "Pour-single-101/camera-initial-env0: Too few actual particle pixels",
+      "Pour-single-101/camera-reconfigured-env0: Too few actual particle pixels",
+      "Pour-single-17/camera-initial-env0: Too few actual particle pixels",
+      "Pour-single-17/camera-reconfigured-env0: Too few actual particle pixels",
+      "Pour-batch-absolute/partial-selected: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-absolute/count-selected: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-absolute/flat-env0: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-absolute/flat-env1: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-absolute/camera-initial-env0: Too few actual particle pixels",
+      "Pour-batch-absolute/camera-initial-env1: Too few actual particle pixels",
+      "Pour-batch-absolute/camera-partial-count-env0: Too few actual particle pixels",
+      "Pour-batch-absolute/camera-partial-count-env1: Too few actual particle pixels",
+      "Pour-batch-absolute/camera-reconfigured-env0: Too few actual particle pixels",
+      "Pour-batch-absolute/camera-reconfigured-env1: Too few actual particle pixels",
+      "Pour-batch-align/partial-selected: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-align/count-selected: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-align/flat-env0: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-align/flat-env1: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-align/camera-initial-env0: Too few actual particle pixels",
+      "Pour-batch-align/camera-initial-env1: Too few actual particle pixels",
+      "Pour-batch-align/camera-partial-count-env0: Too few actual particle pixels",
+      "Pour-batch-align/camera-partial-count-env1: Too few actual particle pixels",
+      "Pour-batch-align/camera-reconfigured-env0: Too few actual particle pixels",
+      "Pour-batch-align/camera-reconfigured-env1: Too few actual particle pixels",
+      "Pour-single-101: native bottle cavity geometry differs from pinned decomposition",
+      "Pour-single-17: native bottle cavity geometry differs from pinned decomposition",
+      "Pour-batch-absolute: native bottle cavity geometry differs from pinned decomposition",
+      "Pour-batch-align: native bottle cavity geometry differs from pinned decomposition"
+    ],
+    "reports": {
+      "Pour-single-101": {
+        "task_snapshots": 6,
+        "initial_counts": [
+          8534
+        ],
+        "initial_heights": [
+          [
+            0.011899389542047969,
+            0.01589938954204797
+          ]
+        ],
+        "max_bottle_hull_error_m": 0.0006986663389047122,
+        "rings": {
+          "camera-initial-env0.npz": {
+            "pixels": 223,
+            "max_bound_error_m": 0.0009385203948569024,
+            "failures": []
+          },
+          "camera-reconfigured-env0.npz": {
+            "pixels": 223,
+            "max_bound_error_m": 0.0009385203948569024,
+            "failures": []
+          }
+        }
+      },
+      "Pour-single-17": {
+        "task_snapshots": 6,
+        "initial_counts": [
+          7279
+        ],
+        "initial_heights": [
+          [
+            0.01357813604483549,
+            0.01757813604483549
+          ]
+        ],
+        "max_bottle_hull_error_m": 0.0006986663389047122,
+        "rings": {
+          "camera-initial-env0.npz": {
+            "pixels": 220,
+            "max_bound_error_m": 0.0009728981672769144,
+            "failures": []
+          },
+          "camera-reconfigured-env0.npz": {
+            "pixels": 220,
+            "max_bound_error_m": 0.0009728981672769144,
+            "failures": []
+          }
+        }
+      },
+      "Pour-batch-absolute": {
+        "task_snapshots": 12,
+        "initial_counts": [
+          8534,
+          7279
+        ],
+        "initial_heights": [
+          [
+            0.011899389542047969,
+            0.01589938954204797
+          ],
+          [
+            0.01357813604483549,
+            0.01757813604483549
+          ]
+        ],
+        "max_bottle_hull_error_m": 0.0006986663389047122,
+        "rings": {
+          "camera-initial-env0.npz": {
+            "pixels": 223,
+            "max_bound_error_m": 0.0009385203948569024,
+            "failures": []
+          },
+          "camera-initial-env1.npz": {
+            "pixels": 220,
+            "max_bound_error_m": 0.0009728981672769144,
+            "failures": []
+          },
+          "camera-partial-count-env0.npz": {
+            "pixels": 223,
+            "max_bound_error_m": 0.0009385203948569024,
+            "failures": []
+          },
+          "camera-partial-count-env1.npz": {
+            "pixels": 241,
+            "max_bound_error_m": 0.0010460719689213763,
+            "failures": []
+          },
+          "camera-reconfigured-env0.npz": {
+            "pixels": 223,
+            "max_bound_error_m": 0.0009385203948569024,
+            "failures": []
+          },
+          "camera-reconfigured-env1.npz": {
+            "pixels": 220,
+            "max_bound_error_m": 0.0009728981672769144,
+            "failures": []
+          }
+        }
+      },
+      "Pour-batch-align": {
+        "task_snapshots": 12,
+        "initial_counts": [
+          8534,
+          7279
+        ],
+        "initial_heights": [
+          [
+            0.011899389542047969,
+            0.01589938954204797
+          ],
+          [
+            0.01357813604483549,
+            0.01757813604483549
+          ]
+        ],
+        "max_bottle_hull_error_m": 0.0006986663389047122,
+        "rings": {
+          "camera-initial-env0.npz": {
+            "pixels": 223,
+            "max_bound_error_m": 0.0009385203948569024,
+            "failures": []
+          },
+          "camera-initial-env1.npz": {
+            "pixels": 220,
+            "max_bound_error_m": 0.0009728981672769144,
+            "failures": []
+          },
+          "camera-partial-count-env0.npz": {
+            "pixels": 223,
+            "max_bound_error_m": 0.0009385203948569024,
+            "failures": []
+          },
+          "camera-partial-count-env1.npz": {
+            "pixels": 241,
+            "max_bound_error_m": 0.0010460719689213763,
+            "failures": []
+          },
+          "camera-reconfigured-env0.npz": {
+            "pixels": 223,
+            "max_bound_error_m": 0.0009385203948569024,
+            "failures": []
+          },
+          "camera-reconfigured-env1.npz": {
+            "pixels": 220,
+            "max_bound_error_m": 0.0009728981672769144,
+            "failures": []
+          }
+        }
+      }
+    },
+    "controller_lifecycle": {
+      "passed": false,
+      "failures": [
+        "Pour-single-101/camera-initial-env0: Too few actual particle pixels",
+        "Pour-single-101/camera-reconfigured-env0: Too few actual particle pixels",
+        "Pour-single-17/camera-initial-env0: Too few actual particle pixels",
+        "Pour-single-17/camera-reconfigured-env0: Too few actual particle pixels",
+        "Pour-batch-absolute/partial-selected: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-absolute/count-selected: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-absolute/flat-env0: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-absolute/flat-env1: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-absolute/camera-initial-env0: Too few actual particle pixels",
+        "Pour-batch-absolute/camera-initial-env1: Too few actual particle pixels",
+        "Pour-batch-absolute/camera-partial-count-env0: Too few actual particle pixels",
+        "Pour-batch-absolute/camera-partial-count-env1: Too few actual particle pixels",
+        "Pour-batch-absolute/camera-reconfigured-env0: Too few actual particle pixels",
+        "Pour-batch-absolute/camera-reconfigured-env1: Too few actual particle pixels",
+        "Pour-batch-align/partial-selected: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-align/count-selected: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-align/flat-env0: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-align/flat-env1: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-align/camera-initial-env0: Too few actual particle pixels",
+        "Pour-batch-align/camera-initial-env1: Too few actual particle pixels",
+        "Pour-batch-align/camera-partial-count-env0: Too few actual particle pixels",
+        "Pour-batch-align/camera-partial-count-env1: Too few actual particle pixels",
+        "Pour-batch-align/camera-reconfigured-env0: Too few actual particle pixels",
+        "Pour-batch-align/camera-reconfigured-env1: Too few actual particle pixels"
+      ],
+      "reports": {
+        "Pour-single-101": {
+          "ik_requests": 4,
+          "replay_errors": {}
+        },
+        "Pour-single-17": {
+          "ik_requests": 4,
+          "replay_errors": {}
+        },
+        "Pour-batch-absolute": {
+          "ik_requests": 12,
+          "replay_errors": {
+            "partial-stepped/env0": {
+              "x": 0.00010001659393310547,
+              "v": 0.0760777872055769,
+              "F": 0.0,
+              "C": 12.166006803512573,
+              "vc": 0.0,
+              "qpos": 8.344650268554688e-07,
+              "qvel": 0.00024061996373347938,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "flat-stepped/env0": {
+              "x": 0.00011053681373596191,
+              "v": 0.11283827945590019,
+              "F": 0.0,
+              "C": 18.522120714187622,
+              "vc": 0.0,
+              "qpos": 8.344650268554688e-07,
+              "qvel": 0.0001439674524590373,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            },
+            "flat-stepped/env1": {
+              "x": 0.0003769993782043457,
+              "v": 0.12998873740434647,
+              "F": 0.0,
+              "C": 20.1497220993042,
+              "vc": 0.0,
+              "qpos": 9.72263514995575e-05,
+              "qvel": 0.0014453449402935803,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0
+            }
+          }
+        },
+        "Pour-batch-align": {
+          "ik_requests": 12,
+          "replay_errors": {
+            "partial-stepped/env0": {
+              "x": 0.00015575066208839417,
+              "v": 0.08684229105710983,
+              "F": 0.0,
+              "C": 12.06825304031372,
+              "vc": 0.0,
+              "qpos": 2.2761523723602295e-06,
+              "qvel": 0.00044808973325416446,
+              "drive_position": 3.5762786865234375e-07,
+              "drive_velocity": 0.0
+            },
+            "flat-stepped/env0": {
+              "x": 0.00014406442642211914,
+              "v": 0.06259763613343239,
+              "F": 0.0,
+              "C": 12.710898399353027,
+              "vc": 0.0,
+              "qpos": 1.6260892152786255e-06,
+              "qvel": 0.0006718404474668205,
+              "drive_position": 3.5762786865234375e-07,
+              "drive_velocity": 0.0
+            },
+            "flat-stepped/env1": {
+              "x": 0.0004152655601501465,
+              "v": 0.1560625471174717,
+              "F": 0.0,
+              "C": 25.078288078308105,
+              "vc": 0.0,
+              "qpos": 7.95312225818634e-05,
+              "qvel": 0.0009613658185116947,
+              "drive_position": 3.5762786865234375e-07,
+              "drive_velocity": 0.0
+            }
+          }
+        }
+      },
+      "lifecycle_and_rendering": {
+        "passed": false,
+        "failures": [
+          "Pour-single-101/camera-initial-env0: Too few actual particle pixels",
+          "Pour-single-101/camera-reconfigured-env0: Too few actual particle pixels",
+          "Pour-single-17/camera-initial-env0: Too few actual particle pixels",
+          "Pour-single-17/camera-reconfigured-env0: Too few actual particle pixels",
+          "Pour-batch-absolute/partial-selected: changed checkpoint fields state/actors/bottle",
+          "Pour-batch-absolute/count-selected: changed checkpoint fields state/actors/bottle",
+          "Pour-batch-absolute/flat-env0: changed checkpoint fields state/actors/bottle",
+          "Pour-batch-absolute/flat-env1: changed checkpoint fields state/actors/bottle",
+          "Pour-batch-absolute/camera-initial-env0: Too few actual particle pixels",
+          "Pour-batch-absolute/camera-initial-env1: Too few actual particle pixels",
+          "Pour-batch-absolute/camera-partial-count-env0: Too few actual particle pixels",
+          "Pour-batch-absolute/camera-partial-count-env1: Too few actual particle pixels",
+          "Pour-batch-absolute/camera-reconfigured-env0: Too few actual particle pixels",
+          "Pour-batch-absolute/camera-reconfigured-env1: Too few actual particle pixels",
+          "Pour-batch-align/partial-selected: changed checkpoint fields state/actors/bottle",
+          "Pour-batch-align/count-selected: changed checkpoint fields state/actors/bottle",
+          "Pour-batch-align/flat-env0: changed checkpoint fields state/actors/bottle",
+          "Pour-batch-align/flat-env1: changed checkpoint fields state/actors/bottle",
+          "Pour-batch-align/camera-initial-env0: Too few actual particle pixels",
+          "Pour-batch-align/camera-initial-env1: Too few actual particle pixels",
+          "Pour-batch-align/camera-partial-count-env0: Too few actual particle pixels",
+          "Pour-batch-align/camera-partial-count-env1: Too few actual particle pixels",
+          "Pour-batch-align/camera-reconfigured-env0: Too few actual particle pixels",
+          "Pour-batch-align/camera-reconfigured-env1: Too few actual particle pixels"
+        ],
+        "reports": {
+          "Pour-single-101": {
+            "exact_checkpoints": {},
+            "cameras": {
+              "camera-initial-env0": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-reconfigured-env0": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              }
+            }
+          },
+          "Pour-single-17": {
+            "exact_checkpoints": {},
+            "cameras": {
+              "camera-initial-env0": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-reconfigured-env0": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              }
+            }
+          },
+          "Pour-batch-absolute": {
+            "exact_checkpoints": {
+              "partial-unchosen": [],
+              "fresh-unchosen": [],
+              "count-unchosen": [],
+              "partial-selected": [
+                "state/actors/bottle"
+              ],
+              "count-selected": [
+                "state/actors/bottle"
+              ],
+              "flat-env0": [
+                "state/actors/bottle"
+              ],
+              "flat-env1": [
+                "state/actors/bottle"
+              ]
+            },
+            "cameras": {
+              "camera-initial-env0": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-initial-env1": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-partial-count-env0": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-partial-count-env1": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-reconfigured-env0": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-reconfigured-env1": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              }
+            }
+          },
+          "Pour-batch-align": {
+            "exact_checkpoints": {
+              "partial-unchosen": [],
+              "fresh-unchosen": [],
+              "count-unchosen": [],
+              "partial-selected": [
+                "state/actors/bottle"
+              ],
+              "count-selected": [
+                "state/actors/bottle"
+              ],
+              "flat-env0": [
+                "state/actors/bottle"
+              ],
+              "flat-env1": [
+                "state/actors/bottle"
+              ]
+            },
+            "cameras": {
+              "camera-initial-env0": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-initial-env1": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-partial-count-env0": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-partial-count-env1": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-reconfigured-env0": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              },
+              "camera-reconfigured-env1": {
+                "particle_pixels": 0,
+                "failures": [
+                  "Too few actual particle pixels"
+                ]
+              }
+            }
+          }
+        },
+        "scope": "Selected actor adapter experiment using the unchanged v10 gates; expected native selected-COM precision, camera occlusion and cooked geometry limitations remain failures. Native Pour N2 shared-world lifecycle with distinct seeded fluids, native reset IK, per-env open-cavity bottle colliders, beakers, fill heights and physical grasp contacts. Independent count/success/dense reward reconstruction, native convex-cavity containment within1e-6 of pinned decomposition, ring/container pixels and ring geometry3mm. Exact selected actors and unchanged neighboring checkpoint state, variable-count/flat/reconfigured reset. N1 seed101 matches frozen old initial particles including fluid volume, robot/drives, heights and materials; N2 initialization equals independent N1 seed cases with physical container pose component limit1e-6. Absolute and aligned EE modes use independent native IK models; unchanged target1e-6 and joint1e-3 lifecycle gates. Particle replay differences descriptive. No full episode, successful pouring or strict reference parity claim. All earlier failures retained.",
+        "full_port_complete": false
+      },
+      "scope": "Selected actor adapter experiment using the unchanged v10 gates; expected native selected-COM precision, camera occlusion and cooked geometry limitations remain failures. Native Pour N2 shared-world lifecycle with distinct seeded fluids, native reset IK, per-env open-cavity bottle colliders, beakers, fill heights and physical grasp contacts. Independent count/success/dense reward reconstruction, native convex-cavity containment within1e-6 of pinned decomposition, ring/container pixels and ring geometry3mm. Exact selected actors and unchanged neighboring checkpoint state, variable-count/flat/reconfigured reset. N1 seed101 matches frozen old initial particles including fluid volume, robot/drives, heights and materials; N2 initialization equals independent N1 seed cases with physical container pose component limit1e-6. Absolute and aligned EE modes use independent native IK models; unchanged target1e-6 and joint1e-3 lifecycle gates. Particle replay differences descriptive. No full episode, successful pouring or strict reference parity claim. All earlier failures retained.",
+      "full_port_complete": false
+    },
+    "scope": "Selected actor adapter experiment using the unchanged v10 gates; expected native selected-COM precision, camera occlusion and cooked geometry limitations remain failures. Native Pour N2 shared-world lifecycle with distinct seeded fluids, native reset IK, per-env open-cavity bottle colliders, beakers, fill heights and physical grasp contacts. Independent count/success/dense reward reconstruction, native convex-cavity containment within1e-6 of pinned decomposition, ring/container pixels and ring geometry3mm. Exact selected actors and unchanged neighboring checkpoint state, variable-count/flat/reconfigured reset. N1 seed101 matches frozen old initial particles including fluid volume, robot/drives, heights and materials; N2 initialization equals independent N1 seed cases with physical container pose component limit1e-6. Absolute and aligned EE modes use independent native IK models; unchanged target1e-6 and joint1e-3 lifecycle gates. Particle replay differences descriptive. No full episode, successful pouring or strict reference parity claim. All earlier failures retained.",
+    "full_port_complete": false
+  },
+  "pour_reset_diagnostic": {
+    "scope": "Separate native reset diagnostic; original strict Pourv11 verdict remains FAIL28",
+    "unselected_exact_comparisons": 6,
+    "selected_exact_failures": 8,
+    "comparisons": [
+      {
+        "case": "Pour-batch-absolute",
+        "comparison": "partial-unchosen",
+        "changed_fields": [],
+        "position_max_abs_m": 0.0,
+        "quaternion_max_abs": 0.0,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-absolute",
+        "comparison": "fresh-unchosen",
+        "changed_fields": [],
+        "position_max_abs_m": 0.0,
+        "quaternion_max_abs": 0.0,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-absolute",
+        "comparison": "count-unchosen",
+        "changed_fields": [],
+        "position_max_abs_m": 0.0,
+        "quaternion_max_abs": 0.0,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-absolute",
+        "comparison": "partial-selected",
+        "changed_fields": [
+          "state/actors/bottle",
+          "state/articulations/legacy_mpm_panda"
+        ],
+        "position_max_abs_m": 1.4901161193847656e-08,
+        "quaternion_max_abs": 5.960464477539063e-08,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-absolute",
+        "comparison": "count-selected",
+        "changed_fields": [
+          "state/actors/bottle",
+          "state/articulations/legacy_mpm_panda"
+        ],
+        "position_max_abs_m": 1.4901161193847656e-08,
+        "quaternion_max_abs": 5.960464477539063e-08,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-absolute",
+        "comparison": "flat-env0",
+        "changed_fields": [
+          "state/actors/bottle",
+          "state/articulations/legacy_mpm_panda"
+        ],
+        "position_max_abs_m": 1.4901161193847656e-08,
+        "quaternion_max_abs": 5.960464477539063e-08,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-absolute",
+        "comparison": "flat-env1",
+        "changed_fields": [
+          "state/actors/bottle",
+          "state/articulations/legacy_mpm_panda"
+        ],
+        "position_max_abs_m": 1.4901161193847656e-08,
+        "quaternion_max_abs": 5.960464477539063e-08,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-align",
+        "comparison": "partial-unchosen",
+        "changed_fields": [],
+        "position_max_abs_m": 0.0,
+        "quaternion_max_abs": 0.0,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-align",
+        "comparison": "fresh-unchosen",
+        "changed_fields": [],
+        "position_max_abs_m": 0.0,
+        "quaternion_max_abs": 0.0,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-align",
+        "comparison": "count-unchosen",
+        "changed_fields": [],
+        "position_max_abs_m": 0.0,
+        "quaternion_max_abs": 0.0,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-align",
+        "comparison": "partial-selected",
+        "changed_fields": [
+          "state/actors/bottle",
+          "state/articulations/legacy_mpm_panda"
+        ],
+        "position_max_abs_m": 7.450580596923828e-09,
+        "quaternion_max_abs": 5.960464477539063e-08,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-align",
+        "comparison": "count-selected",
+        "changed_fields": [
+          "state/actors/bottle",
+          "state/articulations/legacy_mpm_panda"
+        ],
+        "position_max_abs_m": 7.450580596923828e-09,
+        "quaternion_max_abs": 5.960464477539063e-08,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-align",
+        "comparison": "flat-env0",
+        "changed_fields": [
+          "state/actors/bottle",
+          "state/articulations/legacy_mpm_panda"
+        ],
+        "position_max_abs_m": 7.450580596923828e-09,
+        "quaternion_max_abs": 5.960464477539063e-08,
+        "velocity_max_abs": 0.0
+      },
+      {
+        "case": "Pour-batch-align",
+        "comparison": "flat-env1",
+        "changed_fields": [
+          "state/actors/bottle",
+          "state/articulations/legacy_mpm_panda"
+        ],
+        "position_max_abs_m": 7.450580596923828e-09,
+        "quaternion_max_abs": 1.862645149230957e-09,
+        "velocity_max_abs": 0.0
+      }
+    ],
+    "source_files_checked": 515,
+    "regression_source_identical": true,
+    "extension_sha256": "2c7ab84cdc9c6421be985164cf569f1630bbfea936dfab9d8e312c28e3b27feb"
+  },
+  "shared_reset_regression": {
+    "excavate": {
+      "passed": true,
+      "failures": [],
+      "reports": {
+        "Excavate-batch-ee": {
+          "task_snapshots": 12,
+          "initial_counts": [
+            11056,
+            11071
+          ],
+          "initial_targets": [
+            1113.0,
+            873.0
+          ]
+        }
+      },
+      "controller_lifecycle": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Excavate-batch-ee": {
+            "ik_requests": 12,
+            "replay_errors": {
+              "partial-stepped/env0": {
+                "x": 9.424984455108643e-07,
+                "v": 0.0001332610845565796,
+                "F": 0.0005772113800048828,
+                "C": 0.032389163970947266,
+                "vc": 2.7567148208618164e-07,
+                "qpos": 1.1920928955078125e-07,
+                "qvel": 4.809349775314331e-06,
+                "drive_position": 5.960464477539062e-07,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env0": {
+                "x": 3.7029385566711426e-06,
+                "v": 0.0008978918194770813,
+                "F": 0.0022584199905395508,
+                "C": 0.5706913024187088,
+                "vc": 2.384185791015625e-07,
+                "qpos": 1.1920928955078125e-07,
+                "qvel": 4.809349775314331e-06,
+                "drive_position": 5.960464477539062e-07,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env1": {
+                "x": 3.1962990760803223e-06,
+                "v": 0.0009018196724355221,
+                "F": 0.014328360557556152,
+                "C": 0.398392915725708,
+                "vc": 0.019269468961283565,
+                "qpos": 2.384185791015625e-07,
+                "qvel": 4.701199941337109e-06,
+                "drive_position": 7.152557373046875e-07,
+                "drive_velocity": 0.0
+              }
+            }
+          },
+          "Fill-reset-regression-ee": {
+            "ik_requests": 12,
+            "replay_errors": {
+              "partial-stepped/env0": {
+                "x": 2.212822437286377e-06,
+                "v": 0.0005523506551980972,
+                "F": 0.0016207098960876465,
+                "C": 0.17699700593948364,
+                "vc": 5.43743371963501e-05,
+                "qpos": 0.0,
+                "qvel": 8.940696716308594e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env0": {
+                "x": 0.00010073184967041016,
+                "v": 0.0052149537950754166,
+                "F": 0.032831668853759766,
+                "C": 3.209992466494441,
+                "vc": 0.03678077831864357,
+                "qpos": 2.9802322387695312e-08,
+                "qvel": 2.332031726837158e-06,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env1": {
+                "x": 1.7881393432617188e-07,
+                "v": 1.854635775089264e-05,
+                "F": 1.975148916244507e-05,
+                "C": 0.0023703575134277344,
+                "vc": 2.397596836090088e-05,
+                "qpos": 0.0,
+                "qvel": 1.5832483768463135e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            }
+          },
+          "Hang-batch-target": {
+            "ik_requests": 12,
+            "replay_errors": {
+              "partial-stepped/env0": {
+                "x": 1.7881393432617188e-07,
+                "v": 2.1267682313919067e-05,
+                "F": 5.841255187988281e-06,
+                "C": 0.00165480375289917,
+                "vc": 0.0,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 7.82310962677002e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env0": {
+                "x": 1.7881393432617188e-07,
+                "v": 2.127513289451599e-05,
+                "F": 5.7220458984375e-06,
+                "C": 0.0016542673110961914,
+                "vc": 0.0,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 7.078051567077637e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env1": {
+                "x": 2.2351741790771484e-07,
+                "v": 1.2828037142753601e-05,
+                "F": 7.0035457611083984e-06,
+                "C": 0.0007385611534118652,
+                "vc": 0.0,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 3.5390257835388184e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            }
+          }
+        },
+        "lifecycle_and_rendering": {
+          "passed": true,
+          "failures": [],
+          "reports": {
+            "Excavate-batch-ee": {
+              "exact_checkpoints": {
+                "partial-unchosen": [],
+                "fresh-unchosen": [],
+                "count-unchosen": [],
+                "partial-selected": [],
+                "count-selected": [],
+                "flat-env0": [],
+                "flat-env1": []
+              },
+              "cameras": {
+                "camera-initial-env0": {
+                  "rigid_pixels": 44140,
+                  "max_rigid_bound_violation_m": 0.0010863688006547412,
+                  "particle_pixels": 16821,
+                  "visible_particles": 2031,
+                  "max_surface_error_m": 0.0015809763569507277,
+                  "median_surface_error_m": 0.0005842781037719564,
+                  "failures": []
+                },
+                "camera-initial-env1": {
+                  "rigid_pixels": 42384,
+                  "max_rigid_bound_violation_m": 0.001059106218912871,
+                  "particle_pixels": 16205,
+                  "visible_particles": 1941,
+                  "max_surface_error_m": 0.001590443312767057,
+                  "median_surface_error_m": 0.0005854509973434265,
+                  "failures": []
+                },
+                "camera-partial-count-env0": {
+                  "rigid_pixels": 43717,
+                  "max_rigid_bound_violation_m": 0.0011389318784181673,
+                  "particle_pixels": 15652,
+                  "visible_particles": 1924,
+                  "max_surface_error_m": 0.001640442622917008,
+                  "median_surface_error_m": 0.0005756187130538922,
+                  "failures": []
+                },
+                "camera-partial-count-env1": {
+                  "rigid_pixels": 39961,
+                  "max_rigid_bound_violation_m": 0.0011240419058999168,
+                  "particle_pixels": 16842,
+                  "visible_particles": 2035,
+                  "max_surface_error_m": 0.0016185428048027472,
+                  "median_surface_error_m": 0.0005696376821987812,
+                  "failures": []
+                },
+                "camera-reconfigured-env0": {
+                  "rigid_pixels": 44140,
+                  "max_rigid_bound_violation_m": 0.0010863688006547412,
+                  "particle_pixels": 16821,
+                  "visible_particles": 2031,
+                  "max_surface_error_m": 0.0015809763569507277,
+                  "median_surface_error_m": 0.0005842781037719564,
+                  "failures": []
+                },
+                "camera-reconfigured-env1": {
+                  "rigid_pixels": 42384,
+                  "max_rigid_bound_violation_m": 0.001059106218912871,
+                  "particle_pixels": 16205,
+                  "visible_particles": 1941,
+                  "max_surface_error_m": 0.001590443312767057,
+                  "median_surface_error_m": 0.0005854509973434265,
+                  "failures": []
+                }
+              }
+            },
+            "Fill-reset-regression-ee": {
+              "exact_checkpoints": {
+                "partial-unchosen": [],
+                "fresh-unchosen": [],
+                "count-unchosen": [],
+                "partial-selected": [],
+                "count-selected": [],
+                "flat-env0": [],
+                "flat-env1": []
+              },
+              "cameras": {
+                "camera-initial-env0": {
+                  "rigid_pixels": 35410,
+                  "max_rigid_bound_violation_m": 0.0014656652884353916,
+                  "particle_pixels": 1262,
+                  "visible_particles": 226,
+                  "max_surface_error_m": 0.0015480025122622735,
+                  "median_surface_error_m": 0.0004848182231410921,
+                  "failures": []
+                },
+                "camera-initial-env1": {
+                  "rigid_pixels": 35398,
+                  "max_rigid_bound_violation_m": 0.001347999887893983,
+                  "particle_pixels": 1280,
+                  "visible_particles": 234,
+                  "max_surface_error_m": 0.0015049038963031564,
+                  "median_surface_error_m": 0.0005229196131294495,
+                  "failures": []
+                },
+                "camera-partial-count-env0": {
+                  "rigid_pixels": 36121,
+                  "max_rigid_bound_violation_m": 0.0014048820837600715,
+                  "particle_pixels": 927,
+                  "visible_particles": 155,
+                  "max_surface_error_m": 0.0015485016098256209,
+                  "median_surface_error_m": 0.0005206559326384444,
+                  "failures": []
+                },
+                "camera-partial-count-env1": {
+                  "rigid_pixels": 35352,
+                  "max_rigid_bound_violation_m": 0.0014116438505610354,
+                  "particle_pixels": 1301,
+                  "visible_particles": 218,
+                  "max_surface_error_m": 0.0015248591910106374,
+                  "median_surface_error_m": 0.00048500101862220327,
+                  "failures": []
+                },
+                "camera-reconfigured-env0": {
+                  "rigid_pixels": 35410,
+                  "max_rigid_bound_violation_m": 0.0014656652884353916,
+                  "particle_pixels": 1262,
+                  "visible_particles": 226,
+                  "max_surface_error_m": 0.0015480025122622735,
+                  "median_surface_error_m": 0.0004848182231410921,
+                  "failures": []
+                },
+                "camera-reconfigured-env1": {
+                  "rigid_pixels": 35398,
+                  "max_rigid_bound_violation_m": 0.001347999887893983,
+                  "particle_pixels": 1280,
+                  "visible_particles": 234,
+                  "max_surface_error_m": 0.0015049038963031564,
+                  "median_surface_error_m": 0.0005229196131294495,
+                  "failures": []
+                }
+              }
+            },
+            "Hang-batch-target": {
+              "exact_checkpoints": {
+                "partial-unchosen": [],
+                "fresh-unchosen": [],
+                "count-unchosen": [],
+                "partial-selected": [],
+                "count-selected": [],
+                "flat-env0": [],
+                "flat-env1": []
+              },
+              "cameras": {
+                "camera-initial-env0": {
+                  "rigid_pixels": 29894,
+                  "max_rigid_bound_violation_m": 0.0012765910907407488,
+                  "particle_pixels": 2568,
+                  "visible_particles": 610,
+                  "max_surface_error_m": 0.0015111399768870494,
+                  "median_surface_error_m": 0.0005148216619601867,
+                  "failures": []
+                },
+                "camera-initial-env1": {
+                  "rigid_pixels": 29884,
+                  "max_rigid_bound_violation_m": 0.0012775013519738115,
+                  "particle_pixels": 2553,
+                  "visible_particles": 611,
+                  "max_surface_error_m": 0.0014708763885864463,
+                  "median_surface_error_m": 0.000529037215112195,
+                  "failures": []
+                },
+                "camera-partial-count-env0": {
+                  "rigid_pixels": 29983,
+                  "max_rigid_bound_violation_m": 0.0012189843203464015,
+                  "particle_pixels": 2484,
+                  "visible_particles": 457,
+                  "max_surface_error_m": 0.0015902883618810534,
+                  "median_surface_error_m": 0.0005381275645392294,
+                  "failures": []
+                },
+                "camera-partial-count-env1": {
+                  "rigid_pixels": 29948,
+                  "max_rigid_bound_violation_m": 0.0012826557384305048,
+                  "particle_pixels": 2535,
+                  "visible_particles": 603,
+                  "max_surface_error_m": 0.0015413997419442289,
+                  "median_surface_error_m": 0.0005198081843187149,
+                  "failures": []
+                },
+                "camera-reconfigured-env0": {
+                  "rigid_pixels": 29894,
+                  "max_rigid_bound_violation_m": 0.0012765910907407488,
+                  "particle_pixels": 2568,
+                  "visible_particles": 610,
+                  "max_surface_error_m": 0.0015111399768870494,
+                  "median_surface_error_m": 0.0005148216619601867,
+                  "failures": []
+                },
+                "camera-reconfigured-env1": {
+                  "rigid_pixels": 29884,
+                  "max_rigid_bound_violation_m": 0.0012775013519738115,
+                  "particle_pixels": 2553,
+                  "visible_particles": 611,
+                  "max_surface_error_m": 0.0014708763885864463,
+                  "median_surface_error_m": 0.000529037215112195,
+                  "failures": []
+                }
+              }
+            }
+          },
+          "scope": "N2 Fill, Excavate and Hang regression for native selected-actor adapter. Runtime bytes identical to Pourv11. Existing actor-inclusive exact checkpoint, IK, task reward/outcome and camera gates retained. No reference trajectory/full task acceptance claim.",
+          "full_port_complete": false
+        },
+        "scope": "N2 Fill, Excavate and Hang regression for native selected-actor adapter. Runtime bytes identical to Pourv11. Existing actor-inclusive exact checkpoint, IK, task reward/outcome and camera gates retained. No reference trajectory/full task acceptance claim.",
+        "full_port_complete": false
+      },
+      "scope": "N2 Fill, Excavate and Hang regression for native selected-actor adapter. Runtime bytes identical to Pourv11. Existing actor-inclusive exact checkpoint, IK, task reward/outcome and camera gates retained. No reference trajectory/full task acceptance claim.",
+      "full_port_complete": false
+    },
+    "hang": {
+      "passed": true,
+      "failures": [],
+      "reports": {
+        "Hang-batch-target": {
+          "task_snapshots": 12,
+          "initial_counts": [
+            3636,
+            3636
+          ],
+          "grasp_indices": [
+            3,
+            0
+          ]
+        }
+      },
+      "controller_lifecycle": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Excavate-batch-ee": {
+            "ik_requests": 12,
+            "replay_errors": {
+              "partial-stepped/env0": {
+                "x": 9.424984455108643e-07,
+                "v": 0.0001332610845565796,
+                "F": 0.0005772113800048828,
+                "C": 0.032389163970947266,
+                "vc": 2.7567148208618164e-07,
+                "qpos": 1.1920928955078125e-07,
+                "qvel": 4.809349775314331e-06,
+                "drive_position": 5.960464477539062e-07,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env0": {
+                "x": 3.7029385566711426e-06,
+                "v": 0.0008978918194770813,
+                "F": 0.0022584199905395508,
+                "C": 0.5706913024187088,
+                "vc": 2.384185791015625e-07,
+                "qpos": 1.1920928955078125e-07,
+                "qvel": 4.809349775314331e-06,
+                "drive_position": 5.960464477539062e-07,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env1": {
+                "x": 3.1962990760803223e-06,
+                "v": 0.0009018196724355221,
+                "F": 0.014328360557556152,
+                "C": 0.398392915725708,
+                "vc": 0.019269468961283565,
+                "qpos": 2.384185791015625e-07,
+                "qvel": 4.701199941337109e-06,
+                "drive_position": 7.152557373046875e-07,
+                "drive_velocity": 0.0
+              }
+            }
+          },
+          "Fill-reset-regression-ee": {
+            "ik_requests": 12,
+            "replay_errors": {
+              "partial-stepped/env0": {
+                "x": 2.212822437286377e-06,
+                "v": 0.0005523506551980972,
+                "F": 0.0016207098960876465,
+                "C": 0.17699700593948364,
+                "vc": 5.43743371963501e-05,
+                "qpos": 0.0,
+                "qvel": 8.940696716308594e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env0": {
+                "x": 0.00010073184967041016,
+                "v": 0.0052149537950754166,
+                "F": 0.032831668853759766,
+                "C": 3.209992466494441,
+                "vc": 0.03678077831864357,
+                "qpos": 2.9802322387695312e-08,
+                "qvel": 2.332031726837158e-06,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env1": {
+                "x": 1.7881393432617188e-07,
+                "v": 1.854635775089264e-05,
+                "F": 1.975148916244507e-05,
+                "C": 0.0023703575134277344,
+                "vc": 2.397596836090088e-05,
+                "qpos": 0.0,
+                "qvel": 1.5832483768463135e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            }
+          },
+          "Hang-batch-target": {
+            "ik_requests": 12,
+            "replay_errors": {
+              "partial-stepped/env0": {
+                "x": 1.7881393432617188e-07,
+                "v": 2.1267682313919067e-05,
+                "F": 5.841255187988281e-06,
+                "C": 0.00165480375289917,
+                "vc": 0.0,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 7.82310962677002e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env0": {
+                "x": 1.7881393432617188e-07,
+                "v": 2.127513289451599e-05,
+                "F": 5.7220458984375e-06,
+                "C": 0.0016542673110961914,
+                "vc": 0.0,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 7.078051567077637e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              },
+              "flat-stepped/env1": {
+                "x": 2.2351741790771484e-07,
+                "v": 1.2828037142753601e-05,
+                "F": 7.0035457611083984e-06,
+                "C": 0.0007385611534118652,
+                "vc": 0.0,
+                "qpos": 1.862645149230957e-09,
+                "qvel": 3.5390257835388184e-08,
+                "drive_position": 0.0,
+                "drive_velocity": 0.0
+              }
+            }
+          }
+        },
+        "lifecycle_and_rendering": {
+          "passed": true,
+          "failures": [],
+          "reports": {
+            "Excavate-batch-ee": {
+              "exact_checkpoints": {
+                "partial-unchosen": [],
+                "fresh-unchosen": [],
+                "count-unchosen": [],
+                "partial-selected": [],
+                "count-selected": [],
+                "flat-env0": [],
+                "flat-env1": []
+              },
+              "cameras": {
+                "camera-initial-env0": {
+                  "rigid_pixels": 44140,
+                  "max_rigid_bound_violation_m": 0.0010863688006547412,
+                  "particle_pixels": 16821,
+                  "visible_particles": 2031,
+                  "max_surface_error_m": 0.0015809763569507277,
+                  "median_surface_error_m": 0.0005842781037719564,
+                  "failures": []
+                },
+                "camera-initial-env1": {
+                  "rigid_pixels": 42384,
+                  "max_rigid_bound_violation_m": 0.001059106218912871,
+                  "particle_pixels": 16205,
+                  "visible_particles": 1941,
+                  "max_surface_error_m": 0.001590443312767057,
+                  "median_surface_error_m": 0.0005854509973434265,
+                  "failures": []
+                },
+                "camera-partial-count-env0": {
+                  "rigid_pixels": 43717,
+                  "max_rigid_bound_violation_m": 0.0011389318784181673,
+                  "particle_pixels": 15652,
+                  "visible_particles": 1924,
+                  "max_surface_error_m": 0.001640442622917008,
+                  "median_surface_error_m": 0.0005756187130538922,
+                  "failures": []
+                },
+                "camera-partial-count-env1": {
+                  "rigid_pixels": 39961,
+                  "max_rigid_bound_violation_m": 0.0011240419058999168,
+                  "particle_pixels": 16842,
+                  "visible_particles": 2035,
+                  "max_surface_error_m": 0.0016185428048027472,
+                  "median_surface_error_m": 0.0005696376821987812,
+                  "failures": []
+                },
+                "camera-reconfigured-env0": {
+                  "rigid_pixels": 44140,
+                  "max_rigid_bound_violation_m": 0.0010863688006547412,
+                  "particle_pixels": 16821,
+                  "visible_particles": 2031,
+                  "max_surface_error_m": 0.0015809763569507277,
+                  "median_surface_error_m": 0.0005842781037719564,
+                  "failures": []
+                },
+                "camera-reconfigured-env1": {
+                  "rigid_pixels": 42384,
+                  "max_rigid_bound_violation_m": 0.001059106218912871,
+                  "particle_pixels": 16205,
+                  "visible_particles": 1941,
+                  "max_surface_error_m": 0.001590443312767057,
+                  "median_surface_error_m": 0.0005854509973434265,
+                  "failures": []
+                }
+              }
+            },
+            "Fill-reset-regression-ee": {
+              "exact_checkpoints": {
+                "partial-unchosen": [],
+                "fresh-unchosen": [],
+                "count-unchosen": [],
+                "partial-selected": [],
+                "count-selected": [],
+                "flat-env0": [],
+                "flat-env1": []
+              },
+              "cameras": {
+                "camera-initial-env0": {
+                  "rigid_pixels": 35410,
+                  "max_rigid_bound_violation_m": 0.0014656652884353916,
+                  "particle_pixels": 1262,
+                  "visible_particles": 226,
+                  "max_surface_error_m": 0.0015480025122622735,
+                  "median_surface_error_m": 0.0004848182231410921,
+                  "failures": []
+                },
+                "camera-initial-env1": {
+                  "rigid_pixels": 35398,
+                  "max_rigid_bound_violation_m": 0.001347999887893983,
+                  "particle_pixels": 1280,
+                  "visible_particles": 234,
+                  "max_surface_error_m": 0.0015049038963031564,
+                  "median_surface_error_m": 0.0005229196131294495,
+                  "failures": []
+                },
+                "camera-partial-count-env0": {
+                  "rigid_pixels": 36121,
+                  "max_rigid_bound_violation_m": 0.0014048820837600715,
+                  "particle_pixels": 927,
+                  "visible_particles": 155,
+                  "max_surface_error_m": 0.0015485016098256209,
+                  "median_surface_error_m": 0.0005206559326384444,
+                  "failures": []
+                },
+                "camera-partial-count-env1": {
+                  "rigid_pixels": 35352,
+                  "max_rigid_bound_violation_m": 0.0014116438505610354,
+                  "particle_pixels": 1301,
+                  "visible_particles": 218,
+                  "max_surface_error_m": 0.0015248591910106374,
+                  "median_surface_error_m": 0.00048500101862220327,
+                  "failures": []
+                },
+                "camera-reconfigured-env0": {
+                  "rigid_pixels": 35410,
+                  "max_rigid_bound_violation_m": 0.0014656652884353916,
+                  "particle_pixels": 1262,
+                  "visible_particles": 226,
+                  "max_surface_error_m": 0.0015480025122622735,
+                  "median_surface_error_m": 0.0004848182231410921,
+                  "failures": []
+                },
+                "camera-reconfigured-env1": {
+                  "rigid_pixels": 35398,
+                  "max_rigid_bound_violation_m": 0.001347999887893983,
+                  "particle_pixels": 1280,
+                  "visible_particles": 234,
+                  "max_surface_error_m": 0.0015049038963031564,
+                  "median_surface_error_m": 0.0005229196131294495,
+                  "failures": []
+                }
+              }
+            },
+            "Hang-batch-target": {
+              "exact_checkpoints": {
+                "partial-unchosen": [],
+                "fresh-unchosen": [],
+                "count-unchosen": [],
+                "partial-selected": [],
+                "count-selected": [],
+                "flat-env0": [],
+                "flat-env1": []
+              },
+              "cameras": {
+                "camera-initial-env0": {
+                  "rigid_pixels": 29894,
+                  "max_rigid_bound_violation_m": 0.0012765910907407488,
+                  "particle_pixels": 2568,
+                  "visible_particles": 610,
+                  "max_surface_error_m": 0.0015111399768870494,
+                  "median_surface_error_m": 0.0005148216619601867,
+                  "failures": []
+                },
+                "camera-initial-env1": {
+                  "rigid_pixels": 29884,
+                  "max_rigid_bound_violation_m": 0.0012775013519738115,
+                  "particle_pixels": 2553,
+                  "visible_particles": 611,
+                  "max_surface_error_m": 0.0014708763885864463,
+                  "median_surface_error_m": 0.000529037215112195,
+                  "failures": []
+                },
+                "camera-partial-count-env0": {
+                  "rigid_pixels": 29983,
+                  "max_rigid_bound_violation_m": 0.0012189843203464015,
+                  "particle_pixels": 2484,
+                  "visible_particles": 457,
+                  "max_surface_error_m": 0.0015902883618810534,
+                  "median_surface_error_m": 0.0005381275645392294,
+                  "failures": []
+                },
+                "camera-partial-count-env1": {
+                  "rigid_pixels": 29948,
+                  "max_rigid_bound_violation_m": 0.0012826557384305048,
+                  "particle_pixels": 2535,
+                  "visible_particles": 603,
+                  "max_surface_error_m": 0.0015413997419442289,
+                  "median_surface_error_m": 0.0005198081843187149,
+                  "failures": []
+                },
+                "camera-reconfigured-env0": {
+                  "rigid_pixels": 29894,
+                  "max_rigid_bound_violation_m": 0.0012765910907407488,
+                  "particle_pixels": 2568,
+                  "visible_particles": 610,
+                  "max_surface_error_m": 0.0015111399768870494,
+                  "median_surface_error_m": 0.0005148216619601867,
+                  "failures": []
+                },
+                "camera-reconfigured-env1": {
+                  "rigid_pixels": 29884,
+                  "max_rigid_bound_violation_m": 0.0012775013519738115,
+                  "particle_pixels": 2553,
+                  "visible_particles": 611,
+                  "max_surface_error_m": 0.0014708763885864463,
+                  "median_surface_error_m": 0.000529037215112195,
+                  "failures": []
+                }
+              }
+            }
+          },
+          "scope": "N2 Fill, Excavate and Hang regression for native selected-actor adapter. Runtime bytes identical to Pourv11. Existing actor-inclusive exact checkpoint, IK, task reward/outcome and camera gates retained. No reference trajectory/full task acceptance claim.",
+          "full_port_complete": false
+        },
+        "scope": "N2 Fill, Excavate and Hang regression for native selected-actor adapter. Runtime bytes identical to Pourv11. Existing actor-inclusive exact checkpoint, IK, task reward/outcome and camera gates retained. No reference trajectory/full task acceptance claim.",
+        "full_port_complete": false
+      },
+      "scope": "N2 Fill, Excavate and Hang regression for native selected-actor adapter. Runtime bytes identical to Pourv11. Existing actor-inclusive exact checkpoint, IK, task reward/outcome and camera gates retained. No reference trajectory/full task acceptance claim.",
+      "full_port_complete": false
+    }
+  },
+  "archive_sha256": {
+    "actor-probe-v1": "912645d166b9ee30fe07eb13173e1169b8a3039fb3f63951e0d1715c71e297f5",
+    "gpu-batch-v11": "9c78cf198edd4575c72c450c3173cb54c9c615f3c7fae66731493a3d14fda2df",
+    "gpu-batch-v12": "3b57e74851105470309ef559a45879024a683dcb156e56f05ae3e713ec644a3c",
+    "native-bridge-v3": "9442ef1cd95c8c7aa1f79aa2f85b3f5a4472bb4e778e079b7b3191aed7f672e1"
+  },
+  "native_binary_sha256": "2c7ab84cdc9c6421be985164cf569f1630bbfea936dfab9d8e312c28e3b27feb",
+  "documented_build_reproduces_gpu_tested_binary_exactly": true,
+  "local_tests": "231 host tests +14subtests;144fork tests; portable verifiers reproduce all new verdicts."
+}

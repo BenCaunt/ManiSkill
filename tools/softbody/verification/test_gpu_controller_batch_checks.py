@@ -6,6 +6,7 @@ import pytest
 
 from tools.softbody.verification.gpu_batch_checks import expected_actions
 from tools.softbody.verification.gpu_controller_batch_checks import check_ik_step
+from tools.softbody.verification.gpu_controller_batch_checks import target_pose
 
 
 @pytest.fixture
@@ -75,3 +76,14 @@ def test_panda_actions_include_one_gripper_command(mode,width):
     action = expected_actions(case,np.zeros((2,9),np.float32))
     assert action.shape == (2,width)
     assert not action[:,-1].any()
+
+
+def test_absolute_pose_actions_use_each_initial_tcp_without_delta_scaling():
+    case=dict(task='Pour',control_mode='pd_ee_pose',action_scales=[1.,-.5],controller_lifecycle=True)
+    poses=np.array([[.2,0,.3,1,0,0,0],[.3,.1,.4,1,0,0,0]],np.float32)
+    actions=expected_actions(case,np.zeros((2,9),np.float32),poses)
+    assert actions.shape==(2,7) and not actions[:,-1].any()
+    np.testing.assert_allclose(actions[:,:3]-poses[:,:3],[[.001,-.002,.001],[-.0005,.001,-.0005]],atol=2e-8)
+    target=target_pose(np.array([4.,5.,6.,1,0,0,0]),actions[0,:6].astype(float),'pd_ee_pose')
+    np.testing.assert_array_equal(target[:3],actions[0,:3])
+    np.testing.assert_allclose(target[4:],actions[0,3:6]/2,atol=3e-9)

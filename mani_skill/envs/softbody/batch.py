@@ -5,6 +5,7 @@ import numpy as np
 import torch
 
 from mani_skill.envs.sapien_env import BaseEnv
+from mani_skill.envs.utils.randomization.batched_rng import BatchedRNG
 from .gpu_coupling import MPMGPUWorld
 from .particle_visuals import ParticleVisualPool
 
@@ -37,6 +38,51 @@ class MPMBatchRuntime:
             raise ValueError('Reset indices must be unique in-range integer environment indices')
         return value.tolist()
 
+    @property
+    def partial_reset(self):
+        return self.reset_indices is not None and len(self.reset_indices) < self.count
+
+    @staticmethod
+    def seed_values(seed, count):
+        if seed is None:
+            return None
+        values = np.asarray(seed)
+        if values.ndim == 0:
+            values = values.reshape(1)
+        if (values.ndim != 1 or len(values) not in (1, count) or values.dtype.kind not in 'iu'
+                or np.any(values < 0) or np.any(values > 2**32-1)):
+            raise ValueError('Provide one integer seed or one seed per selected environment, in [0, 2**32)')
+        values = values.astype(np.int64, copy=True)
+        if len(values) == 1 and count > 1:
+            values = np.r_[values, np.random.RandomState(values[0]).randint(2**31, size=count-1)]
+        return values
+
+    def set_main_rng(self, seed):
+        # BaseEnv's default explicit reseed replaces every stream. A partial
+        # reset must preserve both the values and draw positions of neighbours.
+        if seed is None:
+            return
+        env = self.env; indices = self.reset_indices
+        values = self.seed_values(seed, len(indices))
+        replacement = BatchedRNG.from_seeds(values, backend=env._batched_rng_backend)
+        env._main_seed[indices] = values
+        env._batched_main_rng[indices] = replacement.rngs
+        if 0 in indices:
+            env._main_rng = np.random.RandomState(env._main_seed[0])
+
+    def set_episode_rng(self, seed, env_idx):
+        env = self.env; indices = self.indices(env_idx)
+        if indices != self.reset_indices:
+            raise ValueError('Episode RNG selection differs from the active reset')
+        if seed is None and not env._enhanced_determinism:
+            return
+        values = (env._batched_main_rng[indices].randint(2**31) if seed is None
+                  else self.seed_values(seed, len(indices)))
+        replacement = BatchedRNG.from_seeds(values, backend=env._batched_rng_backend)
+        env._episode_seed[indices] = values
+        env._batched_episode_rng[indices] = replacement.rngs
+        env._episode_rng = env._batched_episode_rng[0]
+
     def reset(self, seed, options):
         env = self.env
         options = dict(options or {})
@@ -50,6 +96,11 @@ class MPMBatchRuntime:
             raise RuntimeError('Cannot reset during a pending shared physics step')
         if world is not None and world.failed and len(selected) != self.count:
             raise RuntimeError('A failed shared world requires a full reset')
+        seeds = self.seed_values(seed, len(selected))
+        if seeds is not None and len(selected) == self.count and selected != sorted(selected):
+            # BaseEnv's full reset APIs take seeds in global environment order.
+            seed = np.empty(self.count, dtype=np.int64)
+            seed[selected] = seeds
         restore = options.pop('reset_to_env_states', None)
         self.reset_indices = selected
         env._mpm_initial_checkpoint = None
@@ -183,6 +234,17 @@ class MPMBatchRuntime:
         indices = self.indices(env_idx)
         if any(i not in self.reset_indices for i in indices):
             raise ValueError('Checkpoint targets must be among the environments being reset')
+        if indices != sorted(indices):
+            order = np.argsort(indices).tolist()
+            def reorder(value):
+                if isinstance(value, dict):
+                    return {k: reorder(v) for k, v in value.items()}
+                value = torch.as_tensor(value)
+                if value.ndim < 1 or len(value) != len(indices):
+                    raise ValueError('Checkpoint tensor must match selected environment rows')
+                return value[order]
+            # Native articulation/actor setters consume boolean mask order.
+            return self.restore(reorder(state), sorted(indices))
         size = len(indices)
         counts = torch.as_tensor(state['mpm_meta']['count']).detach().cpu().numpy()
         if (counts.shape != (size, 1) or not np.isfinite(counts).all() or np.any(counts != counts.astype(np.int64))

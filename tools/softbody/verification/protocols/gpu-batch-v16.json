@@ -1,0 +1,223 @@
+{
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "exact_checkpoint_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_meta",
+    "mpm_drives",
+    "controller",
+    "task",
+    "actors"
+  ],
+  "rendering": {
+    "minimum_particle_pixels": 10,
+    "surface_distance_error_limit_m": 0.003,
+    "require_visual_pool_checks": true,
+    "require_native_buffer_checks": true,
+    "require_rigid_visual_bounds": true,
+    "minimum_rigid_pixels": 10,
+    "rigid_bound_error_limit_m": 0.003
+  },
+  "joint_replay_limit": 0.001,
+  "target_pose_limit": 1e-06,
+  "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+  "rng_contract": 1,
+  "declared_at_utc": "2026-09-08T21:55:51.615647+00:00",
+  "input_sha256": "c12f86c79b04e7c77e5b096b1adfb7aa122bb264c6494e0d97106e732673e08b",
+  "request_sha256": "471afbc3d382ec936b0bacf391213571b2769b16449aa304cc2e0f924c4e55f2",
+  "probe_sha256": "6ac2271ee6f6a10282df942fc5746a1ee9f4b9c1b405004ed0e162d577909fc4",
+  "runner_sha256": "505a0e91b721377e3aa28f10da45e266fb171c447f4b4396df28cb0012accd15",
+  "native_actor_extension": {
+    "build": "native-bridge-v2",
+    "sha256": "2c7ab84cdc9c6421be985164cf569f1630bbfea936dfab9d8e312c28e3b27feb",
+    "cpp_sha256": "d530564be7765406bb175540be22bcef98b9748621990542b20e4e73f4d28c9f"
+  },
+  "cases": [
+    {
+      "name": "Write-single-101",
+      "task": "Write",
+      "backend": "gpu",
+      "control_mode": "pd_joint_delta_pos",
+      "seeds": [
+        101
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "line.h5"
+      ],
+      "fresh_level_file": "arc.h5"
+    },
+    {
+      "name": "Write-single-17",
+      "task": "Write",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        17
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "elbow.h5"
+      ],
+      "fresh_level_file": "line.h5"
+    },
+    {
+      "name": "Write-single-1",
+      "task": "Write",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        1
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "arc.h5"
+      ],
+      "fresh_level_file": "elbow.h5"
+    },
+    {
+      "name": "Write-batch-joint",
+      "task": "Write",
+      "backend": "gpu",
+      "control_mode": "pd_joint_delta_pos",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "line.h5",
+        "elbow.h5"
+      ],
+      "fresh_level_file": "arc.h5",
+      "capacity": 32768,
+      "reverse_flat_indices": true
+    },
+    {
+      "name": "Write-batch-target",
+      "task": "Write",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        17,
+        1
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "elbow.h5",
+        "arc.h5"
+      ],
+      "fresh_level_file": "line.h5",
+      "capacity": 32768,
+      "reverse_flat_indices": true
+    },
+    {
+      "name": "Write-batch-aligned",
+      "task": "Write",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_align",
+      "seeds": [
+        101,
+        1
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "line.h5",
+        "arc.h5"
+      ],
+      "fresh_level_file": "elbow.h5",
+      "capacity": 32768,
+      "reverse_flat_indices": true
+    }
+  ],
+  "compare_batch_vs_single": false,
+  "reward_limit": 1e-06,
+  "initial_pose_limit": 1e-06,
+  "scope": "Write N1/N2 task with exact selected RNG isolation, native buffers, seeded MS2 initial inputs, distinct goals, reversed flat/partial/count checkpoints, IK and camera checks. Existing interval raster and prior failed parity gates retained. Authored diagnostics only; no official-level/full-trajectory/performance acceptance.",
+  "baseline": {
+    "files": {
+      "case-0/reference/trace/manifest.json": "13a922f3ed695fa1a99772cedf216a20d46e71cac7e9e029de119b2977b07e48",
+      "case-0/reference/trace/frames/000000.npz": "79bed6abc3e58cc069d86a5e36ab2e65163bc2fc95dc6781eb6b494f3bb51f26",
+      "case-0/reference/trace/material.npz": "e42d36de594788d42682f6415fae2dfbbe67e7cf4f3f680f14b60918471d977b",
+      "case-1/reference/trace/manifest.json": "0b487681f979338a5fb57e8d921d84119011bd789a2c5f7f67b2a245fdcdfb7c",
+      "case-1/reference/trace/frames/000000.npz": "6f8f9f59de4fed0f3f176e7a1ed18314859e260cd32c5ed17bd3114e3dd3d07b",
+      "case-1/reference/trace/material.npz": "e42d36de594788d42682f6415fae2dfbbe67e7cf4f3f680f14b60918471d977b",
+      "case-2/reference/trace/manifest.json": "cfede92ad9b9574608da485720d365c2131bff7cf0092de82193fc5e1ae5cc07",
+      "case-2/reference/trace/frames/000000.npz": "9c2a135808265e0c3a1f2806a27b008d3fc8c76ad24451e5a378100dafa12836",
+      "case-2/reference/trace/material.npz": "e42d36de594788d42682f6415fae2dfbbe67e7cf4f3f680f14b60918471d977b"
+    },
+    "cases": [
+      {
+        "seed": 101,
+        "level_file": "line.h5",
+        "snapshot": "case-0/reference/trace/frames/000000.npz",
+        "material": "case-0/reference/trace/material.npz"
+      },
+      {
+        "seed": 17,
+        "level_file": "elbow.h5",
+        "snapshot": "case-1/reference/trace/frames/000000.npz",
+        "material": "case-1/reference/trace/material.npz"
+      },
+      {
+        "seed": 1,
+        "level_file": "arc.h5",
+        "snapshot": "case-2/reference/trace/frames/000000.npz",
+        "material": "case-2/reference/trace/material.npz"
+      }
+    ]
+  },
+  "pack_files": {
+    "PROVENANCE.json": "46e0f3dbd61f494f2082bb115fff2c0679bdd3112ec04f787e9769adb4e04c31",
+    "UPSTREAM-README.md": "3d0e64b73bcdec663fabeaf00071af3c025bd9d1360b0a0fb4e8524e655fdcec",
+    "UPSTREAM-WARP-LICENSE.md": "d26cbb5a6241fb9516523ce9dcba9715d97002f9f1b6ab82ec8eaaab88bf1b2a",
+    "body-0.npz": "e58901e1082d62d26273f5b774ed2aad6905855fb2de92d861aa40dc025704d9",
+    "body-1.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "body-2.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "body-3.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "body-4.npz": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+    "export.json": "d27e8453c5adc25c6a97d0d8319dc6bec6e9d245a7d4d241bcd2aa94d517a71c",
+    "initial-readback.npz": "2142644ed47bbd71fb30b49cf02fe1a6c0bdda58c28f01491997f9ff1a2a4dd5"
+  },
+  "level_files": {
+    "LICENSE.txt": "a2010f343487d3f7618affe54f789f5487602331c0a8d03f49e9a7c547cf0499",
+    "NOTICE.txt": "2f138993da0cccc65204129f06f07c6cf6888f3e8913f8c4bb770d17d65ab4ab",
+    "PROVENANCE.json": "85c700d60077386753a18f831c1a15c7772f71391a991f4ee16fa7e5f1b75734",
+    "arc.h5": "7d1ba1cf28ab78a7c45cade9dc07739efc457b4d8e3599871dd12e508eb17d55",
+    "elbow.h5": "5a1c5d83e5d6af0a2c5d74456ff96626554a336f322cb522d5c98ab47a7d0953",
+    "line.h5": "67d915b81283244d985c61749689f64136ee7934d70822ef96468f6188ed92c8"
+  }
+}

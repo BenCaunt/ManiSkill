@@ -18,10 +18,12 @@ def rotate(q, p):
 
 
 def target_pose(previous, action, mode):
-    translation = np.clip(action[:3], -1., 1.) * .1
-    vector = action[3:] * .1 / max(np.linalg.norm(action[3:]), 1.) if len(action) == 6 else np.zeros(3)
+    absolute = mode == 'pd_ee_pose'
+    translation = action[:3] if absolute else np.clip(action[:3], -1., 1.) * .1
+    vector = action[3:] if absolute else action[3:] * .1 / max(np.linalg.norm(action[3:]), 1.) if len(action) == 6 else np.zeros(3)
     angle = np.linalg.norm(vector)
     q = np.r_[np.cos(angle/2), vector * (np.sin(angle/2)/angle if angle else .5)]
+    if absolute:return np.r_[translation,q]
     if mode.endswith('_align'):
         return np.r_[previous[:3]+translation, quat_product(q, previous[3:])]
     return np.r_[previous[:3]+rotate(previous[3:],translation), quat_product(previous[3:],q)]

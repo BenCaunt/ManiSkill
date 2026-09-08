@@ -15,6 +15,7 @@ from mani_skill.render import SAPIEN_RENDER_SYSTEM
 from mani_skill.sensors.base_sensor import BaseSensor
 from mani_skill.sensors.camera import Camera
 from mani_skill.utils import common, sapien_utils
+from mani_skill.utils.sapien303 import apply_selected_actor_data
 from mani_skill.utils.structs.actor import Actor
 from mani_skill.utils.structs.articulation import Articulation
 from mani_skill.utils.structs.drive import Drive
@@ -1004,13 +1005,15 @@ class ManiSkillScene:
 
     def _gpu_apply_all(self, env_idx=None):
         """
-        Apply simulation buffers, restricting articulation roots to selected scenes.
+        Apply buffers, restricting actor data and roots to selected scenes.
 
         Reapplying an untouched root pose can change its rounded native pose.
-        Other buffers keep the full apply path for SAPIEN 3.0.3 compatibility.
-        Its indexed joint methods ignore indices, while indexed actor updates
-        compact the pose data but retain original PxGpuActorPair.srcIndex values.
-        That mismatch can assign one selected actor another actor's pose.
+        Soft-body scenes opt into SAPIEN 3.0.3's native actor compatibility
+        module; ordinary scenes retain their existing dependency requirements.
+        The module keeps compact data and
+        source indices aligned without resending untouched actor poses. Joint
+        buffers keep the full apply path because its indexed methods ignore
+        indices. Native global-pose roundoff still applies to selected actors.
         """
         assert (
             not self._needs_fetch
@@ -1037,9 +1040,10 @@ class ManiSkillScene:
             # CudaArray borrows these pointers; retain their storage through fetch.
             self._gpu_reset_index_buffers = (rigid, articulation)
             if rigid.numel():
-                # Keep native actor data and srcIndex in the same full layout.
-                # Unselected rows already contain their unchanged fetched state.
-                self.px.gpu_apply_rigid_dynamic_data()
+                if getattr(self, '_use_native_actor_reset', False):
+                    apply_selected_actor_data(self.px, rigid)
+                else:
+                    self.px.gpu_apply_rigid_dynamic_data()
         else:
             self.px.gpu_apply_rigid_dynamic_data()
         self.px.gpu_apply_articulation_qpos()

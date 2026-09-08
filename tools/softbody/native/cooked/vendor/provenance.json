@@ -1,0 +1,28 @@
+{
+  "project": "pybind11",
+  "version": "3.0.1",
+  "commit": "f5fbe867d2d26e4a0a9177a51f6e568868ad3dc8",
+  "retrieved": "2026-09-08",
+  "files": [
+    {
+      "path": "pybind11_conduit_v1.h",
+      "source": "https://github.com/pybind/pybind11/blob/f5fbe867d2d26e4a0a9177a51f6e568868ad3dc8/include/pybind11/conduit/pybind11_conduit_v1.h",
+      "sha256": "19af7d983107690a0250e53de0257ab2f394c99d2b2046cbf0cdb84643ffdcfc"
+    },
+    {
+      "path": "pybind11_platform_abi_id.h",
+      "source": "https://github.com/pybind/pybind11/blob/f5fbe867d2d26e4a0a9177a51f6e568868ad3dc8/include/pybind11/conduit/pybind11_platform_abi_id.h",
+      "sha256": "554656e07ee2cbdbd553380b749d7df76c25e0d9cdeac30259db599f563177f6"
+    },
+    {
+      "path": "LICENSE",
+      "source": "https://github.com/pybind/pybind11/blob/f5fbe867d2d26e4a0a9177a51f6e568868ad3dc8/LICENSE",
+      "sha256": "83965b843b98f670d3a85bd041ed4b372c8ec50d7b4a5995a83ac697ba675dcb"
+    },
+    {
+      "path": "wrap_include_python_h.h",
+      "source": "https://github.com/pybind/pybind11/blob/f5fbe867d2d26e4a0a9177a51f6e568868ad3dc8/include/pybind11/conduit/wrap_include_python_h.h",
+      "sha256": "b86c91eda51e381e8411919f6f5f5367cb3270fede6d9db0e7131a2013226d33"
+    }
+  ]
+}

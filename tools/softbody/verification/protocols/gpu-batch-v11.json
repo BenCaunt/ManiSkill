@@ -1,0 +1,157 @@
+{
+  "declared_at_utc": "2026-09-08T18:39:54.963935+00:00",
+  "input_sha256": "f6ae494261228a5400d65c779e5322fd3283b084b054e5f091550e3a34fb0cbd",
+  "request_sha256": "cd57d5a2de75742ddf669445f62b64311539ec532a3c76e02ca85fcd8b48448a",
+  "probe_sha256": "760e093582fd3291c3928343316883ba48e4a6e8233f65ea07bd0dcbe09c749b",
+  "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "cases": [
+    {
+      "name": "Pour-single-101",
+      "task": "Pour",
+      "backend": "gpu",
+      "control_mode": "pd_ee_pose",
+      "seeds": [
+        101
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.0025
+    },
+    {
+      "name": "Pour-single-17",
+      "task": "Pour",
+      "backend": "gpu",
+      "control_mode": "pd_ee_pose",
+      "seeds": [
+        17
+      ],
+      "action_scales": [
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.0025
+    },
+    {
+      "name": "Pour-batch-absolute",
+      "task": "Pour",
+      "backend": "gpu",
+      "control_mode": "pd_ee_pose",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.0025,
+      "capacity": 16384
+    },
+    {
+      "name": "Pour-batch-align",
+      "task": "Pour",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_align",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.0025,
+      "capacity": 16384
+    }
+  ],
+  "exact_checkpoint_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_meta",
+    "mpm_drives",
+    "controller",
+    "task",
+    "actors"
+  ],
+  "rendering": {
+    "minimum_particle_pixels": 10,
+    "surface_distance_error_limit_m": 0.003,
+    "require_visual_pool_checks": true,
+    "require_native_buffer_checks": true,
+    "require_rigid_visual_bounds": true,
+    "minimum_rigid_pixels": 10,
+    "rigid_bound_error_limit_m": 0.003
+  },
+  "scope": "Selected actor adapter experiment using the unchanged v10 gates; expected native selected-COM precision, camera occlusion and cooked geometry limitations remain failures. Native Pour N2 shared-world lifecycle with distinct seeded fluids, native reset IK, per-env open-cavity bottle colliders, beakers, fill heights and physical grasp contacts. Independent count/success/dense reward reconstruction, native convex-cavity containment within1e-6 of pinned decomposition, ring/container pixels and ring geometry3mm. Exact selected actors and unchanged neighboring checkpoint state, variable-count/flat/reconfigured reset. N1 seed101 matches frozen old initial particles including fluid volume, robot/drives, heights and materials; N2 initialization equals independent N1 seed cases with physical container pose component limit1e-6. Absolute and aligned EE modes use independent native IK models; unchanged target1e-6 and joint1e-3 lifecycle gates. Particle replay differences descriptive. No full episode, successful pouring or strict reference parity claim. All earlier failures retained.",
+  "compare_batch_vs_single": false,
+  "joint_replay_limit": 0.001,
+  "target_pose_limit": 1e-06,
+  "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+  "reward_limit": 1e-06,
+  "baseline": {
+    "label": "gpu-lifecycle-v4",
+    "archive_sha256": "170ebd7c49276a844cd0749e860bfdc0e1db72aa32e2b9ef6672db247cb3cbfc",
+    "files": {
+      "execution.json": "5e512ce348ad8bce0c39e5e4e9484ed9936106148ff4182cc22044be7227c2a0",
+      "request.json": "17b601a8517e916ec7608cfe07378ec1f5ee9aac4d75ac107bb15ca6e6895aee",
+      "probe.py": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+      "source/pour.py": "450df9aff2aee87ddadbe4c7dabf2ab2388853a0f7d5fbdcedfc6e95dca49506",
+      "Pour-pd_ee_pose-gpu/initial.npz": "9530c35182264d67485c34b198f988262ad894cb5327180dd764260828d616a9",
+      "Pour-pd_ee_pose-gpu/checkpoint.npz": "fff9b805847c551d8eec07b5f38a049ad519da4ccf1d5c1937dab10bcfb21ab4",
+      "Pour-pd_ee_pose-gpu/result.json": "c6e4b0d2cb1dcc9142334c57a4986fcbbcad21c9ec8e7b6f106924f21c26c5a4"
+    },
+    "snapshot": "Pour-pd_ee_pose-gpu/initial.npz",
+    "checkpoint": "Pour-pd_ee_pose-gpu/checkpoint.npz",
+    "new_case": "Pour-single-101"
+  },
+  "initial_comparisons": [
+    [
+      "Pour-batch-absolute",
+      0,
+      "Pour-single-101"
+    ],
+    [
+      "Pour-batch-absolute",
+      1,
+      "Pour-single-17"
+    ],
+    [
+      "Pour-batch-align",
+      0,
+      "Pour-single-101"
+    ],
+    [
+      "Pour-batch-align",
+      1,
+      "Pour-single-17"
+    ]
+  ],
+  "initial_pose_limit": 1e-06,
+  "verifier_files": {
+    "gpu_pour_batch_checks.py": "841d030129d81816b5c67b2884eddf5fe0df003be7e4386a5d9d110fd941a2ba",
+    "gpu_controller_batch_checks.py": "21093eec7892fa9b711b4dec4e4e776b5ce9bb36f0268a7abe489a9a5fece2f9",
+    "gpu_batch_checks.py": "0942dac1f466edcc67548eb48d55c4774663d7e8aaebd0871b69d36d65258d34",
+    "gpu_rendering_checks.py": "832f642fab91d5d267b6138eff4746f63a8756fedd07e582db4d8c0a3f591342"
+  },
+  "pack_manifest_sha256": "54d4c40bdfe3184788d5e1f1841c8806611cff1249f0aad8b5c9a150ab982710",
+  "bottle_collision_sha256": "6f2f689d65dcbb036e407b2350a4aad10d5ce47f8f17f24551628d4bf9fc593e",
+  "collision_limit_m": 1e-06,
+  "minimum_ring_pixels": 1,
+  "minimum_container_pixels": 1,
+  "ring_surface_limit_m": 0.003,
+  "native_actor_extension": {
+    "build": "native-bridge-v2",
+    "sha256": "2c7ab84cdc9c6421be985164cf569f1630bbfea936dfab9d8e312c28e3b27feb",
+    "cpp_sha256": "d530564be7765406bb175540be22bcef98b9748621990542b20e4e73f4d28c9f"
+  },
+  "retained_pour_v10_protocol_sha256": "44565fc1305d4a40797109267323e0266467c7f37107aeffda840c1b9fbc57f8"
+}

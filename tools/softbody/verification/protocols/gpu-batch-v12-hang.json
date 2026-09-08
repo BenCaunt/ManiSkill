@@ -1,0 +1,120 @@
+{
+  "declared_at_utc": "2026-09-08T18:22:12.740189+00:00",
+  "input_sha256": "c875c4ba037ce1f49672d272406df9f2f18756c9e269ac9492141c3c32e6085e",
+  "request_sha256": "486408715729f310f103a221f91ca5b7ac0e07f557db75f43f774a660c1d6c5e",
+  "probe_sha256": "760e093582fd3291c3928343316883ba48e4a6e8233f65ea07bd0dcbe09c749b",
+  "runner_sha256": "ba207f627694d1cb5c1088a47464d30c73f61aa385c4a6c5782dc32cc25e6ba3",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "cases": [
+    {
+      "name": "Excavate-batch-ee",
+      "task": "Excavate",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_align",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 32768,
+      "controller_lifecycle": true,
+      "reward_mode": "dense"
+    },
+    {
+      "name": "Fill-reset-regression-ee",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Hang-batch-target",
+      "task": "Hang",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "capacity": 8192,
+      "preserve_task_particle_indices": true
+    }
+  ],
+  "exact_checkpoint_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_meta",
+    "mpm_drives",
+    "controller",
+    "task",
+    "actors"
+  ],
+  "rendering": {
+    "minimum_particle_pixels": 10,
+    "surface_distance_error_limit_m": 0.003,
+    "require_visual_pool_checks": true,
+    "require_native_buffer_checks": true,
+    "require_rigid_visual_bounds": true,
+    "minimum_rigid_pixels": 10,
+    "rigid_bound_error_limit_m": 0.003
+  },
+  "scope": "N2 Fill, Excavate and Hang regression for native selected-actor adapter. Runtime bytes identical to Pourv11. Existing actor-inclusive exact checkpoint, IK, task reward/outcome and camera gates retained. No reference trajectory/full task acceptance claim.",
+  "compare_batch_vs_single": false,
+  "joint_replay_limit": 0.001,
+  "target_pose_limit": 1e-06,
+  "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+  "reward_limit": 1e-06,
+  "baseline": {
+    "label": "gpu-lifecycle-v2",
+    "archive_sha256": "5e5796221a71d41170e3cd5b996281a73e245f714d22a952ff04a460cc934aa2",
+    "files": {
+      "execution.json": "6537c5ee24bd667f5efc97977ea22ff4b4e41950635c663a587a529f3f750b65",
+      "request.json": "7139aef98858eb9c6f7615b5e4b03012eb69bb12d5a098359f0136f6d1e36e82",
+      "probe.py": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+      "source/hang.py": "409c0ef56bc53d6508a06e6985e531e4715a3cf3616a76b35d0d1c7cea27ed54",
+      "source/legacy_panda.py": "a9d09c9d8c7e6521d4ac68254b9ab8cce453bac6cf79b2a2d1a7562f73f01371",
+      "Hang-pd_ee_target_delta_pose-gpu/initial.npz": "a704df8ce01ef716253efcb9f33f5cb33224c70395fac7cb60343873227159d3",
+      "Hang-pd_ee_target_delta_pose-gpu/checkpoint.npz": "08972c7a0230bcb76e641468ad621c6e0801faf91e183d403abc179ebc7889ee",
+      "Hang-pd_ee_target_delta_pose-gpu/result.json": "0233793ae1a302a432dcf70a9def1eb54c9a969cbd52907ec7e61c17953712c5"
+    },
+    "snapshot": "Hang-pd_ee_target_delta_pose-gpu/initial.npz",
+    "checkpoint": "Hang-pd_ee_target_delta_pose-gpu/checkpoint.npz",
+    "new_case": "Hang-single-101"
+  },
+  "initial_comparisons": [],
+  "initial_pose_limit": 1e-06,
+  "pack_files": {
+    "export.json": "bd9a93ad23798da1b34bbb6b64f4bd2470a4740cbfbbec519ee5b584720db431",
+    "initial-states.npz": "cea40f78aad0b788e5fd04acd3a925e962e93efac6517bbf410d4a24ae8bf2d0"
+  },
+  "verifier_files": {
+    "gpu_hang_batch_checks.py": "0c2fe14f91c8136ff2305748b9fb0c92090d4b282036232d2e87091dfb02b567",
+    "gpu_controller_batch_checks.py": "4e7d73707aee8e7f1e7d98608f61689a15a12506db005a1ee12e22525a8c38ee",
+    "gpu_batch_checks.py": "e29987b1e5c132ce32ce6bd4e9816d1c451e2faa3a9758353b2ac34910f816d4",
+    "gpu_rendering_checks.py": "832f642fab91d5d267b6138eff4746f63a8756fedd07e582db4d8c0a3f591342"
+  },
+  "native_actor_extension": {
+    "build": "native-bridge-v2",
+    "sha256": "2c7ab84cdc9c6421be985164cf569f1630bbfea936dfab9d8e312c28e3b27feb",
+    "cpp_sha256": "d530564be7765406bb175540be22bcef98b9748621990542b20e4e73f4d28c9f"
+  }
+}

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import numpy as np
 from PIL import Image
+from scipy.spatial.transform import Rotation
 
 from .gpu_rendering_checks import measure_frame
 from .job_archive import file_hash, inventory
@@ -56,7 +57,7 @@ def particle_errors(a, ai, b, bi):
     return result
 
 
-def expected_actions(case, initial_qpos):
+def expected_actions(case, initial_qpos, initial_ee=None):
     scales = np.asarray(case['action_scales'], dtype=np.float64)[:, None]
     if not case.get('controller_lifecycle'):
         return np.array([np.array([.02,-.04,.01,.03,-.01,.03,-.02],np.float32)*s for s in case['action_scales']])
@@ -67,6 +68,11 @@ def expected_actions(case, initial_qpos):
         value = np.concatenate([q + scales * .002, np.repeat(scales * .02, 7, axis=1)], axis=1)
     elif mode == 'pd_joint_delta_pos_vel':
         value = np.concatenate([np.repeat(scales * .01, 7, axis=1), np.repeat(scales * .02, 7, axis=1)], axis=1)
+    elif mode == 'pd_ee_pose':
+        pose=np.asarray(initial_ee,dtype=np.float32)
+        if pose.shape!=(len(q),7) or not np.isfinite(pose).all():raise ValueError('Invalid initial absolute EE poses')
+        value=np.concatenate([pose[:,:3]+scales*np.array([.001,-.002,.001]),
+            Rotation.from_quat(pose[:,[4,5,6,3]]).as_rotvec()+scales*np.array([.002,-.001,.003])],axis=1)
     elif 'ee' in mode:
         value = scales * np.array([.01, -.02, .01, .03, -.02, .01])[:3 if mode.endswith('_pos') else 6]
     else:
@@ -91,7 +97,7 @@ def check_reduced_checkpoint(case, before, reduced):
     for key,value in before.items():
         if not key.startswith('state/'):continue
         expected = value[:1].copy()
-        if key.startswith(('state/mpm/','state/mpm_material/')):
+        if key.startswith(('state/mpm/','state/mpm_material/')) or (case.get('task')=='Pinch' and key.startswith('state/task_particles/')):
             expected[:] = 0;expected[0,:len(keep)] = value[0,keep]
         elif key == 'state/mpm_meta/count':expected[:] = len(keep)
         elif key == 'state/mpm_meta/mask':expected[:] = np.arange(case['capacity']) < len(keep)
@@ -99,6 +105,42 @@ def check_reduced_checkpoint(case, before, reduced):
             expected[0] = np.searchsorted(keep,value[0])
         if key not in reduced or not np.array_equal(expected,reduced[key]):
             failures.append('Count-reduction recipe changed: '+key)
+    return failures
+
+
+def check_native_extension(root, request):
+    """Check archived binary/build evidence independently of the staging helper.
+
+    The helper checksum marks the new capture contract. Historical v11/v12
+    requests retain their original verdict scope and are not retroactively passed.
+    """
+    if 'native_extensions_helper_sha256' not in request:
+        return []
+    failures=[];spec=request['native_actor_extension']
+    if file_hash(root/'native_extensions.py')!=request['native_extensions_helper_sha256']:
+        failures.append('Native actor staging helper differs')
+    record=json.loads((root/'native-extension.json').read_text())
+    filename='sapien303_actor_bridge.cpython-310-x86_64-linux-gnu.so'
+    for key in ('build','sha256','cpp_sha256'):
+        if record.get(key)!=spec[key]:failures.append('Native actor staging identity differs: '+key)
+    if record.get('filename')!=filename or record.get('module')!='sapien303_actor_bridge':
+        failures.append('Native actor module/ABI filename differs')
+    binary=root/'native-extension'/filename
+    if not binary.is_file() or file_hash(binary)!=spec['sha256']:
+        failures.append('Archived native actor binary differs')
+    build_path=root/'extension-build.json'
+    if file_hash(build_path)!=record.get('build_manifest_sha256') or file_hash(root/'native-extension/build.json')!=file_hash(build_path):
+        failures.append('Native actor build record differs')
+    build=json.loads(build_path.read_text())
+    expected={filename:spec['sha256'],'actor_bridge.cpp':spec['cpp_sha256'],
+              'libsapien.so':'57b9dbf776bd216a2a71c86c34fadeab12469cc9067f6bf2338234499d80f097'}
+    if build.get('sapien')!='3.0.3' or not build.get('python','').startswith('3.10.'):
+        failures.append('Native actor build ABI differs')
+    for name,digest in expected.items():
+        if [v for k,v in build.get('files',{}).items() if Path(k).name==name]!=[digest]:
+            failures.append('Native actor build provenance differs: '+name)
+    if file_hash(root/'sapien303.py')!=request['source_files']['mani_skill/utils/sapien303.py']:
+        failures.append('Native actor Python adapter differs from frozen source')
     return failures
 
 
@@ -111,6 +153,9 @@ def evaluate(root, protocol):
     if file_hash(root/'request.json') != protocol['request_sha256'] or file_hash(root/'probe.py') != protocol['probe_sha256']:
         failures.append('Frozen request/probe mismatch')
     request = json.loads((root/'request.json').read_text()); prefix = 'mani_skill/envs/softbody/'
+    if protocol.get('rng_contract') is not None and (protocol['rng_contract']!=1 or request.get('rng_contract')!=1):
+        raise ValueError('RNG verification requires the declared capture contract')
+    failures.extend(check_native_extension(root,request))
     sources = {k[len(prefix):]: v for k, v in request['source_files'].items()
                if k.startswith(prefix) and k.endswith('.py') and '/' not in k[len(prefix):]}
     sources.update({name:request['source_files']['mani_skill/envs/'+name] for name in ('scene.py','sapien_env.py')})
@@ -119,6 +164,10 @@ def evaluate(root, protocol):
         name=case['name']; directory=root/name; result=json.loads((directory/'result.json').read_text())
         if result['case'] != case or result['probe_sha256'] != protocol['probe_sha256']:
             failures.append(name+': case/probe identity mismatch')
+        if 'native_extensions_helper_sha256' in request:
+            loaded=result.get('native_actor_extension',{})
+            if loaded.get('sha256')!=request['native_actor_extension']['sha256'] or not loaded.get('abi'):
+                failures.append(name+': loaded native actor adapter differs or lacks ABI evidence')
         if not result['complete'] or json.loads((directory/'execution.json').read_text())['exit_code'] != 0:
             failures.append(name+': '+result.get('error','incomplete'));continue
         count=len(case['seeds'])
@@ -141,10 +190,13 @@ def evaluate(root, protocol):
             if Path(filename).name != filename or file_hash(directory/filename) != digest: raise ValueError('Invalid trace archive identity')
             with np.load(directory/filename,allow_pickle=False) as z: data[filename[:-4]]={k:z[k] for k in z.files}
             if any(v.dtype.kind not in 'fibu' or not np.isfinite(v).all() for v in data[filename[:-4]].values()):raise ValueError('Invalid numeric trace')
-        if not np.array_equal(np.array(result['action'],np.float32),expected_actions(case,data['initial']['qpos'])):
+        if not np.array_equal(np.array(result['action'],np.float32),expected_actions(case,data['initial']['qpos'],data['initial'].get('ee_pose_at_base'))):
             failures.append(name+': action recipe changed')
         for label, values in data.items():
             if 'counts' in values:failures.extend(name+'/'+label+': '+f for f in check_snapshot(values,count,case.get('capacity'),dof))
+        if protocol.get('rng_contract') == 1:
+            from .gpu_rng_checks import check_sequence
+            failures.extend(name+': '+f for f in check_sequence(case,data,result['steps']))
         exact={}
         if count>1:
             for label,before,ai,after,bi,groups in [

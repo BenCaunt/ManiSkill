@@ -1,0 +1,17 @@
+{
+  "original_header_sha256": "7fb15de62dbb14a5c6d1ed10abecf7b98b3290421c5b5603b5a08d71c60afd01",
+  "files": {
+    "bridge.cpp": "f740187ae631d8ac3dbafd684f61342b56d86740f2aa2e2307f3f18f5875f5fd",
+    "convex_mesh_cooked.cpp": "db580fd475f7860101a944c50e909ebe165fa4bd3abd982b8dbafb6b78e13cbd",
+    "mesh.h": "c5569b47a0b302146e83671b088b338df6447e90c99b7812c083904d5e412250",
+    "vendor/provenance.json": "7aeac63e69bf47c9221bed2de837d99bd43921d2356fdd7bb4444fa93ddd8f4a",
+    "vendor/LICENSE": "83965b843b98f670d3a85bd041ed4b372c8ec50d7b4a5995a83ac697ba675dcb",
+    "vendor/pybind11_platform_abi_id.h": "554656e07ee2cbdbd553380b749d7df76c25e0d9cdeac30259db599f563177f6",
+    "vendor/pybind11_conduit_v1.h": "19af7d983107690a0250e53de0257ab2f394c99d2b2046cbf0cdb84643ffdcfc",
+    "vendor/wrap_include_python_h.h": "b86c91eda51e381e8411919f6f5f5367cb3270fede6d9db0e7131a2013226d33"
+  },
+  "native_libraries": {
+    "Darwin": "91e7133761c505c0cad2042011b3af454cd9fde84625d32ea2fc6d9643877bcb",
+    "Linux": "57b9dbf776bd216a2a71c86c34fadeab12469cc9067f6bf2338234499d80f097"
+  }
+}
