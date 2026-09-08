@@ -97,7 +97,14 @@ PhysX. `complete_step` publishes the final MPM buffer. Runtime stepping never
 assigns robot or object poses. GPU MPM currently transfers state/wrenches through
 the CPU; this is not a GPU PhysX adapter or a throughput claim.
 
-Reset replay currently assumes the same particle topology.
+Reset replay supports a changed particle count for uniform-color particle recipes,
+with fixed rigid/task topology and the same solid/fluid state layout. Dictionary
+checkpoints determine the count from their particle arrays; flat checkpoints use
+the current field schema and vector length. Counts must be positive and at most
+65,536 (or the task's smaller observation capacity). Heterogeneous visual colors,
+changed rigid models and changed goal-array shapes require a separate checkpoint
+contract. This does not introduce resampling: every saved particle and material
+value is restored at its original index.
 Reset builds the model before restoring state, including after reconfiguration.
 Checkpoints contain all five particle material arrays, controller memory, and native drive targets; restoring them
 does not invoke a controller reset afterward. The current schema requires these
@@ -106,6 +113,18 @@ state observations keep their normal observation dtype. Camera observations are
 recomputed after restore.
 The lifecycle probe changes the reset recipe's density before restoring a checkpoint
 and checks that the saved masses and material arrays replace the new recipe.
+`probe_checkpoint_topology.py` additionally changes a pressureless recipe between
+27 and 64 particles, tests dictionary/flat/rebuilt-scene resets on CPU and CUDA,
+and compares subsequent free fall. The old implementation fails at its MPM shape
+check; the fixed implementation restores values exactly and gives zero measured
+position difference in all twelve replay trials. Malformed flat layouts and
+unsupported material types are rejected. Pour's lifecycle probe also changes
+the reset seed so its fresh particle count differs from the saved checkpoint.
+The September 8 Pour trial restores 8,534 saved particles after a seed-1 reset
+creates 8,032. Particle/material/drive/task values restore exactly. Subsequent
+one-control replay differs by at most 0.000142 m in particle position,
+1.23e-10 m3 in current volume and 3.13e-5 rad in joint position; this is lifecycle
+evidence, not reference parity. Fill, Excavate and Hang lifecycle regressions pass.
 
 `mani_skill.envs.softbody.capture.CaptureAdapter` exposes both bucket tasks and Hang to the
 independent `softbody_lab` recorder. Version 2 fixtures use explicit physical actor, fixed-root,

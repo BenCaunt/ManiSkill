@@ -1,5 +1,6 @@
 """Experimental single-scene MPM integration with the ManiSkill 3 lifecycle."""
 
+import copy
 import numpy as np
 import torch
 import sapien
@@ -21,6 +22,7 @@ class MPMBaseEnv(BaseEnv):
     """
 
     SUPPORTED_OBS_MODES = ("state", "state_dict", "none", "sensor_data", "any_textures", "pointcloud")
+    max_checkpoint_particles = 65536
 
     def __init__(self, *args, mpm_device="cuda", mpm_dt=.0005,
                  num_envs=1, sim_backend="physx_cpu", **kwargs):
@@ -33,6 +35,7 @@ class MPMBaseEnv(BaseEnv):
         if not np.isfinite(self.mpm_dt) or self.mpm_dt <= 0:
             raise ValueError("mpm_dt must be positive and finite")
         self.mpm_coupler = None
+        self._mpm_builder = None
         self._mpm_reset_active = False
         self.last_coupling_step = None
         self._particle_entities = []
@@ -85,6 +88,7 @@ class MPMBaseEnv(BaseEnv):
         builder.init_model_state(model, states)
         self.mpm_coupler = MPMCoupler(self.scene.sub_scenes[0], model, states,
                                       bodies, mpm_dt=self.mpm_dt)
+        self._mpm_builder = builder
         self.last_coupling_step = None
         self._setup_particle_rendering()
 
@@ -200,10 +204,15 @@ class MPMBaseEnv(BaseEnv):
         expected = self.mpm_coupler.particle_state()
         if set(state.get("mpm", {})) != set(expected):
             raise ValueError(f"Restored MPM fields must match {sorted(expected)}")
+        positions = torch.as_tensor(state['mpm']['x'])
+        if positions.ndim != 3 or positions.shape[0] != 1 or positions.shape[2] != 3:
+            raise ValueError('Invalid MPM position shape')
+        count = positions.shape[1]
+        self._validate_checkpoint_count(count)
         values = {}
         for key, initial in expected.items():
             value = torch.as_tensor(state["mpm"][key]).detach().cpu().numpy()
-            if value.shape != (1, *initial.shape) or not np.isfinite(value).all():
+            if value.shape != (1, count, *initial.shape[1:]) or not np.isfinite(value).all():
                 raise ValueError(f"Invalid MPM state field: {key}")
             if key == 'vol' and np.any(value <= 0):
                 raise ValueError('Current fluid particle volumes must be positive')
@@ -214,12 +223,12 @@ class MPMBaseEnv(BaseEnv):
         materials = {}
         for key, initial in template.items():
             value = torch.as_tensor(state['mpm_material'][key]).detach().cpu().numpy()
-            if value.shape != initial.shape or not np.isfinite(value).all():
+            if value.shape != (1, count, *initial.shape[2:]) or not np.isfinite(value).all():
                 raise ValueError(f'Invalid MPM material array: {key}')
             if key in ('particle_mass', 'particle_vol') and np.any(value <= 0):
                 raise ValueError(f'MPM {key} must be positive')
-            if key == 'particle_type' and np.any(value != np.floor(value)):
-                raise ValueError('MPM particle types must be integral')
+            if key == 'particle_type' and np.any(~np.isin(value, (0, 1, 2))):
+                raise ValueError('MPM particle types must be 0, 1 or 2')
             materials[key] = value[0]
         if bool(np.any(materials['particle_type'] == 2)) != self.mpm_coupler.has_fluid_particles:
             raise ValueError('Restored material changes the fluid state layout')
@@ -242,6 +251,8 @@ class MPMBaseEnv(BaseEnv):
                     raise ValueError('Invalid controller state tensor')
                 return tensor.to(dtype=template.dtype).clone()
             controller = restore_controller(state.get('controller', {}), self.agent.get_controller_state())
+        if count != self.mpm_coupler.model.struct.n_particles:
+            self._resize_checkpoint_particles(values, materials)
         super().set_state_dict({k: v for k, v in state.items() if k not in ('mpm', 'mpm_material', 'mpm_drives', 'controller')}, env_idx)
         if drives is not None:
             self.agent.set_controller_state(controller)
@@ -267,25 +278,68 @@ class MPMBaseEnv(BaseEnv):
         self.last_coupling_step = None
         self._update_particle_rendering()
 
+    def _validate_checkpoint_count(self, count):
+        capacity = min(self.max_checkpoint_particles,
+                       getattr(self, 'observation_particle_capacity', self.max_checkpoint_particles))
+        if not 0 < count <= capacity:
+            raise ValueError(f'Checkpoint particle count must be between 1 and {capacity}')
+
+    def _resize_checkpoint_particles(self, values, materials):
+        """Rebuild only particle buffers, retaining the fresh scene's rigid model.
+
+        Current task checkpoints omit visual colors. Count-changing restore is
+        therefore supported for uniform-color recipes; heterogeneous visuals
+        need an explicit per-particle visual checkpoint contract first.
+        """
+        if not self._mpm_reset_active or self._mpm_builder is None:
+            raise RuntimeError('Particle topology may only be rebuilt during reset')
+        colors = np.asarray(self._mpm_builder.mpm_particle_colors)
+        if not len(colors) or not np.all(colors == colors[0]):
+            raise ValueError('Count-changing checkpoints require a uniform-color particle recipe')
+        builder = copy.copy(self._mpm_builder)
+        builder.mpm_particle_q = values['x'].tolist()
+        builder.mpm_particle_qd = values['v'].tolist()
+        for source, target in (('particle_mass', 'mpm_particle_mass'),
+                               ('particle_vol', 'mpm_particle_volume'),
+                               ('particle_mu_lam_ys', 'mpm_particle_mu_lam_ys'),
+                               ('particle_friction_cohesion', 'mpm_particle_friction_cohesion'),
+                               ('particle_type', 'mpm_particle_type')):
+            setattr(builder, target, materials[source].tolist())
+        builder.mpm_particle_colors = np.repeat(colors[:1], len(values['x']), axis=0).tolist()
+        self.rebuild_mpm(builder, self.mpm_coupler.bodies)
+
     def set_state(self, state, env_idx=None):
+        if not self._mpm_reset_active:
+            raise RuntimeError('Soft-body state assignment is only allowed during reset')
         state = torch.as_tensor(state, device=self.device)
         if state.ndim != 2 or state.shape[0] != 1 or not torch.isfinite(state).all():
             raise ValueError("Expected finite batched soft-body state with shape (1, state_size)")
+        template = self.get_state_dict()
+        live_count = self.mpm_coupler.model.struct.n_particles
+        particle_width = sum(int(np.prod(value.shape[2:]))
+                             for group in ('mpm', 'mpm_material') for value in template[group].values())
+        flat_size = sum(value.numel() for value in common.flatten_dict_keys(template).values())
+        particle_values = state.shape[1] - (flat_size - live_count*particle_width)
+        if particle_values % particle_width:
+            raise ValueError('Soft-body state vector has an inconsistent particle layout')
+        count = particle_values // particle_width
+        self._validate_checkpoint_count(count)
         cursor = 0
-        def unpack(template):
+        def unpack(template, particle_group=False):
             nonlocal cursor
             result = {}
             for key, value in template.items():
                 if isinstance(value, dict):
-                    result[key] = unpack(value)
+                    result[key] = unpack(value, key in ('mpm', 'mpm_material'))
                 else:
-                    size = int(np.prod(value.shape[1:]))
+                    shape = (1, count, *value.shape[2:]) if particle_group else value.shape
+                    size = int(np.prod(shape[1:]))
                     if cursor + size > state.shape[1]:
                         raise ValueError("Soft-body state vector is too short")
-                    result[key] = state[:, cursor:cursor+size].reshape(value.shape)
+                    result[key] = state[:, cursor:cursor+size].reshape(shape)
                     cursor += size
             return result
-        restored = unpack(self.get_state_dict())
+        restored = unpack(template)
         if cursor != state.shape[1]:
             raise ValueError("Soft-body state vector has extra values")
         self.set_state_dict(restored, env_idx)
@@ -293,5 +347,6 @@ class MPMBaseEnv(BaseEnv):
     def _clear(self):
         self._particle_entities = []
         self.mpm_coupler = None
+        self._mpm_builder = None
         self.last_coupling_step = None
         super()._clear()

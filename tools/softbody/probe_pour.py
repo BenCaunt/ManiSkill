@@ -57,14 +57,19 @@ def run(args):
         env.step(action)
         expected = adapter.snapshot()
         trials = []
+        other_seed = 1 if args.seed==101 else 101
+        env.reset(seed=other_seed)
+        other_count = env.mpm_coupler.model.struct.n_particles
+        assert other_count!=n, 'Checkpoint probe must exercise a changed particle count'
         for kind,saved in [('dict',checkpoint),('flat',flat),('reconfigure',checkpoint)]:
-            env.reset(seed=args.seed,options={'reconfigure':kind=='reconfigure','reset_to_env_states':{'env_states':saved}})
+            env.reset(seed=other_seed,options={'reconfigure':kind=='reconfigure','reset_to_env_states':{'env_states':saved}})
             restored = env.get_state_dict()
             for key in ('mpm','mpm_material','mpm_drives','task'):
                 assert all(torch.equal(restored[key][k],v) for k,v in checkpoint[key].items()), f'{kind}: {key}'
             env.step(action)
             actual = adapter.snapshot()
-            trials.append(dict(kind=kind,particle_replay_max_abs_m=float(np.max(abs(actual['x']-expected['x']))),
+            trials.append(dict(kind=kind,reset_seed=other_seed,reset_particle_count=other_count,
+                restored_particle_count=len(actual['x']),particle_replay_max_abs_m=float(np.max(abs(actual['x']-expected['x']))),
                 current_volume_replay_max_abs_m3=float(np.max(abs(actual['vol']-expected['vol']))),
                 qpos_replay_max_abs=float(np.max(abs(actual['qpos']-expected['qpos'])))))
             assert trials[-1]['qpos_replay_max_abs']<1e-4, f'{kind}: unstable joint replay'

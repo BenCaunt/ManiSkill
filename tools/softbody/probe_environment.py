@@ -22,6 +22,7 @@ from mani_skill.utils.structs.types import SimConfig
 
 class BallisticEnv(MPMBaseEnv):
     diagnostic_density = 1000.
+    diagnostic_dimension = 2
     @property
     def _default_sim_config(self):
         return SimConfig(sim_freq=500, control_freq=50)
@@ -30,7 +31,7 @@ class BallisticEnv(MPMBaseEnv):
         builder = MPMModelBuilder()
         builder.set_mpm_domain([.4, .4, .6], grid_length=.01)
         builder.add_mpm_grid(pos=(0., 0., .3), vel=(.05, 0., .1),
-                             dim_x=2, dim_y=2, dim_z=2,
+                             dim_x=self.diagnostic_dimension, dim_y=self.diagnostic_dimension, dim_z=self.diagnostic_dimension,
                              cell_x=.005, cell_y=.005, cell_z=.005,
                              density=self.diagnostic_density, mu_lambda_ys=(0., 0., 0.),
                              friction_cohesion=(0., 0., 0.), type=0, jitter=False)
