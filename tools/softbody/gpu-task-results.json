@@ -1,0 +1,805 @@
+{
+  "scope": "Six single-scene CPU/GPU task short rollouts and checkpoint replay; not full task parity or batching",
+  "passed": false,
+  "full_port_complete": false,
+  "runtime_completed_tasks": [
+    "Fill",
+    "Excavate",
+    "Hang",
+    "Pour",
+    "Write",
+    "Pinch"
+  ],
+  "short_replay_pass_tasks": [
+    "Hang",
+    "Write",
+    "Pinch"
+  ],
+  "short_replay_fail_tasks": [
+    "Fill",
+    "Excavate",
+    "Pour"
+  ],
+  "runs": {
+    "gpu-tasks-v1": {
+      "protocol": {
+        "declared_at_utc": "2026-09-08T14:25:00.809592+00:00",
+        "input_sha256": "8cc0aa261b4f6dbf91a686c844e49237a78ea2bd5218457a3ab73a18085c87d6",
+        "request_sha256": "52feb432e974e53a11650e9d2407e2402379d09c3e2a9461161a3f2cf74e31ec",
+        "probe_sha256": "3b1ae3e37a2513058a19b014b54c68e3864fa9d61949ec493568948977e0befc",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "tasks": [
+          "Fill",
+          "Excavate",
+          "Hang",
+          "Pour",
+          "Write",
+          "Pinch"
+        ],
+        "backends": [
+          "cpu",
+          "gpu"
+        ],
+        "replay_limits": {
+          "x": 1e-05,
+          "qpos": 1e-05,
+          "qvel": 0.0001,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0,
+          "mass": 0.0
+        },
+        "scope": "Actual task API, physical stepping and same-backend checkpoint replay for three frozen actions. Not full episodes, cross-backend/legacy physics parity or batched task lifecycle."
+      },
+      "verdict": {
+        "passed": false,
+        "failures": [
+          "Worker failed; inspect retained task logs",
+          "Fill/cpu: replay x=5.2947551012039185e-05 exceeds 1e-05",
+          "Fill/gpu: replay x=5.8904290199279785e-05 exceeds 1e-05",
+          "Excavate/cpu: replay x=3.1694769859313965e-05 exceeds 1e-05",
+          "Excavate/gpu: replay x=3.609806299209595e-05 exceeds 1e-05",
+          "Pour/cpu: incomplete task record",
+          "Pour/gpu: incomplete task record",
+          "Write/cpu: incomplete task record",
+          "Write/gpu: incomplete task record",
+          "Pinch/cpu: incomplete task record",
+          "Pinch/gpu: incomplete task record"
+        ],
+        "reports": {
+          "Fill/cpu": {
+            "replay_max_abs": {
+              "x": 5.2947551012039185e-05,
+              "v": 0.005300484597682953,
+              "F": 0.03953516483306885,
+              "C": 2.350139617919922,
+              "vc": 0.020265916362404823,
+              "mass": 0.0,
+              "qpos": 1.1920928955078125e-07,
+              "qvel": 3.032386302947998e-06,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 8.940696716308594e-08,
+              "rigid_velocity": 5.200505256652832e-06,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0,
+              "rigid_velocity": 0.0,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "motion_max_abs": {
+              "x": 0.027336984872817993,
+              "qpos": 0.0019704997539520264
+            },
+            "particle_count": 704
+          },
+          "Fill/gpu": {
+            "replay_max_abs": {
+              "x": 5.8904290199279785e-05,
+              "v": 0.005313709378242493,
+              "F": 0.034986019134521484,
+              "C": 2.3539555072784424,
+              "vc": 0.022768104448914528,
+              "mass": 0.0,
+              "qpos": 2.384185791015625e-07,
+              "qvel": 2.1867454051971436e-06,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 1.4901161193847656e-07,
+              "rigid_velocity": 3.460794687271118e-06,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 5.960464477539063e-08,
+              "rigid_velocity": 0.0,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "motion_max_abs": {
+              "x": 0.027350783348083496,
+              "qpos": 0.001970648765563965
+            },
+            "particle_count": 704
+          },
+          "Excavate/cpu": {
+            "replay_max_abs": {
+              "x": 3.1694769859313965e-05,
+              "v": 0.001451633870601654,
+              "F": 0.01796048879623413,
+              "C": 0.7319913953542709,
+              "vc": 2.6872381567955017e-05,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0,
+              "rigid_velocity": 0.0,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0,
+              "rigid_velocity": 0.0,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "motion_max_abs": {
+              "x": 0.010910868644714355,
+              "qpos": 0.0023963749408721924
+            },
+            "particle_count": 11056
+          },
+          "Excavate/gpu": {
+            "replay_max_abs": {
+              "x": 3.609806299209595e-05,
+              "v": 0.0005661845207214355,
+              "F": 0.011236011981964111,
+              "C": 0.1589406132698059,
+              "vc": 2.422276884317398e-05,
+              "mass": 0.0,
+              "qpos": 2.9802322387695312e-08,
+              "qvel": 1.993030309677124e-07,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 1.5739351511001587e-07,
+              "rigid_velocity": 2.4959444999694824e-07,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 1.5739351511001587e-07,
+              "rigid_velocity": 0.0,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "motion_max_abs": {
+              "x": 0.01091088354587555,
+              "qpos": 0.00239640474319458
+            },
+            "particle_count": 11056
+          },
+          "Hang/cpu": {
+            "replay_max_abs": {
+              "x": 2.7567148208618164e-07,
+              "v": 3.1441450119018555e-06,
+              "F": 5.379319190979004e-06,
+              "C": 0.00019216537475585938,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 9.313225746154785e-10,
+              "qvel": 2.9802322387695312e-08,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 5.960464477539063e-08,
+              "rigid_velocity": 6.705522537231445e-08,
+              "root_pose": 5.960464477539063e-08,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 5.960464477539063e-08,
+              "rigid_velocity": 0.0,
+              "root_pose": 5.960464477539063e-08,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "motion_max_abs": {
+              "x": 0.015178404748439789,
+              "qpos": 0.036726489663124084
+            },
+            "particle_count": 3636
+          },
+          "Hang/gpu": {
+            "replay_max_abs": {
+              "x": 3.129243850708008e-07,
+              "v": 1.7896294593811035e-05,
+              "F": 1.6577541828155518e-05,
+              "C": 0.0011875629425048828,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 1.3969838619232178e-09,
+              "qvel": 1.1175870895385742e-07,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 1.4901161193847656e-07,
+              "rigid_velocity": 1.1175870895385742e-07,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 1.1920928955078125e-07,
+              "rigid_velocity": 7.450580596923828e-09,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "motion_max_abs": {
+              "x": 0.01517835259437561,
+              "qpos": 0.03672650456428528
+            },
+            "particle_count": 3636
+          }
+        },
+        "limits": {
+          "x": 1e-05,
+          "qpos": 1e-05,
+          "qvel": 0.0001,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0,
+          "mass": 0.0
+        },
+        "scope": "Actual task API, physical stepping and same-backend checkpoint replay for three frozen actions. Not full episodes, cross-backend/legacy physics parity or batched task lifecycle.",
+        "full_port_complete": false
+      },
+      "archive_sha256": "5ba244da1cfae96ad3132000c42f9676aa8ebe4e1976a508fd7088341622cbc8"
+    },
+    "gpu-tasks-v2": {
+      "protocol": {
+        "declared_at_utc": "2026-09-08T14:34:53.512682+00:00",
+        "input_sha256": "fd8bfc44876a6aa144401ebbccea494e23c7dccbec606cba451d0a8e478cd5df",
+        "request_sha256": "57f3709690468cac41a3af4600b9e18224e23710e86048164a7cfa58f2f987b1",
+        "probe_sha256": "3b1ae3e37a2513058a19b014b54c68e3864fa9d61949ec493568948977e0befc",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "tasks": [
+          "Pour",
+          "Write",
+          "Pinch"
+        ],
+        "backends": [
+          "cpu",
+          "gpu"
+        ],
+        "replay_limits": {
+          "x": 1e-05,
+          "qpos": 1e-05,
+          "qvel": 0.0001,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0,
+          "mass": 0.0
+        },
+        "scope": "Actual task API, physical stepping and same-backend checkpoint replay for three frozen actions. Not full episodes, cross-backend/legacy physics parity or batched task lifecycle.",
+        "runner_sha256": "beab71be9cddff814a6973f72bd3fed32396c8919b2297c40e750e1cd10ef0e3"
+      },
+      "verdict": {
+        "passed": false,
+        "failures": [
+          "Worker failed; inspect retained task logs",
+          "Pour/cpu: replay x=0.0005959570407867432 exceeds 1e-05",
+          "Pour/cpu: replay qvel=0.0022574486647499725 exceeds 0.0001",
+          "Pour/gpu: replay x=0.0010793805122375488 exceeds 1e-05",
+          "Pour/gpu: replay qpos=4.494562745094299e-05 exceeds 1e-05",
+          "Pour/gpu: replay qvel=0.0009459387511014938 exceeds 0.0001",
+          "Write/gpu: incomplete task record"
+        ],
+        "reports": {
+          "Pour/cpu": {
+            "replay_max_abs": {
+              "x": 0.0005959570407867432,
+              "v": 0.0850450899451971,
+              "F": 0.0,
+              "C": 16.33794641494751,
+              "vc": 0.0,
+              "vol": 1.3990657521389949e-09,
+              "mass": 0.0,
+              "qpos": 3.993511199951172e-06,
+              "qvel": 0.0022574486647499725,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0001128384901676327,
+              "rigid_velocity": 0.051769083365797997,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0001128384901676327,
+              "scene_actor_velocity": 0.051769083365797997,
+              "task_state": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "vol": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0,
+              "rigid_velocity": 0.0,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "motion_max_abs": {
+              "x": 0.023904230445623398,
+              "qpos": 0.010742569342255592
+            },
+            "particle_count": 8534
+          },
+          "Pour/gpu": {
+            "replay_max_abs": {
+              "x": 0.0010793805122375488,
+              "v": 0.1303570419549942,
+              "F": 0.0,
+              "C": 32.18301200866699,
+              "vc": 0.0,
+              "vol": 7.434586279941868e-10,
+              "mass": 0.0,
+              "qpos": 4.494562745094299e-05,
+              "qvel": 0.0009459387511014938,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0003492208197712898,
+              "rigid_velocity": 0.01815474033355713,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0003492208197712898,
+              "scene_actor_velocity": 0.01815474033355713,
+              "task_state": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "vol": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 1.4901161193847656e-08,
+              "rigid_velocity": 0.0,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 1.4901161193847656e-08,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0
+            },
+            "motion_max_abs": {
+              "x": 0.02690018340945244,
+              "qpos": 0.012521093711256981
+            },
+            "particle_count": 8534
+          },
+          "Write/cpu": {
+            "replay_max_abs": {
+              "x": 1.4901161193847656e-07,
+              "v": 1.6938429325819016e-06,
+              "F": 3.516674041748047e-06,
+              "C": 0.000311279043671675,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0,
+              "rigid_velocity": 0.0,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0,
+              "goal_height_mm": 0.0,
+              "current_height_mm": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0,
+              "rigid_velocity": 0.0,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0,
+              "goal_height_mm": 0.0,
+              "current_height_mm": 0.0
+            },
+            "motion_max_abs": {
+              "x": 0.0025073871947824955,
+              "qpos": 0.002414911985397339
+            },
+            "particle_count": 19404
+          },
+          "Pinch/cpu": {
+            "replay_max_abs": {
+              "x": 1.4901161193847656e-07,
+              "v": 1.7883721739053726e-06,
+              "F": 1.7881393432617188e-06,
+              "C": 0.00027777417562901974,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0,
+              "rigid_velocity": 0.0,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0,
+              "goal_depths": 0.0,
+              "goal_rgbs": 0.0,
+              "goal_cam_pos": 0.0,
+              "goal_cam_rot": 0.0,
+              "goal_cam_intrinsic": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0,
+              "rigid_velocity": 0.0,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0,
+              "goal_depths": 0.0,
+              "goal_rgbs": 0.0,
+              "goal_cam_pos": 0.0,
+              "goal_cam_rot": 0.0,
+              "goal_cam_intrinsic": 0.0
+            },
+            "motion_max_abs": {
+              "x": 2.600252628326416e-06,
+              "qpos": 0.02692865952849388
+            },
+            "particle_count": 3072
+          },
+          "Pinch/gpu": {
+            "replay_max_abs": {
+              "x": 1.4901161193847656e-07,
+              "v": 2.619643055368215e-06,
+              "F": 1.8477439880371094e-06,
+              "C": 0.0002330660354346037,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 1.862645149230957e-09,
+              "qvel": 2.2351741790771484e-08,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 1.1920928955078125e-07,
+              "rigid_velocity": 2.0489096641540527e-08,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0,
+              "goal_depths": 0.0,
+              "goal_rgbs": 0.0,
+              "goal_cam_pos": 0.0,
+              "goal_cam_rot": 0.0,
+              "goal_cam_intrinsic": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 1.1920928955078125e-07,
+              "rigid_velocity": 0.0,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0,
+              "goal_depths": 0.0,
+              "goal_rgbs": 0.0,
+              "goal_cam_pos": 0.0,
+              "goal_cam_rot": 0.0,
+              "goal_cam_intrinsic": 0.0
+            },
+            "motion_max_abs": {
+              "x": 2.600252628326416e-06,
+              "qpos": 0.02692865952849388
+            },
+            "particle_count": 3072
+          }
+        },
+        "limits": {
+          "x": 1e-05,
+          "qpos": 1e-05,
+          "qvel": 0.0001,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0,
+          "mass": 0.0
+        },
+        "scope": "Actual task API, physical stepping and same-backend checkpoint replay for three frozen actions. Not full episodes, cross-backend/legacy physics parity or batched task lifecycle.",
+        "full_port_complete": false
+      },
+      "archive_sha256": "889fc21a48c9f838f2afb61815fbe17c6dfb3556d9976bbf0ab1d7809a14bc40"
+    },
+    "gpu-tasks-v3": {
+      "protocol": {
+        "declared_at_utc": "2026-09-08T15:08:25.400030+00:00",
+        "input_sha256": "9655451fae2b84c9dcfdadee0ec0df9e690a5c6fdd10b2f382d3906440b2439f",
+        "request_sha256": "f2ffc69a5b892b496734d29c399eb478ccdbba9a79fa7e44f46d8dd1893ad31f",
+        "probe_sha256": "3b1ae3e37a2513058a19b014b54c68e3864fa9d61949ec493568948977e0befc",
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "warp_binary_sha256": "ed1c35995381c224f9ab359ad4fbe3cc48c0ff5205aa695f08deb2e73cac2e56",
+        "tasks": [
+          "Write"
+        ],
+        "backends": [
+          "cpu",
+          "gpu"
+        ],
+        "replay_limits": {
+          "x": 1e-05,
+          "qpos": 1e-05,
+          "qvel": 0.0001,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0,
+          "mass": 0.0
+        },
+        "scope": "Actual task API, physical stepping and same-backend checkpoint replay for three frozen actions. Not full episodes, cross-backend/legacy physics parity or batched task lifecycle.",
+        "runner_sha256": "beab71be9cddff814a6973f72bd3fed32396c8919b2297c40e750e1cd10ef0e3"
+      },
+      "verdict": {
+        "passed": true,
+        "failures": [],
+        "reports": {
+          "Write/cpu": {
+            "replay_max_abs": {
+              "x": 1.7881393432617188e-07,
+              "v": 1.6458798199892044e-06,
+              "F": 3.0994415283203125e-06,
+              "C": 0.00034728366881608963,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0,
+              "rigid_velocity": 0.0,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0,
+              "goal_height_mm": 0.0,
+              "current_height_mm": 1.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 0.0,
+              "rigid_velocity": 0.0,
+              "root_pose": 8.731149137020111e-11,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0,
+              "goal_height_mm": 0.0,
+              "current_height_mm": 0.0
+            },
+            "motion_max_abs": {
+              "x": 0.0025073890574276447,
+              "qpos": 0.002414911985397339
+            },
+            "particle_count": 19404
+          },
+          "Write/gpu": {
+            "replay_max_abs": {
+              "x": 1.7881393432617188e-07,
+              "v": 1.5730038285255432e-06,
+              "F": 3.1160307116806507e-06,
+              "C": 0.0005762616638094187,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 3.725290298461914e-09,
+              "qvel": 3.91155481338501e-08,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 1.043081283569336e-07,
+              "rigid_velocity": 4.854518920183182e-08,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0,
+              "goal_height_mm": 0.0,
+              "current_height_mm": 0.0
+            },
+            "initial_max_abs": {
+              "x": 0.0,
+              "v": 0.0,
+              "F": 0.0,
+              "C": 0.0,
+              "vc": 0.0,
+              "mass": 0.0,
+              "qpos": 0.0,
+              "qvel": 0.0,
+              "drive_position": 0.0,
+              "drive_velocity": 0.0,
+              "rigid_pose": 1.0337680578231812e-07,
+              "rigid_velocity": 0.0,
+              "root_pose": 1.1920928955078125e-07,
+              "root_velocity": 0.0,
+              "scene_actor_pose": 0.0,
+              "scene_actor_velocity": 0.0,
+              "task_state": 0.0,
+              "goal_height_mm": 0.0,
+              "current_height_mm": 0.0
+            },
+            "motion_max_abs": {
+              "x": 0.0025073890574276447,
+              "qpos": 0.0024149343371391296
+            },
+            "particle_count": 19404
+          }
+        },
+        "limits": {
+          "x": 1e-05,
+          "qpos": 1e-05,
+          "qvel": 0.0001,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0,
+          "mass": 0.0
+        },
+        "scope": "Actual task API, physical stepping and same-backend checkpoint replay for three frozen actions. Not full episodes, cross-backend/legacy physics parity or batched task lifecycle.",
+        "full_port_complete": false
+      },
+      "archive_sha256": "978691b610b5c9916287aabc49a809fe777041ce20158e109d84f20c52091e9b"
+    }
+  },
+  "source_changes_after_tests": "Write-only agent mixin fix tested in v3; other five task runtime files unchanged from their recorded runs. MPMBaseEnv class docstring updated after v3; no executable change."
+}

@@ -21,6 +21,7 @@ from .controllers import LegacyEEPoseControllerConfig, legacy_arm_configs
 from .geometry import load_numeric_pack_file, register_reference_collision_body
 from .legacy_base import LegacyMPMEnv
 from .legacy_panda import apply_reference_robot_parameters
+from .passive_forces import LegacyPassiveForceMixin
 from .mpm import MPMModelBuilder, wp
 from mpm.height_rasterizer import rasterize_clear_kernel, rasterize_kernel
 
@@ -41,7 +42,7 @@ def success_iou_kernel(goal:wp.array(dtype=int,ndim=2), current:wp.array(dtype=i
         wp.atomic_add(out,1,1)
 
 
-class LegacyPandaStick(BaseAgent):
+class LegacyPandaStick(LegacyPassiveForceMixin, BaseAgent):
     uid='legacy_mpm_panda_stick'
     urdf_config={}
 
@@ -62,13 +63,6 @@ class LegacyPandaStick(BaseAgent):
         configs['pd_ee_delta_pose_demo']=LegacyEEPoseControllerConfig(joints,-.1,.1,.1,1000.,100.,'panda_hand',
             frame='base',normalize_action=False)
         return {key:dict(arm=value,balance_passive_force=False) for key,value in configs.items()}
-
-    def before_simulation_step(self):
-        robot=self.robot._objs[0]
-        passive=robot.compute_passive_force(gravity=True,coriolis_and_centrifugal=True)
-        super().before_simulation_step()
-        robot.set_qf(passive)
-
 
 @register_env('Write-v0',max_episode_steps=200)
 class WriteEnv(LegacyMPMEnv):
@@ -209,7 +203,7 @@ class WriteEnv(LegacyMPMEnv):
         return dict(success=torch.tensor([value>.8],device=self.device),iou=torch.tensor([value],device=self.device))
 
     def compute_dense_reward(self,obs,action,info):
-        matrix=self.end_effector.entity_pose.to_transformation_matrix()
+        matrix=self.rigid_pose(self.end_effector).to_transformation_matrix()
         bottom=np.asarray(matrix[:3,3]+matrix[:3,2]*.02,dtype=np.float32)
         distance=np.min(np.linalg.norm(self.mpm_coupler.particle_state()['x']-bottom,axis=-1))
         reach=1-np.tanh(10.*distance)
@@ -220,7 +214,7 @@ class WriteEnv(LegacyMPMEnv):
         return self.compute_dense_reward(obs,action,info)
 
     def _get_obs_extra(self,info):
-        pose=self.end_effector.entity_pose
+        pose=self.rigid_pose(self.end_effector)
         return {**super()._get_obs_extra(info),'tcp_pose':torch.as_tensor(np.r_[pose.p,pose.q],device=self.device)[None],
                 'goal':torch.as_tensor(self.goal_image_display.copy(),device=self.device)[None]}
 

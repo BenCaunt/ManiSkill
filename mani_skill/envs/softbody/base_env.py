@@ -8,17 +8,20 @@ import sapien
 from mani_skill.envs.sapien_env import BaseEnv
 from mani_skill.utils import common
 from .mpm import MPMCoupler, wp
+from .gpu_coupling import MPMGPUWorld
 
 MATERIAL_FIELDS = ('particle_mass', 'particle_vol', 'particle_mu_lam_ys',
                    'particle_friction_cohesion', 'particle_type')
 
 
 class MPMBaseEnv(BaseEnv):
-    """CPU PhysX with CPU or CUDA MPM and particle sphere visualization.
+    """Single-scene CPU/GPU PhysX coupling and particle sphere visualization.
 
     Tasks build their rigid scene normally and call rebuild_mpm(builder, bodies)
     during _initialize_episode, after setting their reset poses. Both engines
     retain their own state; only reaction forces cross the coupling boundary.
+    GPU robot controllers must supply a fresh complete mpm_baseline_qf buffer.
+    Multiple task instances in one native GPU world remain unsupported here.
     """
 
     SUPPORTED_OBS_MODES = ("state", "state_dict", "none", "sensor_data", "any_textures", "pointcloud")
@@ -27,8 +30,8 @@ class MPMBaseEnv(BaseEnv):
 
     def __init__(self, *args, mpm_device="cuda", mpm_dt=.0005,
                  num_envs=1, sim_backend="physx_cpu", **kwargs):
-        if num_envs != 1 or sim_backend not in ("auto", "cpu", "physx_cpu"):
-            raise NotImplementedError("MPM currently supports one CPU PhysX scene")
+        if num_envs != 1:
+            raise NotImplementedError("MPM task lifecycle currently supports one PhysX scene")
         if mpm_device not in ("cpu", "cuda"):
             raise ValueError("mpm_device must be cpu or cuda")
         self.mpm_device = mpm_device
@@ -36,13 +39,16 @@ class MPMBaseEnv(BaseEnv):
         if not np.isfinite(self.mpm_dt) or self.mpm_dt <= 0:
             raise ValueError("mpm_dt must be positive and finite")
         self.mpm_coupler = None
+        self.mpm_gpu_world = None
         self._mpm_builder = None
         self._mpm_reset_active = False
         self.last_coupling_step = None
         self._particle_entities = []
         self._mpm_initial_checkpoint = None
+        if sim_backend.split(':')[0] in ('gpu', 'cuda', 'physx_cuda') and not sapien.physx.is_gpu_enabled():
+            sapien.physx.enable_gpu()
         wp.init()
-        super().__init__(*args, num_envs=1, sim_backend="physx_cpu", **kwargs)
+        super().__init__(*args, num_envs=1, sim_backend=sim_backend, **kwargs)
 
     def reset(self, *, seed=None, options=None):
         options = dict(options or {})
@@ -87,8 +93,13 @@ class MPMBaseEnv(BaseEnv):
         self._configure_mpm_model(model)
         states = [model.state() for _ in range(substeps + 1)]
         builder.init_model_state(model, states)
-        self.mpm_coupler = MPMCoupler(self.scene.sub_scenes[0], model, states,
-                                      bodies, mpm_dt=self.mpm_dt)
+        if self.gpu_sim_enabled:
+            self.mpm_gpu_world = MPMGPUWorld(self.scene.px)
+            self.mpm_coupler = self.mpm_gpu_world.add_model(self.scene.sub_scenes[0], model, states,
+                                                          bodies, mpm_dt=self.mpm_dt)
+        else:
+            self.mpm_coupler = MPMCoupler(self.scene.sub_scenes[0], model, states,
+                                          bodies, mpm_dt=self.mpm_dt)
         self._mpm_builder = builder
         self.last_coupling_step = None
         self._setup_particle_rendering()
@@ -139,11 +150,53 @@ class MPMBaseEnv(BaseEnv):
         super()._before_simulation_step()
         if self.mpm_coupler is None:
             raise RuntimeError("Task reset did not build an MPM model")
-        self.mpm_coupler.prepare_step()
+        if self.gpu_sim_enabled:
+            baseline = self.agent.mpm_baseline_qf if self.agent is not None else None
+            self.mpm_gpu_world.prepare_step(baseline_qf=baseline)
+        else:
+            self.mpm_coupler.prepare_step()
 
     def _after_simulation_step(self):
-        self.last_coupling_step = self.mpm_coupler.complete_step()
+        self.last_coupling_step = (self.mpm_gpu_world.complete_step()[0] if self.gpu_sim_enabled
+                                   else self.mpm_coupler.complete_step())
         super()._after_simulation_step()
+
+    def rigid_pose(self, body):
+        """Read scene-local native GPU pose without overwriting pending reset data."""
+        if not self.gpu_sim_enabled or not isinstance(body, sapien.physx.PhysxRigidBodyComponent):
+            return body.entity_pose
+        px = self.scene.px
+        if not self._mpm_reset_active:
+            if isinstance(body, sapien.physx.PhysxArticulationLinkComponent):
+                px.gpu_fetch_articulation_link_pose()
+            else:
+                px.gpu_fetch_rigid_dynamic_data()
+        row = px.cuda_rigid_body_data.torch()[body.gpu_pose_index, :7].cpu().numpy()
+        return sapien.Pose(row[:3], row[3:])
+
+    def reset_rigid_velocity(self, body, linear, angular):
+        if not self._mpm_reset_active:
+            raise RuntimeError('Rigid state assignment is only allowed during reset')
+        if self.gpu_sim_enabled:
+            data = self.scene.px.cuda_rigid_body_data.torch()
+            data[body.gpu_pose_index, 7:13] = torch.as_tensor([*linear, *angular], dtype=data.dtype, device=data.device)
+        else:
+            body.linear_velocity = linear
+            body.angular_velocity = angular
+
+    def rigid_velocity(self, body):
+        """Read world linear/angular velocity, including native GPU link data."""
+        if not isinstance(body, sapien.physx.PhysxRigidBodyComponent):
+            return np.zeros(6, dtype=np.float32)
+        if not self.gpu_sim_enabled:
+            return np.r_[body.linear_velocity, body.angular_velocity]
+        px = self.scene.px
+        if not self._mpm_reset_active:
+            if isinstance(body, sapien.physx.PhysxArticulationLinkComponent):
+                px.gpu_fetch_articulation_link_velocity()
+            else:
+                px.gpu_fetch_rigid_dynamic_data()
+        return px.cuda_rigid_body_data.torch()[body.gpu_pose_index, 7:13].cpu().numpy().copy()
 
     def _get_obs_agent(self):
         return super()._get_obs_agent() if self.agent is not None else {}
@@ -177,10 +230,9 @@ class MPMBaseEnv(BaseEnv):
         if self.agent is not None:
             # Native CPU drive targets and controller memory are separate from
             # qpos/qvel. Both are needed to replay target-relative controllers.
-            joints = self.agent.robot._objs[0].active_joints
             state['mpm_drives'] = {
-                'position': torch.as_tensor(np.array([j.drive_target for j in joints]).reshape(1, -1), device=self.device),
-                'velocity': torch.as_tensor(np.array([j.drive_velocity_target for j in joints]).reshape(1, -1), device=self.device),
+                'position': self.agent.robot.get_drive_targets(),
+                'velocity': self.agent.robot.get_drive_velocities(),
             }
         state["mpm"] = self._mpm_tensors()
         state['mpm_material'] = self._mpm_material_tensors()
@@ -257,9 +309,12 @@ class MPMBaseEnv(BaseEnv):
         super().set_state_dict({k: v for k, v in state.items() if k not in ('mpm', 'mpm_material', 'mpm_drives', 'controller')}, env_idx)
         if drives is not None:
             self.agent.set_controller_state(controller)
-            for i, joint in enumerate(joints):
-                joint.set_drive_target(float(drives['position'][0, i]))
-                joint.set_drive_velocity_target(float(drives['velocity'][0, i]))
+            self.agent.robot.set_joint_drive_targets(torch.as_tensor(drives['position'], device=self.device), self.agent.robot.active_joints)
+            self.agent.robot.set_joint_drive_velocity_targets(torch.as_tensor(drives['velocity'], device=self.device), self.agent.robot.active_joints)
+            if self.gpu_sim_enabled:
+                self.scene.px.gpu_apply_articulation_target_position()
+                self.scene.px.gpu_apply_articulation_target_velocity()
+                self.agent._mpm_passive_adapter = None
         for key, value in materials.items():
             target = getattr(self.mpm_coupler.model.struct, key)
             full = target.numpy(); full[:len(value)] = value; target.assign(full)
@@ -276,6 +331,9 @@ class MPMBaseEnv(BaseEnv):
             buffer.struct.error.zero_()
         self.mpm_coupler.failed = False
         self.mpm_coupler.pending_step = None
+        if self.gpu_sim_enabled:
+            self.mpm_gpu_world.failed = False
+            self.mpm_gpu_world.pending_step = False
         self.last_coupling_step = None
         self._update_particle_rendering()
 
@@ -348,6 +406,7 @@ class MPMBaseEnv(BaseEnv):
     def _clear(self):
         self._particle_entities = []
         self.mpm_coupler = None
+        self.mpm_gpu_world = None
         self._mpm_builder = None
         self.last_coupling_step = None
         super()._clear()

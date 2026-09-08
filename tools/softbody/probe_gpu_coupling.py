@@ -88,7 +88,22 @@ def run(backend, source, output):
         return values
     frames=[snapshot()];wrenches=[]
     for step in range(100):
-        if gpu:details=world.step(baseline_qf=torch.zeros_like(px.cuda_articulation_qf.torch()))
+        if gpu:
+            baseline=torch.zeros_like(px.cuda_articulation_qf.torch())
+            if step%2==0:
+                world.prepare_step(baseline_qf=baseline)
+                if step==0:
+                    try:world.prepare_step(baseline_qf=baseline)
+                    except RuntimeError:pass
+                    else:raise AssertionError('Duplicate preparation must be rejected')
+                    assert world.pending_step and not world.failed and world.steps==0
+                px.step();details=world.complete_step()
+                if step==0:
+                    try:world.complete_step()
+                    except RuntimeError:pass
+                    else:raise AssertionError('Duplicate completion must be rejected')
+                    assert not world.pending_step and not world.failed and world.steps==1
+            else:details=world.step(baseline_qf=baseline)
         else:details=[f['coupler'].step() for f in fixtures]
         wrenches.append(np.array([d.mean_wrench_torque_force[0] for d in details]))
         frames.append(snapshot())
@@ -105,6 +120,7 @@ def run(backend, source, output):
             kinds=[f['kind'] for f in fixtures],hinge_effective_inertia=fixtures[2]['effective_inertia']),
         source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         arrays_sha256=hashlib.sha256((output/(backend+'.npz')).read_bytes()).hexdigest(),
+        schedule='alternating external prepare/step/complete and world-owned step' if gpu else 'independent CPU couplers',
         scope='Real MPM contact and native force response across four independent scenes; no task-level parity or environment batching claim')
     (output/(backend+'.json')).write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))
 

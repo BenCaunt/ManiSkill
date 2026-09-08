@@ -55,12 +55,13 @@ class MPMGPUWorld:
         self._adapters=[]
         self._active=False
         self.failed=False
+        self.pending_step=False
         self.steps=0
         self._force_adapter=None
         self._link_mapping={}
 
     def add_model(self, scene, model, states, bodies, *, mpm_dt):
-        if self.steps or self._active or self.failed:
+        if self.steps or self._active or self.pending_step or self.failed:
             raise RuntimeError('Add models only to a new world before stepping')
         if scene.physx_system is not self.system:
             raise ValueError('All MPM scenes must share this native PhysxGpuSystem')
@@ -88,8 +89,14 @@ class MPMGPUWorld:
             self._dynamic_force[int(body.gpu_index),:3]+=value[3:]
             self._dynamic_torque[int(body.gpu_index),:3]+=value[:3]
 
-    def step(self, *, baseline_qf=None, baseline_force=None, baseline_torque=None, before_physx=None):
-        if self.failed or self._active or not self.couplers:
+    def prepare_step(self, *, baseline_qf=None, baseline_force=None, baseline_torque=None, before_physx=None):
+        """Integrate MPM and apply combined forces before one external PhysX step.
+
+        Pair with complete_step after the caller advances this system once.
+        This lets ManiSkill's simulation loop retain ownership of rigid stepping.
+        No MPM state buffer is published until completion.
+        """
+        if self.failed or self._active or self.pending_step or not self.couplers:
             raise RuntimeError('Need a nonfailed configured world with no pending step')
         self._active=True
         try:
@@ -128,10 +135,7 @@ class MPMGPUWorld:
             if force.shape[0]:
                 px.cuda_rigid_dynamic_force.torch().copy_(force);px.gpu_apply_rigid_dynamic_force()
                 px.cuda_rigid_dynamic_torque.torch().copy_(torque);px.gpu_apply_rigid_dynamic_torque()
-            px.step()
-            details=[coupler.complete_step() for coupler in self.couplers]
-            self.steps+=1
-            return details
+            self.pending_step=True
         except BaseException:
             self.failed=True
             for coupler in self.couplers:coupler.failed=True
@@ -139,3 +143,28 @@ class MPMGPUWorld:
         finally:
             self._active=False
             self._rigid_data=None
+
+    def complete_step(self):
+        """Publish MPM state after exactly one successful external PhysX step."""
+        if self.failed or self._active or not self.pending_step:
+            raise RuntimeError('No valid prepared world step to complete')
+        try:
+            details=[coupler.complete_step() for coupler in self.couplers]
+            self.pending_step=False
+            self.steps+=1
+            return details
+        except BaseException:
+            self.failed=True
+            for coupler in self.couplers:coupler.failed=True
+            raise
+
+    def step(self, **kwargs):
+        """Convenience path that owns the single shared PhysX step itself."""
+        self.prepare_step(**kwargs)
+        try:
+            self.system.step()
+            return self.complete_step()
+        except BaseException:
+            self.failed=True
+            for coupler in self.couplers:coupler.failed=True
+            raise

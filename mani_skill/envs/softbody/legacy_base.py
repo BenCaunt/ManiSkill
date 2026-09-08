@@ -21,6 +21,11 @@ class LegacyMPMEnv(MPMBaseEnv):
         super().__init__(*args, **kwargs)
 
     def _restore_requested_drives(self):
+        saved = getattr(self, '_legacy_requested_drive_tensor', None)
+        if saved is not None:
+            self.agent.robot.set_joint_drive_targets(saved, self.agent.robot.active_joints)
+            self.scene.px.gpu_apply_articulation_target_position()
+            self._legacy_requested_drive_tensor = None
         for joint, target in getattr(self, '_legacy_requested_drives', ()):
             joint.set_drive_target(target)
         self._legacy_requested_drives = ()
@@ -31,6 +36,16 @@ class LegacyMPMEnv(MPMBaseEnv):
 
     def _before_simulation_step(self):
         super()._before_simulation_step()
+        if self.gpu_sim_enabled:
+            targets = self.agent.robot.get_drive_targets().clone()
+            limits = self.agent.robot.get_qlimits()
+            clipped = targets.clamp(min=limits[..., 0], max=limits[..., 1])
+            self._legacy_requested_drive_tensor = targets
+            self.agent.robot.set_joint_drive_targets(clipped, self.agent.robot.active_joints)
+            self.scene.px.gpu_apply_articulation_target_position()
+            self.scene.px.gpu_apply_articulation_target_velocity()
+            self.legacy_applied_drive_targets = clipped[0].detach().cpu().numpy()
+            return
         # PhysX 4.1 clamps limited-joint drive positions while constructing
         # its constraints, without changing the public requested target.
         # Reproduce that solver input using real native PD drives; never
@@ -61,7 +76,7 @@ class LegacyMPMEnv(MPMBaseEnv):
     @property
     def _default_sim_config(self):
         return SimConfig(sim_freq=500, control_freq=20,
-                         scene_config=SceneConfig(enable_pcm=False, enable_tgs=False, solver_position_iterations=25,
+                         scene_config=SceneConfig(enable_pcm=self.device.type == 'cuda', enable_tgs=False, solver_position_iterations=25,
                                                   solver_velocity_iterations=1),
                          default_materials_config=DefaultMaterialsConfig(static_friction=1., dynamic_friction=1.))
 

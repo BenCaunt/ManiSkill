@@ -1,8 +1,10 @@
 # GPU rigid-body coupling investigation
 
-The fork now has a native GPU wrench projector and an explicit shared-world MPM
-scheduler. The six task prototypes still use CPU PhysX with CPU or CUDA MPM;
-GPU task integration, robot compensation and batched lifecycle remain incomplete.
+The fork has a native GPU wrench projector, an explicit shared-world MPM
+scheduler and fixed-base robot compensation. The six task prototypes now have
+a single-scene GPU integration path. Actual task runtime and checkpoint replay
+are recorded separately from full task parity; batched task lifecycle remains
+incomplete. See the fork's `tools/softbody/gpu-tasks.md` for task-level results.
 
 SAPIEN 3.0.3 on the existing A10 uses PhysX
 `105.1-physx-5.3.1.patch0`. Its installed API exposes rigid-dynamic force and
@@ -95,8 +97,9 @@ not a robot manipulation or gravity-compensation test.
 
 `MPMGPUWorld` in `gpu_coupling.py` fetches native GPU rigid state, integrates each
 attached MPM model, accumulates all reactions, applies combined free-body and
-joint forces, and advances the shared PhysX system exactly once. Each model's
-state buffers rotate only after that step succeeds. A failure invalidates the
+joint forces, and provides paired `prepare_step`/`complete_step` hooks around
+the caller's single shared PhysX step. Its `step` convenience method owns that
+step itself. Each model's state buffers rotate only after completion. A failure invalidates the
 world and couplers. CPU transfers make this a correctness implementation;
 throughput has not been measured.
 
@@ -153,7 +156,8 @@ The source-audited host verifier checks the frozen input archive, actual probe,
 request inventory, returned implementation files, worker image and trace hashes.
 Seven verifier tests cover analytic inputs and reject forged inventories, changed images, falsely
 reported native velocities, vacuous zero-force comparisons, shared idle drift
-and nonfinite traces. The full host suite passes 140 tests and 14 subtests.
+and nonfinite traces. The full host suite now passes 159 tests and 14 subtests,
+including nine passive-force and ten task-runtime verifier checks.
 
 Local evidence is `artifacts/softbody/lambda/evidence-gpu-coupling-v3`, with
 `gpu-coupling-v3-protocol-source-audited.json` and
@@ -180,13 +184,35 @@ Evidence: `mpm-rest-v1-protocol.json`, `mpm-rest-v1-audit.json`, and
 Archive SHA-256:
 `07cec1d84ff71c4497b796bfdab310ebb4942e7bf5f489e48a68343cbd79d696`.
 
+## External stepping and robot compensation
+
+Version 4 alternates the world's convenience `step` with the paired external
+hooks around a real native GPU step. It also checks duplicate prepare/complete
+rejection. Contact and impulse gates still pass: the GPU free-system momentum
+residual is 1.0358e-7 kg m/s, with free-body, slider and hinge impulse residuals
+3.0548e-10, 4.0792e-10 and 6.8197e-11 respectively in their declared units.
+The unchanged exact-zero idle-particle gates still fail: displacement reaches
+1.1176e-8 m and GPU velocity reaches 1.5934e-6 m/s. Overall verdict: failed.
+Archive SHA-256:
+`9111974491a708ec2aa827b2adf35333f2a3d777575444e8f941b24fe1ab8540`.
+
+`FixedBasePassiveForces` uses the native articulation's exported Pinocchio
+model, with world gravity expressed in the actual fixed root's frame.
+`GPUPassiveForces` reads actual GPU joint state and returns a complete force
+buffer for combination with MPM reactions. Seven collision-free mechanisms,
+including the original Panda and bucket inertial recipes, pass 175 static
+force comparisons and 60 online compensation steps against an independent
+native-CPU oracle. See `tools/softbody/passive-forces.md` in the fork for
+limitations, numeric limits and frozen evidence identities.
+
 ## Remaining implementation and evidence
 
-The original robot's gravity/Coriolis compensation, task integration, partial
-reset/checkpoints, heterogeneous topology, GPU-buffer invalidation, broader batch
-isolation and performance remain unverified. GPU PCM contact differences need
-task comparisons. Full reference parity and the existing unsuccessful task
-demonstrations remain separate unresolved requirements.
+Full GPU task episodes, broader controls, partial reset/checkpoints,
+heterogeneous topology, GPU-buffer invalidation, batch isolation and performance
+remain unverified. The short task suite retains replay failures for Fill,
+Excavate and Pour. GPU PCM contact differences need reference comparisons.
+Full reference parity and the existing unsuccessful task demonstrations remain
+separate unresolved requirements.
 
 The force probe uses the same GPU lock as the supervisor. Do not run older manual
 simulation runners concurrently with either process.

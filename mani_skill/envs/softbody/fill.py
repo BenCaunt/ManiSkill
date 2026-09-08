@@ -82,7 +82,7 @@ class FillEnv(LegacyBucketEnv):
     def _task_counts(self):
         state = self.mpm_coupler.particle_state()
         x = state['x']
-        center = self.beaker_body.entity_pose.p[:2]
+        center = self.rigid_pose(self.beaker_body).p[:2]
         in_column = np.sum((x[:, :2] - center)**2, axis=1) < self._target_radius**2
         in_bounds = in_column & (x[:, 2] < self._target_height)
         inside = int(np.count_nonzero(in_bounds & (x[:, 2] > 0)))
@@ -97,7 +97,7 @@ class FillEnv(LegacyBucketEnv):
                     spilled_particles=torch.tensor([spill], device=self.device))
 
     def _get_obs_extra(self, info):
-        pose = self.bucket.entity_pose
+        pose = self.rigid_pose(self.bucket)
         return {**super()._get_obs_extra(info),
                 'tcp_pose': torch.as_tensor(np.r_[pose.p, pose.q], device=self.device)[None],
                 'target': torch.tensor([[self.beaker_x, self.beaker_y]], dtype=torch.float32, device=self.device)}
@@ -107,7 +107,7 @@ class FillEnv(LegacyBucketEnv):
         if success:
             value = 2.5
         else:
-            matrix = self.bucket.entity_pose.to_transformation_matrix()
+            matrix = self.rigid_pose(self.bucket).to_transformation_matrix()
             bucket_pos = (matrix @ np.array([0., .02, .08, 1.]))[:3]
             reach = 1 - np.tanh(10 * np.linalg.norm(bucket_pos[:2] - [self.beaker_x, self.beaker_y]))
             tilt = .4

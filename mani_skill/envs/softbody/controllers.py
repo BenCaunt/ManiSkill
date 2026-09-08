@@ -25,8 +25,8 @@ from mani_skill.utils.structs import Pose
 
 class LegacyEEPosController(PDJointPosController):
     def _initialize_joints(self):
-        if self.scene.gpu_sim_enabled or self.scene.num_envs != 1:
-            raise NotImplementedError('Legacy IK currently requires one CPU PhysX scene')
+        if self.scene.num_envs != 1:
+            raise NotImplementedError('Legacy IK currently requires one PhysX scene')
         super()._initialize_joints()
         self._native_robot = self.articulation._objs[0]
         self.pmodel = self._native_robot.create_pinocchio_model()
@@ -70,7 +70,7 @@ class LegacyEEPosController(PDJointPosController):
         previous = self._target_pose if self.config.use_target else self.ee_pose_at_base
         self._target_pose = self.compute_target_pose(previous,action)
         result, success, _ = self.pmodel.compute_inverse_kinematics(self.ee_link_idx,self._target_pose.sp,
-            initial_qpos=self._native_robot.qpos,active_qmask=self.qmask,max_iterations=100)
+            initial_qpos=self.articulation.get_qpos()[0].detach().cpu().numpy(),active_qmask=self.qmask,max_iterations=100)
         self.last_ik_success = bool(success)
         self._target_qpos = torch.as_tensor(result[self._joint_indices],dtype=self.qpos.dtype,device=self.device)[None] if success else self._start_qpos
         if self.config.interpolate:

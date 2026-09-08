@@ -136,7 +136,7 @@ class HangEnv(LegacyMPMEnv):
         return {'success': torch.tensor([self._task_success()], device=self.device)}
 
     def _get_obs_extra(self, info):
-        hand, rod = self.hand.entity_pose, self.rod_body.entity_pose
+        hand, rod = self.rigid_pose(self.hand), self.rigid_pose(self.rod_body)
         return {**super()._get_obs_extra(info),
             'tcp_pose': torch.as_tensor(np.r_[hand.p, hand.q], device=self.device)[None],
             'target': torch.as_tensor(np.r_[rod.p, rod.q], device=self.device)[None]}
@@ -165,10 +165,10 @@ class HangEnv(LegacyMPMEnv):
     def _task_success(self, **kwargs):
         particles_x = self.mpm_coupler.particle_state()['x']
         particles_v = self.mpm_coupler.particle_state()['v']
-        lf_pos = self.leftfinger.entity_pose.p
-        rf_pos = self.rightfinger.entity_pose.p
+        lf_pos = self.rigid_pose(self.leftfinger).p
+        rf_pos = self.rigid_pose(self.rightfinger).p
         finger_dist = np.linalg.norm(lf_pos - rf_pos)
-        pose = self.rod_body.entity_pose
+        pose = self.rigid_pose(self.rod_body)
         center = pose.p
         normal = pose.to_transformation_matrix()[:3, :3] @ np.array([0, 1, 0])
         x = particles_x[self.selected_indices]
@@ -192,12 +192,12 @@ class HangEnv(LegacyMPMEnv):
             top_reward = 1
             release_reward = 1
         else:
-            gripper_pos = self.hand.entity_pose.p
+            gripper_pos = self.rigid_pose(self.hand).p
             particles_x = self.mpm_coupler.particle_state()['x']
             distance = np.min(np.linalg.norm(particles_x - gripper_pos, axis=-1))
             reaching_reward = 1 - np.tanh(10.0 * distance)
             center_reward = 0.0
-            pose = self.rod_body.entity_pose
+            pose = self.rigid_pose(self.rod_body)
             rod_center = pose.p
             rope_center = particles_x[self.selected_indices[2]]
             distance = np.linalg.norm(rod_center[:2] - rope_center[:2])
@@ -223,6 +223,6 @@ class HangEnv(LegacyMPMEnv):
                     top_reward = 0.25 * (int(dirs[0, 2] < 0) + int(dirs[1, 2] < 0) + int(dirs[3, 2] < 0) + int(dirs[4, 2] < 0))
                     reaching_reward = 1
                     if top_reward > 0.9:
-                        release_reward = np.sum(self.agent.robot._objs[0].qpos[-2:]) / gripper_width
+                        release_reward = np.sum(self.agent.robot.get_qpos()[0, -2:].detach().cpu().numpy()) / gripper_width
             reward = reaching_reward + center_reward + side_reward + top_reward + release_reward + bottom_reward * 0.2
         return reward

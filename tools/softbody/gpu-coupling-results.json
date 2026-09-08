@@ -118,7 +118,7 @@
     "mani_skill/envs/softbody/gpu_wrenches.py": "5a496e1522bfb9e7704757f28af586ca0e7529c13d125e673a32d84a20dc7703",
     "mani_skill/envs/softbody/mpm.py": "8e8f143ca45888cd9da20e914ff54440d402284f62b4a1e90f56a56afb30bf0f"
   },
-  "changes_since_test": "mpm.py module/class documentation only",
+  "changes_since_test": "GPU coupling v4 includes paired prepare/complete external-step hooks, exercised in alternating real native steps. Shared gpu_coupling.py/gpu_wrenches.py unchanged since v4.",
   "retained_failures": [
     "gpu-coupling-v2 missing slider/hinge MPM reactions and idle drift",
     "gpu-coupling-v3 idle particle position and velocity exceed unchanged zero limits in both backends"
@@ -236,5 +236,106 @@
     "conclusion": "Original pinned MPM solver and port both develop rest drift without any rigid engine or coupling adapter. Raw identity SVD produces a nonidentity rotation and nonzero elastic stress in both. This establishes an intrinsic numerical contribution; it does not calibrate limits or prove complete multi-scene isolation.",
     "reference_candidate_npz_byte_identical": true,
     "arithmetic_note": "The host float32 stress computed from recorded native R matches exactly. High-precision U times V-transpose differs slightly from native float32 matrix multiplication; its resulting stress difference is descriptive, not a changed acceptance threshold."
+  },
+  "external_step_v4": {
+    "protocol": {
+      "declared_at_utc": "2026-09-08T14:03:31.735048+00:00",
+      "input_sha256": "ea3fb74e784bb830da18c24d610175e93939dac06298a5c31c35ee7c10e600d5",
+      "probe_sha256": "b0d69b6a563c0be6c85b88c05407da6021b87e83587187ba20e0732c2e5504f1",
+      "steps": 100,
+      "scenes": 4,
+      "limits": {
+        "momentum_error_kg_m_s": 2e-06,
+        "rigid_impulse_error_kg_m_s": 2e-07,
+        "slider_impulse_error_kg_m_s": 2e-07,
+        "hinge_impulse_error_kg_m2_s": 2e-08,
+        "minimum_displacement_m": 1e-05,
+        "minimum_grid_clearance_m": 0.02,
+        "idle_particle_position_error_m": 0.0,
+        "idle_particle_velocity_m_s": 0.0,
+        "idle_rigid_velocity_m_s": 0.0
+      },
+      "scope": "Analytic contact/impulse checks for shared native GPU PhysX with independent MPM models. Cross-backend trajectories descriptive, not calibrated task parity.",
+      "changes": "Split shared GPU world into prepare/complete hooks for existing ManiSkill step ownership. Alternate both paths and test duplicate-call guards. Unchanged physical inputs and all original limits.",
+      "request_sha256": "b3ca12bb471802283000cf449630ba137ab2617a29ae6a23a6aba6725d0408d1",
+      "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+      "identity_addendum": "Freeze host-held request inventory and pinned image identity; identical numeric protocol. Original protocol retained."
+    },
+    "verdict": {
+      "passed": false,
+      "failures": [
+        "cpu: idle_particle_position_error_m=1.1175870895385742e-08",
+        "cpu: idle_particle_velocity_m_s=1.6706925407561357e-06",
+        "gpu: idle_particle_position_error_m=1.1175870895385742e-08",
+        "gpu: idle_particle_velocity_m_s=1.5933260328893084e-06"
+      ],
+      "reports": {
+        "cpu": {
+          "errors": {
+            "momentum_error_kg_m_s": 1.03797145512578e-07,
+            "rigid_impulse_error_kg_m_s": 3.7625439045652763e-10,
+            "slider_impulse_error_kg_m_s": 1.6391277267782667e-10,
+            "hinge_impulse_error_kg_m2_s": 3.067452569076659e-12,
+            "idle_particle_position_error_m": 1.1175870895385742e-08,
+            "idle_particle_velocity_m_s": 1.6706925407561357e-06,
+            "idle_rigid_velocity_m_s": 0.0
+          },
+          "displacements_m": [
+            0.009330330844226992,
+            0.009366486221551895,
+            0.006008186826558256
+          ],
+          "peak_force_N": [
+            0.40921937392125873,
+            0.4098551869407383,
+            0.4142697724477317
+          ],
+          "minimum_grid_clearance_m": 0.18460540771484374
+        },
+        "gpu": {
+          "errors": {
+            "momentum_error_kg_m_s": 1.0358333317068436e-07,
+            "rigid_impulse_error_kg_m_s": 3.054739050711145e-10,
+            "slider_impulse_error_kg_m_s": 4.079192877579074e-10,
+            "hinge_impulse_error_kg_m2_s": 6.819701303239362e-11,
+            "idle_particle_position_error_m": 1.1175870895385742e-08,
+            "idle_particle_velocity_m_s": 1.5933260328893084e-06,
+            "idle_rigid_velocity_m_s": 0.0
+          },
+          "displacements_m": [
+            0.009330331758809483,
+            0.009366512298583984,
+            0.0060078172062226175
+          ],
+          "peak_force_N": [
+            0.40921919494134534,
+            0.4098494052902024,
+            0.41427147136936426
+          ],
+          "minimum_grid_clearance_m": 0.18460414111614226
+        }
+      },
+      "descriptive_cpu_gpu_max_errors": {
+        "x": 3.1441450119018555e-06,
+        "v": 0.00013244152069091797,
+        "rigid": 8.344650268554688e-05,
+        "joint": 8.308887481689453e-05,
+        "wrenches": 0.00014585256576538086
+      },
+      "limits": {
+        "momentum_error_kg_m_s": 2e-06,
+        "rigid_impulse_error_kg_m_s": 2e-07,
+        "slider_impulse_error_kg_m_s": 2e-07,
+        "hinge_impulse_error_kg_m2_s": 2e-08,
+        "minimum_displacement_m": 1e-05,
+        "minimum_grid_clearance_m": 0.02,
+        "idle_particle_position_error_m": 0.0,
+        "idle_particle_velocity_m_s": 0.0,
+        "idle_rigid_velocity_m_s": 0.0
+      },
+      "scope": "Analytic contact/impulse checks for shared native GPU PhysX with independent MPM models. Cross-backend trajectories descriptive, not calibrated task parity.",
+      "full_port_complete": false
+    },
+    "archive_sha256": "9111974491a708ec2aa827b2adf35333f2a3d777575444e8f941b24fe1ab8540"
   }
 }

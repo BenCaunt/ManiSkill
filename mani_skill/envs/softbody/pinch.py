@@ -159,7 +159,7 @@ class PinchEnv(LegacyMPMEnv):
         checkpoint['mpm'] = {key:torch.as_tensor(data[key],device=self.device)[None] for key in checkpoint['mpm']}
         robot = np.r_[data['root_pose'],data['root_velocity'],data['qpos'],data['qvel']]
         checkpoint['articulations'][self.agent.robot.name] = torch.as_tensor(robot,device=self.device)[None]
-        ground = self.ground._bodies[0].entity_pose
+        ground = self.rigid_pose(self.ground._bodies[0])
         if not np.array_equal(np.r_[ground.p,ground.q],data['ground_pose']):
             raise ValueError('Pinch level changes the fixed ground pose')
         # Source restores the level's physical state after nominal agent.reset;
@@ -222,7 +222,7 @@ class PinchEnv(LegacyMPMEnv):
             progress=torch.tensor([1-distance/sum(self.total_deformed_distance)],device=self.device,dtype=torch.float64))
 
     def compute_dense_reward(self,obs,action,info):
-        matrix=self.grasp_site.entity_pose.to_transformation_matrix()
+        matrix=self.rigid_pose(self.grasp_site).to_transformation_matrix()
         bottom=np.asarray(matrix[:3,3]+matrix[:3,2]*.02,dtype=np.float32)
         distance=np.min(np.linalg.norm(self.mpm_coupler.particle_state()['x']-bottom,axis=-1))
         reach=1-np.tanh(10.*distance)
@@ -233,7 +233,7 @@ class PinchEnv(LegacyMPMEnv):
         return self.compute_dense_reward(obs,action,info)
 
     def _get_obs_extra(self,info):
-        pose=self.grasp_site.entity_pose
+        pose=self.rigid_pose(self.grasp_site)
         return {**super()._get_obs_extra(info),'tcp_pose':torch.as_tensor(np.r_[pose.p,pose.q],device=self.device)[None],
             'target_rgb':torch.as_tensor(self.goal_data['goal_rgbs'].copy(),device=self.device)[None],
             'target_depth':torch.as_tensor(self.goal_data['goal_depths'].copy(),device=self.device,dtype=torch.float32)[None],

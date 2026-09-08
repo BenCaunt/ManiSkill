@@ -1,11 +1,14 @@
 # Experimental MPM bridge
 
 This branch preserves ManiSkill 2 v0.5.3's MPM solver and adds a SAPIEN 3
-coupling adapter and `MPMBaseEnv`. The tested configuration uses one CPU PhysX
-scene with either CPU or CUDA MPM. This is an editable-checkout prototype.
+coupling adapter and `MPMBaseEnv`. Tested configurations include one CPU PhysX
+scene with CPU or CUDA MPM and short single-scene GPU PhysX task runs with CUDA
+MPM. This is an editable-checkout prototype.
 `Fill-v0`, `Excavate-v0`, `Hang-v0`, `Pour-v0`, `Write-v0`, and `Pinch-v0` now run with their legacy robot, material initialization, SDF contacts,
 success/reward equations, and particle sphere visuals. Full reference parity is
-still unverified. Original Pinch/Write benchmark validation, GPU PhysX batching, and distributable
+still unverified. The [GPU task suite](gpu-tasks.md) records short rollouts for
+all six tasks and retains checkpoint replay failures for Fill, Excavate and
+Pour. Original Pinch/Write benchmark validation, GPU PhysX batching, and distributable
 wheel packaging remain under development.
 
 The copied runtime has separate terms in
@@ -54,7 +57,9 @@ drive targets; they do not assign physical poses.
 Target-relative modes save their target pose in checkpoints. Hang initializes
 nominal controller memory before restoring its recorded rope grasp, matching
 the original reset sequence. The current IK adapter explicitly requires one
-CPU PhysX scene; GPU MPM remains supported. The original controller's decoding
+PhysX scene. GPU end-effector controller execution still needs dedicated
+runtime coverage; the GPU task suite currently uses joint-target deltas.
+The original controller's decoding
 and this adapter agree exactly in action values and quaternions across 21 cases,
 with target-position differences at most 2.99e-8 m. This checks conventions,
 not reference dynamics parity. `probe_control_modes.py` exercises actual IK,
@@ -101,7 +106,8 @@ terrain recipe, four wall colliders, target particle count, and reward/success
 equations. Its seed-101 initialization has 11,056 particles, 4.146 kg total mass,
 and a target of 1,113 lifted particles. These are benchmark simulation inputs.
 The current mesh extraction needs a SAPIEN renderer even for state-only Fill
-rollouts. The recorded task runs use Linux, CUDA MPM, and CPU PhysX. Cameras use
+rollouts. The full reference task demonstrations use Linux, CUDA MPM, and CPU
+PhysX; the GPU task suite is a separate short-run experiment. Cameras use
 visual-only sphere entities at actual particle positions, with no physics or
 state-registry component. This supports color/depth/segmentation but has per-particle
 CPU update overhead; it is not yet a batched rendering implementation.
@@ -128,11 +134,12 @@ call their superclass so coupling runs once per PhysX timestep.
 applies world-frame force and torque about each body's COM. ManiSkill then steps
 PhysX. `complete_step` publishes the final MPM buffer. Runtime stepping never
 assigns robot or object poses. GPU MPM currently transfers state/wrenches through
-the CPU. The separate `MPMGPUWorld` adapter now couples primitive contacts to
-shared native GPU PhysX, with branched articulation force projection. Its contact
+the CPU. `MPMGPUWorld` couples contacts to shared native GPU PhysX, with
+branched articulation force projection and paired external-stepping hooks. Its contact
 impulse checks pass, while original exact-zero idle-particle gates still fail.
-The task classes continue to use the CPU PhysX path; see
-[GPU coupling evidence and limits](gpu-coupling.md).
+The task classes select this world for `sim_backend='physx_cuda'` and use
+[native-model robot compensation](passive-forces.md). They retain the original
+CPU path by default; see [GPU coupling evidence and limits](gpu-coupling.md).
 
 Reset replay supports a changed particle count for uniform-color particle recipes,
 with fixed rigid/task topology and the same solid/fluid state layout. Dictionary

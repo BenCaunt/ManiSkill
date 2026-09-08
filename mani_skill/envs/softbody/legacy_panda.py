@@ -9,6 +9,7 @@ import sapien
 from mani_skill.agents.robots.panda.panda import Panda
 from mani_skill.utils import sapien_utils
 from .controllers import legacy_arm_configs
+from .passive_forces import LegacyPassiveForceMixin
 
 
 def apply_reference_robot_parameters(robot, parameters):
@@ -28,7 +29,7 @@ def apply_reference_robot_parameters(robot, parameters):
         joint.pose_in_child = sapien.Pose(child[:3], child[3:])
 
 
-class LegacyPanda(Panda):
+class LegacyPanda(LegacyPassiveForceMixin, Panda):
     uid = 'legacy_mpm_panda'
     legacy_urdf_name = 'panda_v2.urdf'
 
@@ -45,7 +46,7 @@ class LegacyPanda(Panda):
         # The SAPIEN 3 default adds a 1e5-stiffness tendon, changing the forces
         # on a grasped rope. Disable that extra constraint at construction.
         if self.scene.num_envs != 1 or self.build_separate:
-            raise NotImplementedError('Legacy Panda currently requires one CPU scene')
+            raise NotImplementedError('Legacy Panda currently requires one scene')
         loader = self.scene.create_urdf_loader()
         loader.name = self.uid if self._agent_idx is None else f'{self.uid}-agent-{self._agent_idx}'
         loader.fix_root_link = self.fix_root_link
@@ -72,9 +73,3 @@ class LegacyPanda(Panda):
         return {key:dict(arm=value,gripper=deepcopy(gripper),balance_passive_force=False)
                 for key,value in legacy_arm_configs(self.arm_joint_names,self.ee_link_name,
                     absolute_pose=getattr(self,'legacy_absolute_pose',False)).items()}
-
-    def before_simulation_step(self):
-        robot = self.robot._objs[0]
-        passive = robot.compute_passive_force(gravity=True, coriolis_and_centrifugal=True)
-        super().before_simulation_step()
-        robot.set_qf(passive)

@@ -102,7 +102,7 @@ class ExcavateEnv(LegacyBucketEnv):
                     spilled_particles=torch.tensor([spill], device=self.device))
 
     def _get_obs_extra(self, info):
-        pose = self.bucket.entity_pose
+        pose = self.rigid_pose(self.bucket)
         return {**super()._get_obs_extra(info),
                 'tcp_pose': torch.as_tensor(np.r_[pose.p, pose.q], device=self.device)[None],
                 'target': torch.tensor([[self.target_num]], dtype=torch.float32, device=self.device)}
@@ -151,7 +151,7 @@ class ExcavateEnv(LegacyBucketEnv):
 
 
     def _bucket_keypoints(self):
-        gripper_mat = self.bucket.entity_pose.to_transformation_matrix()
+        gripper_mat = self.rigid_pose(self.bucket).to_transformation_matrix()
         bucket_base_mat = np.array(
             [[1, 0, 0, 0], [0, 1, 0, -0.01], [0, 0, 1, 0.045], [0, 0, 0, 1]]
         )
@@ -282,7 +282,7 @@ class ExcavateEnv(LegacyBucketEnv):
             - max(0, lift_num - self.target_num - 500) * 0.001
         )
 
-        gripper_pos = self.bucket.entity_pose.p
+        gripper_pos = self.rigid_pose(self.bucket).p
         height_dist = (
             max(self.target_height + 0.05 - np.mean(lifted_particles[:, 2]), 0)
             if len(lifted_particles) > 0

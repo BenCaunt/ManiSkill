@@ -108,21 +108,26 @@ class CaptureAdapter:
         joints = robot.active_joints
         bodies = self._recorded_bodies()
         actors = self._physical_actors()
+        if env.gpu_sim_enabled:
+            env.scene._gpu_fetch_all()
+        def pose(body):
+            p = env.rigid_pose(body)
+            return np.r_[p.p, p.q]
         state = {**env.mpm_coupler.particle_state(),
                 'mass': model.struct.particle_mass.numpy()[:model.struct.n_particles].copy(),
-                'qpos': robot.qpos.copy(), 'qvel': robot.qvel.copy(),
+                'qpos': env.agent.robot.get_qpos()[0].detach().cpu().numpy().copy(),
+                'qvel': env.agent.robot.get_qvel()[0].detach().cpu().numpy().copy(),
                 'sim_state': env.get_state().detach().cpu().numpy().reshape(-1),
                 # Canonical telemetry uses float64 because SAPIEN 2 exposes
                 # native float targets as Python scalars. Conversion is exact.
-                'drive_position': np.array([j.drive_target for j in joints], dtype=np.float64).reshape(-1),
-                'drive_velocity': np.array([j.drive_velocity_target for j in joints], dtype=np.float64).reshape(-1),
-                'rigid_pose': np.asarray([np.r_[b.entity_pose.p, b.entity_pose.q] for b in bodies]),
-                'rigid_velocity': np.asarray([np.r_[b.linear_velocity, b.angular_velocity] for b in bodies]),
-                'root_pose': np.asarray([np.r_[root.entity_pose.p, root.entity_pose.q]]),
-                'root_velocity': np.asarray([np.r_[root.linear_velocity, root.angular_velocity]]),
-                'scene_actor_pose': np.asarray([np.r_[b.entity_pose.p, b.entity_pose.q] for b in actors]),
-                'scene_actor_velocity': np.asarray([np.zeros(6, dtype=np.float32),
-                                                    *[np.r_[a.linear_velocity, a.angular_velocity] for a in actors[1:]]]),
+                'drive_position': env.agent.robot.get_drive_targets().detach().cpu().numpy().astype(np.float64).reshape(-1),
+                'drive_velocity': env.agent.robot.get_drive_velocities().detach().cpu().numpy().astype(np.float64).reshape(-1),
+                'rigid_pose': np.asarray([pose(b) for b in bodies]),
+                'rigid_velocity': np.asarray([env.rigid_velocity(b) for b in bodies]),
+                'root_pose': np.asarray([pose(root)]),
+                'root_velocity': np.asarray([env.rigid_velocity(root)]),
+                'scene_actor_pose': np.asarray([pose(b) for b in actors]),
+                'scene_actor_velocity': np.asarray([env.rigid_velocity(b) for b in actors]),
                 'task_state': np.asarray([env.beaker_x, env.beaker_y] if self.env_id == 'Fill-v0'
                                          else [env.target_num] if self.env_id == 'Excavate-v0'
                                          else [env.h1, env.h2] if self.env_id == 'Pour-v0'
@@ -156,8 +161,8 @@ class CaptureAdapter:
 
     def step(self, action):
         _, reward, terminated, truncated, info = self.env.step(action)
-        robot = self.env.agent.robot._objs[0]
-        if np.max(abs(robot.qpos)) > 10 or np.max(abs(robot.qvel)) > 100:
+        robot = self.env.agent.robot
+        if torch.max(abs(robot.get_qpos())) > 10 or torch.max(abs(robot.get_qvel())) > 100:
             raise RuntimeError('Unstable robot state')
         return {**numeric_tree(info, unbatch=True), 'reward': float(reward[0]),
                 'terminated': bool(terminated[0]), 'truncated': bool(truncated[0])}

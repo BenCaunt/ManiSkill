@@ -10,9 +10,10 @@ import sapien
 from mani_skill.agents.base_agent import BaseAgent
 from .legacy_base import LegacyMPMEnv
 from .controllers import legacy_arm_configs
+from .passive_forces import LegacyPassiveForceMixin
 
 
-class LegacyPandaBucket(BaseAgent):
+class LegacyPandaBucket(LegacyPassiveForceMixin, BaseAgent):
     uid = 'legacy_panda_bucket'
     urdf_config = {}
 
@@ -45,15 +46,6 @@ class LegacyPandaBucket(BaseAgent):
         names = [f'panda_joint{i}' for i in range(1, 8)]
         return {key:dict(arm=value,balance_passive_force=False)
                 for key,value in legacy_arm_configs(names,'bucket').items()}
-
-    def before_simulation_step(self):
-        # Legacy CPU controller cancels gravity AND Coriolis/centrifugal loads.
-        # Merely disabling gravity (the normal MS3 default) is not equivalent.
-        robot = self.robot._objs[0]
-        passive = robot.compute_passive_force(gravity=True, coriolis_and_centrifugal=True)
-        super().before_simulation_step()
-        robot.set_qf(passive)
-
 
 class LegacyBucketEnv(LegacyMPMEnv):
     def _load_agent(self, options):

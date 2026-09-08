@@ -134,8 +134,7 @@ class PourEnv(LegacyMPMEnv):
         target, source, qpos = self._determine_target_pos(rng)
         self.target_beaker.set_pose(target)
         self.source_container.set_pose(source)
-        self.source_body.linear_velocity = [0.,0.,0.]
-        self.source_body.angular_velocity = [0.,0.,0.]
+        self.reset_rigid_velocity(self.source_body, [0.,0.,0.], [0.,0.,0.])
         self.agent.reset(torch.as_tensor(qpos,dtype=torch.float32,device=self.device)[None])
         self.agent.robot.set_pose(sapien.Pose([-.55,0.,0.]))
         builder = MPMModelBuilder()
@@ -186,7 +185,7 @@ class PourEnv(LegacyMPMEnv):
         self._ring = sapien.Entity()
         self._ring.name = 'pour_target_ring_visual_only'
         self._ring.add_component(component)
-        self._ring.pose = sapien.Pose([*self.beaker_body.entity_pose.p[:2],self.h1])
+        self._ring.pose = sapien.Pose([*self.rigid_pose(self.beaker_body).p[:2],self.h1])
         scene.add_entity(self._ring)
 
     def _clear(self):
@@ -195,21 +194,21 @@ class PourEnv(LegacyMPMEnv):
 
     def _task_counts(self):
         x = self.mpm_coupler.particle_state()['x']
-        inside = (np.sum((x[:,:2]-self.beaker_body.entity_pose.p[:2])**2,axis=1)<self._target_radius**2) & (x[:,2]<self._target_height)
+        inside = (np.sum((x[:,:2]-self.rigid_pose(self.beaker_body).p[:2])**2,axis=1)<self._target_radius**2) & (x[:,2]<self._target_height)
         return tuple(int(np.count_nonzero(v)) for v in
             (inside & (x[:,2]>self.h1),inside & (x[:,2]>self.h2),~inside & (x[:,2]<.001),inside))
 
     def _task_success(self):
         above_start,above_end,spill,_ = self._task_counts()
-        qvel = self.agent.robot._objs[0].qvel
-        upright = self.source_body.entity_pose.to_transformation_matrix()[2,2] >= .866
+        qvel = self.agent.robot.get_qvel()[0].detach().cpu().numpy()
+        upright = self.rigid_pose(self.source_body).to_transformation_matrix()[2,2] >= .866
         return bool(above_start>100 and above_end<10 and spill<100 and upright and qvel.max()<.05 and qvel.min()>-.05)
 
     def evaluate(self):
         return {'success':torch.tensor([self._task_success()],device=self.device)}
 
     def _get_obs_extra(self, info):
-        pose = self.grasp_site.entity_pose
+        pose = self.rigid_pose(self.grasp_site)
         extra = super()._get_obs_extra(info)
         n = self.mpm_coupler.model.struct.n_particles
         if n > self.observation_particle_capacity:
@@ -227,7 +226,7 @@ class PourEnv(LegacyMPMEnv):
         flags = []
         for link, sign in [(self.agent.finger1_link,1),(self.agent.finger2_link,-1)]:
             impulse = self.scene.get_pairwise_contact_impulses(link,self.source_container)[0].cpu().numpy()
-            direction = sign*link._objs[0].entity_pose.to_transformation_matrix()[:3,1]
+            direction = sign*self.rigid_pose(link._objs[0]).to_transformation_matrix()[:3,1]
             flags.append(np.linalg.norm(impulse)>=1e-6 and np.rad2deg(np_compute_angle_between(direction,impulse))<=85)
         return all(flags)
 
@@ -257,14 +256,14 @@ class PourEnv(LegacyMPMEnv):
             return 15
         above_start, above_end, spill, in_beaker = self._task_counts()
 
-        source_mat = self.source_body.entity_pose.to_transformation_matrix()
-        target_mat = self.beaker_body.entity_pose.to_transformation_matrix()
+        source_mat = self.rigid_pose(self.source_body).to_transformation_matrix()
+        target_mat = self.rigid_pose(self.beaker_body).to_transformation_matrix()
 
         a, b = self.source_aabb
         t = np.array([0.5, 0.5, 0.33])
         grasp_site_target = a * (1 - t) + b * t
         grasp_site_target = source_mat[:3, :3] @ grasp_site_target + source_mat[:3, 3]
-        grasp_site_dist = np.linalg.norm(self.grasp_site.entity_pose.p - grasp_site_target)
+        grasp_site_dist = np.linalg.norm(self.rigid_pose(self.grasp_site).p - grasp_site_target)
         reward_grasp_site = -grasp_site_dist
 
         if grasp_site_dist < 0.05:
@@ -290,12 +289,12 @@ class PourEnv(LegacyMPMEnv):
             target_mat[:3, :3] @ np.array([tx, ty, tzmax]) + target_mat[:3, 3]
         )
 
-        dist_lf = np.linalg.norm(self.lfinger.entity_pose.p[:2] - target_top_center[:2])
-        dist_rf = np.linalg.norm(self.rfinger.entity_pose.p[:2] - target_top_center[:2])
+        dist_lf = np.linalg.norm(self.rigid_pose(self.lfinger).p[:2] - target_top_center[:2])
+        dist_rf = np.linalg.norm(self.rigid_pose(self.rfinger).p[:2] - target_top_center[:2])
         reward_finger = 10 * (dist_rf - dist_lf)
 
-        hdist = np.linalg.norm(target_top_center[:2] - self.grasp_site.entity_pose.p[:2])
-        vdist = target_top_center[2] - self.grasp_site.entity_pose.p[2]
+        hdist = np.linalg.norm(target_top_center[:2] - self.rigid_pose(self.grasp_site).p[:2])
+        vdist = target_top_center[2] - self.rigid_pose(self.grasp_site).p[2]
 
         reward_in_beaker = 0
         if above_start < 100 or (above_start > 100 and above_start - above_end < 100):
