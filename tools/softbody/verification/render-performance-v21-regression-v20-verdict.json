@@ -1,0 +1,444 @@
+{
+  "passed": false,
+  "failures": [
+    "Pour-single-101/camera-initial-env0: Too few actual particle pixels",
+    "Pour-single-101/camera-reconfigured-env0: Too few actual particle pixels",
+    "Pour-batch-absolute/partial-selected: changed checkpoint fields state/actors/bottle",
+    "Pour-batch-absolute/count-selected: changed checkpoint fields state/actors/bottle",
+    "Pour-batch-absolute/flat-env0: changed checkpoint fields state/actors/bottle",
+    "Pour-batch-absolute/flat-env1: changed checkpoint fields state/actors/bottle",
+    "Pour-batch-absolute/camera-initial-env0: Too few actual particle pixels",
+    "Pour-batch-absolute/camera-initial-env1: Too few actual particle pixels",
+    "Pour-batch-absolute/camera-partial-count-env0: Too few actual particle pixels",
+    "Pour-batch-absolute/camera-partial-count-env1: Too few actual particle pixels",
+    "Pour-batch-absolute/camera-reconfigured-env0: Too few actual particle pixels",
+    "Pour-batch-absolute/camera-reconfigured-env1: Too few actual particle pixels",
+    "Pour-batch-align/partial-selected: changed checkpoint fields state/actors/bottle",
+    "Pour-batch-align/count-selected: changed checkpoint fields state/actors/bottle",
+    "Pour-batch-align/flat-env0: changed checkpoint fields state/actors/bottle",
+    "Pour-batch-align/flat-env1: changed checkpoint fields state/actors/bottle",
+    "Pour-batch-align/camera-initial-env0: Too few actual particle pixels",
+    "Pour-batch-align/camera-initial-env1: Too few actual particle pixels",
+    "Pour-batch-align/camera-partial-count-env0: Too few actual particle pixels",
+    "Pour-batch-align/camera-partial-count-env1: Too few actual particle pixels",
+    "Pour-batch-align/camera-reconfigured-env0: Too few actual particle pixels",
+    "Pour-batch-align/camera-reconfigured-env1: Too few actual particle pixels"
+  ],
+  "reports": {
+    "Pour-single-101": {
+      "task_snapshots": 6,
+      "initial_counts": [
+        8534
+      ],
+      "initial_heights": [
+        [
+          0.011899389542047969,
+          0.01589938954204797
+        ]
+      ],
+      "max_bottle_hull_error_m": 1.2317345424259932e-16,
+      "rings": {
+        "camera-initial-env0.npz": {
+          "pixels": 223,
+          "max_bound_error_m": 0.0009385203948569024,
+          "failures": []
+        },
+        "camera-reconfigured-env0.npz": {
+          "pixels": 223,
+          "max_bound_error_m": 0.0009385203948569024,
+          "failures": []
+        }
+      },
+      "cooked": {
+        "failures": [],
+        "max_bounds_error_m": 0.0,
+        "pieces": 384
+      }
+    },
+    "Pour-batch-absolute": {
+      "task_snapshots": 12,
+      "initial_counts": [
+        8534,
+        7279
+      ],
+      "initial_heights": [
+        [
+          0.011899389542047969,
+          0.01589938954204797
+        ],
+        [
+          0.01357813604483549,
+          0.01757813604483549
+        ]
+      ],
+      "max_bottle_hull_error_m": 1.2317345424259932e-16,
+      "rings": {
+        "camera-initial-env0.npz": {
+          "pixels": 223,
+          "max_bound_error_m": 0.0009385203948569024,
+          "failures": []
+        },
+        "camera-initial-env1.npz": {
+          "pixels": 220,
+          "max_bound_error_m": 0.0009728981672769144,
+          "failures": []
+        },
+        "camera-partial-count-env0.npz": {
+          "pixels": 223,
+          "max_bound_error_m": 0.0009385203948569024,
+          "failures": []
+        },
+        "camera-partial-count-env1.npz": {
+          "pixels": 220,
+          "max_bound_error_m": 0.0009728981672769144,
+          "failures": []
+        },
+        "camera-reconfigured-env0.npz": {
+          "pixels": 223,
+          "max_bound_error_m": 0.0009385203948569024,
+          "failures": []
+        },
+        "camera-reconfigured-env1.npz": {
+          "pixels": 220,
+          "max_bound_error_m": 0.0009728981672769144,
+          "failures": []
+        }
+      },
+      "cooked": {
+        "failures": [],
+        "max_bounds_error_m": 0.0,
+        "pieces": 768
+      }
+    },
+    "Pour-batch-align": {
+      "task_snapshots": 12,
+      "initial_counts": [
+        8534,
+        7279
+      ],
+      "initial_heights": [
+        [
+          0.011899389542047969,
+          0.01589938954204797
+        ],
+        [
+          0.01357813604483549,
+          0.01757813604483549
+        ]
+      ],
+      "max_bottle_hull_error_m": 1.2317345424259932e-16,
+      "rings": {
+        "camera-initial-env0.npz": {
+          "pixels": 223,
+          "max_bound_error_m": 0.0009385203948569024,
+          "failures": []
+        },
+        "camera-initial-env1.npz": {
+          "pixels": 220,
+          "max_bound_error_m": 0.0009728981672769144,
+          "failures": []
+        },
+        "camera-partial-count-env0.npz": {
+          "pixels": 223,
+          "max_bound_error_m": 0.0009385203948569024,
+          "failures": []
+        },
+        "camera-partial-count-env1.npz": {
+          "pixels": 220,
+          "max_bound_error_m": 0.0009728981672769144,
+          "failures": []
+        },
+        "camera-reconfigured-env0.npz": {
+          "pixels": 223,
+          "max_bound_error_m": 0.0009385203948569024,
+          "failures": []
+        },
+        "camera-reconfigured-env1.npz": {
+          "pixels": 220,
+          "max_bound_error_m": 0.0009728981672769144,
+          "failures": []
+        }
+      },
+      "cooked": {
+        "failures": [],
+        "max_bounds_error_m": 0.0,
+        "pieces": 768
+      }
+    }
+  },
+  "controller_lifecycle": {
+    "passed": false,
+    "failures": [
+      "Pour-single-101/camera-initial-env0: Too few actual particle pixels",
+      "Pour-single-101/camera-reconfigured-env0: Too few actual particle pixels",
+      "Pour-batch-absolute/partial-selected: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-absolute/count-selected: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-absolute/flat-env0: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-absolute/flat-env1: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-absolute/camera-initial-env0: Too few actual particle pixels",
+      "Pour-batch-absolute/camera-initial-env1: Too few actual particle pixels",
+      "Pour-batch-absolute/camera-partial-count-env0: Too few actual particle pixels",
+      "Pour-batch-absolute/camera-partial-count-env1: Too few actual particle pixels",
+      "Pour-batch-absolute/camera-reconfigured-env0: Too few actual particle pixels",
+      "Pour-batch-absolute/camera-reconfigured-env1: Too few actual particle pixels",
+      "Pour-batch-align/partial-selected: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-align/count-selected: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-align/flat-env0: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-align/flat-env1: changed checkpoint fields state/actors/bottle",
+      "Pour-batch-align/camera-initial-env0: Too few actual particle pixels",
+      "Pour-batch-align/camera-initial-env1: Too few actual particle pixels",
+      "Pour-batch-align/camera-partial-count-env0: Too few actual particle pixels",
+      "Pour-batch-align/camera-partial-count-env1: Too few actual particle pixels",
+      "Pour-batch-align/camera-reconfigured-env0: Too few actual particle pixels",
+      "Pour-batch-align/camera-reconfigured-env1: Too few actual particle pixels"
+    ],
+    "reports": {
+      "Pour-single-101": {
+        "ik_requests": 4,
+        "replay_errors": {}
+      },
+      "Pour-batch-absolute": {
+        "ik_requests": 12,
+        "replay_errors": {
+          "partial-stepped/env0": {
+            "x": 9.000301361083984e-05,
+            "v": 0.06852681562304497,
+            "F": 0.0,
+            "C": 11.497600555419922,
+            "vc": 0.0,
+            "qpos": 2.980232238769531e-07,
+            "qvel": 6.360502447932959e-05,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat-stepped/env0": {
+            "x": 0.00012741610407829285,
+            "v": 0.06367235630750656,
+            "F": 0.0,
+            "C": 10.754364967346191,
+            "vc": 0.0,
+            "qpos": 1.7695128917694092e-07,
+            "qvel": 0.00010792724788188934,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat-stepped/env1": {
+            "x": 0.0006064176559448242,
+            "v": 0.06883220560848713,
+            "F": 0.0,
+            "C": 11.278985410928726,
+            "vc": 0.0,
+            "qpos": 0.0001576542854309082,
+            "qvel": 0.0024421028792858124,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        }
+      },
+      "Pour-batch-align": {
+        "ik_requests": 12,
+        "replay_errors": {
+          "partial-stepped/env0": {
+            "x": 0.00010922551155090332,
+            "v": 0.17391272634267807,
+            "F": 0.0,
+            "C": 27.25644874572754,
+            "vc": 0.0,
+            "qpos": 2.384185791015625e-07,
+            "qvel": 7.010623812675476e-05,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          },
+          "flat-stepped/env0": {
+            "x": 0.0002730041742324829,
+            "v": 0.196638286113739,
+            "F": 0.0,
+            "C": 30.556936264038086,
+            "vc": 0.0,
+            "qpos": 2.384185791015625e-07,
+            "qvel": 7.248669862747192e-05,
+            "drive_position": 4.76837158203125e-07,
+            "drive_velocity": 0.0
+          },
+          "flat-stepped/env1": {
+            "x": 0.00041669607162475586,
+            "v": 0.08775888057425618,
+            "F": 0.0,
+            "C": 11.6363365650177,
+            "vc": 0.0,
+            "qpos": 0.0002002120018005371,
+            "qvel": 0.00372400414198637,
+            "drive_position": 2.384185791015625e-07,
+            "drive_velocity": 0.0
+          }
+        }
+      }
+    },
+    "lifecycle_and_rendering": {
+      "passed": false,
+      "failures": [
+        "Pour-single-101/camera-initial-env0: Too few actual particle pixels",
+        "Pour-single-101/camera-reconfigured-env0: Too few actual particle pixels",
+        "Pour-batch-absolute/partial-selected: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-absolute/count-selected: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-absolute/flat-env0: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-absolute/flat-env1: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-absolute/camera-initial-env0: Too few actual particle pixels",
+        "Pour-batch-absolute/camera-initial-env1: Too few actual particle pixels",
+        "Pour-batch-absolute/camera-partial-count-env0: Too few actual particle pixels",
+        "Pour-batch-absolute/camera-partial-count-env1: Too few actual particle pixels",
+        "Pour-batch-absolute/camera-reconfigured-env0: Too few actual particle pixels",
+        "Pour-batch-absolute/camera-reconfigured-env1: Too few actual particle pixels",
+        "Pour-batch-align/partial-selected: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-align/count-selected: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-align/flat-env0: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-align/flat-env1: changed checkpoint fields state/actors/bottle",
+        "Pour-batch-align/camera-initial-env0: Too few actual particle pixels",
+        "Pour-batch-align/camera-initial-env1: Too few actual particle pixels",
+        "Pour-batch-align/camera-partial-count-env0: Too few actual particle pixels",
+        "Pour-batch-align/camera-partial-count-env1: Too few actual particle pixels",
+        "Pour-batch-align/camera-reconfigured-env0: Too few actual particle pixels",
+        "Pour-batch-align/camera-reconfigured-env1: Too few actual particle pixels"
+      ],
+      "reports": {
+        "Pour-single-101": {
+          "exact_checkpoints": {},
+          "cameras": {
+            "camera-initial-env0": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            },
+            "camera-reconfigured-env0": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            }
+          }
+        },
+        "Pour-batch-absolute": {
+          "exact_checkpoints": {
+            "partial-unchosen": [],
+            "fresh-unchosen": [],
+            "count-unchosen": [],
+            "partial-selected": [
+              "state/actors/bottle"
+            ],
+            "count-selected": [
+              "state/actors/bottle"
+            ],
+            "flat-env0": [
+              "state/actors/bottle"
+            ],
+            "flat-env1": [
+              "state/actors/bottle"
+            ]
+          },
+          "cameras": {
+            "camera-initial-env0": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            },
+            "camera-initial-env1": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            },
+            "camera-partial-count-env0": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            },
+            "camera-partial-count-env1": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            },
+            "camera-reconfigured-env0": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            },
+            "camera-reconfigured-env1": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            }
+          }
+        },
+        "Pour-batch-align": {
+          "exact_checkpoints": {
+            "partial-unchosen": [],
+            "fresh-unchosen": [],
+            "count-unchosen": [],
+            "partial-selected": [
+              "state/actors/bottle"
+            ],
+            "count-selected": [
+              "state/actors/bottle"
+            ],
+            "flat-env0": [
+              "state/actors/bottle"
+            ],
+            "flat-env1": [
+              "state/actors/bottle"
+            ]
+          },
+          "cameras": {
+            "camera-initial-env0": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            },
+            "camera-initial-env1": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            },
+            "camera-partial-count-env0": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            },
+            "camera-partial-count-env1": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            },
+            "camera-reconfigured-env0": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            },
+            "camera-reconfigured-env1": {
+              "particle_pixels": 0,
+              "failures": [
+                "Too few actual particle pixels"
+              ]
+            }
+          }
+        }
+      },
+      "scope": "Pour integration of verified384-piece original visual walls through a native cooked loader. Original masses/inertia/COM, fluid SDF/recipe, all old numeric limits and exact actor/lifecycle gates retained. New geometry intentionally replaces previousCoACD approximation and original closed rigid hull; no rigid-contact parity claim. Check actual native/cache polygons, scale, local poses and materials against frozen cooking. Four N1/N2 cases plus seeded reference initialization, reversed partial/count checkpoints, RNG, native IK and camera checks. No full-episode or performance acceptance. Additional initial-frame diagnostic visibility interventions, strictly separate from ordinary camera acceptance. Recheck after scoping the native actor dependency to MPM scenes and after adding the separate cooked-pack environment path. All numeric gates unchanged. Rendering update optimization regression, using identical controls, reset sequence and numeric limits. Timing observer inserted; no acceptance limits relaxed.",
+      "full_port_complete": false
+    },
+    "scope": "Pour integration of verified384-piece original visual walls through a native cooked loader. Original masses/inertia/COM, fluid SDF/recipe, all old numeric limits and exact actor/lifecycle gates retained. New geometry intentionally replaces previousCoACD approximation and original closed rigid hull; no rigid-contact parity claim. Check actual native/cache polygons, scale, local poses and materials against frozen cooking. Four N1/N2 cases plus seeded reference initialization, reversed partial/count checkpoints, RNG, native IK and camera checks. No full-episode or performance acceptance. Additional initial-frame diagnostic visibility interventions, strictly separate from ordinary camera acceptance. Recheck after scoping the native actor dependency to MPM scenes and after adding the separate cooked-pack environment path. All numeric gates unchanged. Rendering update optimization regression, using identical controls, reset sequence and numeric limits. Timing observer inserted; no acceptance limits relaxed.",
+    "full_port_complete": false
+  },
+  "scope": "Pour integration of verified384-piece original visual walls through a native cooked loader. Original masses/inertia/COM, fluid SDF/recipe, all old numeric limits and exact actor/lifecycle gates retained. New geometry intentionally replaces previousCoACD approximation and original closed rigid hull; no rigid-contact parity claim. Check actual native/cache polygons, scale, local poses and materials against frozen cooking. Four N1/N2 cases plus seeded reference initialization, reversed partial/count checkpoints, RNG, native IK and camera checks. No full-episode or performance acceptance. Additional initial-frame diagnostic visibility interventions, strictly separate from ordinary camera acceptance. Recheck after scoping the native actor dependency to MPM scenes and after adding the separate cooked-pack environment path. All numeric gates unchanged. Rendering update optimization regression, using identical controls, reset sequence and numeric limits. Timing observer inserted; no acceptance limits relaxed.",
+  "full_port_complete": false
+}

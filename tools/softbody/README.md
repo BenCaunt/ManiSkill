@@ -132,9 +132,10 @@ The current mesh extraction needs a SAPIEN renderer even for state-only Fill
 rollouts. The full reference task demonstrations use Linux, CUDA MPM, and CPU
 PhysX; the GPU task suite is a separate short-run experiment. Cameras use
 visual-only sphere entities at actual particle positions, with no physics or
-state-registry component. This supports color/depth/segmentation but has per-particle
-CPU update overhead. GPU camera captures use a separate CUDA visual-pose buffer
-and preserve particle identities across resets. The [rendering suite](gpu-rendering.md)
+state-registry component. This supports color/depth/segmentation. Batched GPU
+rendering [copies particle positions directly on the solver's CUDA stream](render-performance.md);
+CPU and single-view rendering retain native entity updates. GPU camera captures
+use a separate CUDA visual-pose buffer and preserve particle identities across resets. The [rendering suite](gpu-rendering.md)
 checks particle surfaces, robot visual bounds, native sensor observations and
 count-changing reset behavior. The separate [Fill batching suite](gpu-batching.md)
 also verifies ten frames across N1/N2 scenes and a partial count-changing reset.

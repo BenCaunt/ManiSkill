@@ -192,8 +192,8 @@ class MPMBatchRuntime:
             return
         offset = 0
         for pool, coupler in zip(self.pools, self.couplers):
-            positions = pool.update(coupler)
-            self.render_poses[offset:offset + len(positions), :3] = torch.as_tensor(positions, device=self.env.device)
+            pool.update(coupler, self.render_poses[offset:offset + len(pool.entities)],
+                        update_entities=self.env.scene.parallel_in_single_scene)
             offset += len(pool.entities)
 
     def padded(self, material=False):

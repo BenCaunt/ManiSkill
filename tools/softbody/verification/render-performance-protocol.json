@@ -1,0 +1,150 @@
+{
+  "declared_at_utc": "2026-09-08T23:50:47.159114+00:00",
+  "input_sha256": "0b1cebd262a8bde9353b4e1a66df57e200d84898378af556dc1a8dd24a160bee",
+  "request_sha256": "5a6beba6006b2b19e7a8e7d560f93cabe3b7cd235ac0f4c29c0181d96e12bd1f",
+  "probe_sha256": "223a81f2373fe0e97f4927e66fd7c035c0fa8e1663b34e709f9b9420a97c04d8",
+  "runner_sha256": "be840f648de2f74e7d86a0fcbe8aef5397994888a9ae8df804ae0685bf312883",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "baseline": {
+    "recorded_at_utc": "2026-09-08T23:46:28.669242+00:00",
+    "commit": "0d45e18fe8c140e044beabba8918a185ae7391b1",
+    "files": {
+      "mani_skill/envs/softbody/particle_visuals.py": "d5e30936e1fc8346da3083ab7c80dec7b4db8de10baf910974e73b2d54700c3f",
+      "mani_skill/envs/softbody/base_env.py": "218de1ce01ef81e6b812e9d32dc4def152ca137f03b50381750a830fc9b2c59e",
+      "mani_skill/envs/softbody/batch.py": "a59bfa30fcf35b7555a704668b8bffa3dfb6d6f40743a6a00e2b14848e421e3e",
+      "mani_skill/envs/scene.py": "8a536203e61bd0ee9452f7e275fefe8b05e21925d969a31cc630eb6c011b896a",
+      "warp_maniskill/warp/torch.py": "c32a452054bbf205b1a710e67aba76721a56b1f4dcd02e5b75cfd3d6b449c250",
+      "warp_maniskill/warp/context.py": "129341d5d4ec90c665ebff1a7b612bfcf507d78e6a8aa6daf03b186b28290d68",
+      "warp_maniskill/warp/types.py": "c010af75c36c9e7d68f0cf527fc878eb5851bd1619dba2f0681aeac4e6c789c7",
+      "warp_maniskill/warp/native/warp.cu": "e17eef024620682ebbc580da0cbf702315b3d4d04ece5851ccf171198e4203fb"
+    }
+  },
+  "cases": [
+    {
+      "name": "Fill-reset-regression-ee",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    },
+    {
+      "name": "Write-single-101",
+      "task": "Write",
+      "backend": "gpu",
+      "control_mode": "pd_joint_delta_pos",
+      "seeds": [
+        101
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "line.h5"
+      ],
+      "fresh_level_file": "arc.h5"
+    },
+    {
+      "name": "Write-batch-joint",
+      "task": "Write",
+      "backend": "gpu",
+      "control_mode": "pd_joint_delta_pos",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.005,
+      "level_files": [
+        "line.h5",
+        "elbow.h5"
+      ],
+      "fresh_level_file": "arc.h5",
+      "capacity": 32768,
+      "reverse_flat_indices": true
+    },
+    {
+      "name": "Pour-single-101",
+      "task": "Pour",
+      "backend": "gpu",
+      "control_mode": "pd_ee_pose",
+      "seeds": [
+        101
+      ],
+      "action_scales": [
+        1.0
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.0025
+    },
+    {
+      "name": "Pour-batch-absolute",
+      "task": "Pour",
+      "backend": "gpu",
+      "control_mode": "pd_ee_pose",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.0025,
+      "capacity": 16384,
+      "reverse_flat_indices": true
+    },
+    {
+      "name": "Pour-batch-align",
+      "task": "Pour",
+      "backend": "gpu",
+      "control_mode": "pd_ee_delta_pose_align",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "controller_lifecycle": true,
+      "reward_mode": "dense",
+      "particle_radius": 0.0025,
+      "capacity": 16384,
+      "reverse_flat_indices": true
+    }
+  ],
+  "helpers": {
+    "render_update_probe.py": "0b95bee6215723ca581edcc1d97e6a02628ebae9dba52ffc6629e017e20b9131",
+    "baseline_particle_visuals.py": "d5e30936e1fc8346da3083ab7c80dec7b4db8de10baf910974e73b2d54700c3f"
+  },
+  "timing_repetitions": 10,
+  "timing_warmup": 2,
+  "timing_trials": 5,
+  "minimum_median_speedup": 2.0,
+  "pose_error_limit_m": 0.0,
+  "state_error_limit": 0.0,
+  "require_detected_unordered_copy": true,
+  "require_no_particle_readback": true,
+  "require_no_entity_writes": true,
+  "scope": "Same-model alternating old/new visual-update microbenchmark with CUDA completion included. Actual task lifecycle/camera regressions evaluated separately under prior frozen limits. No full-step FPS or physics-parity claim."
+}

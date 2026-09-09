@@ -1,0 +1,72 @@
+{
+  "declared_at_utc": "2026-09-08T23:50:47.159114+00:00",
+  "input_sha256": "0b1cebd262a8bde9353b4e1a66df57e200d84898378af556dc1a8dd24a160bee",
+  "request_sha256": "5a6beba6006b2b19e7a8e7d560f93cabe3b7cd235ac0f4c29c0181d96e12bd1f",
+  "probe_sha256": "223a81f2373fe0e97f4927e66fd7c035c0fa8e1663b34e709f9b9420a97c04d8",
+  "runner_sha256": "be840f648de2f74e7d86a0fcbe8aef5397994888a9ae8df804ae0685bf312883",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "cases": [
+    {
+      "name": "Fill-reset-regression-ee",
+      "task": "Fill",
+      "backend": "gpu",
+      "control_mode": "pd_ee_target_delta_pose",
+      "seeds": [
+        101,
+        17
+      ],
+      "action_scales": [
+        1.0,
+        -0.5
+      ],
+      "capacity": 2048,
+      "controller_lifecycle": true
+    }
+  ],
+  "exact_checkpoint_groups": [
+    "mpm",
+    "mpm_material",
+    "mpm_meta",
+    "mpm_drives",
+    "controller",
+    "task",
+    "actors"
+  ],
+  "rendering": {
+    "minimum_particle_pixels": 10,
+    "surface_distance_error_limit_m": 0.003,
+    "require_visual_pool_checks": true,
+    "require_native_buffer_checks": true,
+    "require_rigid_visual_bounds": true,
+    "minimum_rigid_pixels": 10,
+    "rigid_bound_error_limit_m": 0.003
+  },
+  "scope": "N2 Fill, Excavate and Hang regression for native selected-actor adapter. Runtime bytes identical to Pourv11. Existing actor-inclusive exact checkpoint, IK, task reward/outcome and camera gates retained. No reference trajectory/full task acceptance claim. Rendering update optimization regression, using identical controls, reset sequence and numeric limits. Timing observer inserted; no acceptance limits relaxed.",
+  "compare_batch_vs_single": false,
+  "joint_replay_limit": 0.001,
+  "target_pose_limit": 1e-06,
+  "retained_strict_batch_protocol_sha256": "e6703c1ae9b5c6554a2635b0bce469843135f3249da2b002f57d4fb5f8f83743",
+  "reward_limit": 1e-06,
+  "baseline": {
+    "label": "gpu-lifecycle-v2",
+    "archive_sha256": "5e5796221a71d41170e3cd5b996281a73e245f714d22a952ff04a460cc934aa2",
+    "files": {
+      "execution.json": "6537c5ee24bd667f5efc97977ea22ff4b4e41950635c663a587a529f3f750b65",
+      "request.json": "7139aef98858eb9c6f7615b5e4b03012eb69bb12d5a098359f0136f6d1e36e82",
+      "probe.py": "40320e08ef15cf97ea2a487cf3b44eb8f09db0427372e6ec0e74589c732e9639",
+      "source/excavate.py": "2673371a834bb32e3916843d58cb9665e4893b9ab1ef0a1dc7dffa330e158371",
+      "Excavate-pd_ee_delta_pose_align-gpu/initial.npz": "52b15a70db132ac01722a8792cdaeab96ffe8367ee03dedb6fe1432c05dd5184",
+      "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz": "92e35aa79b811c30c4b5ce9ae97ff062aa46a9c4b92c9839bc3b776de52884da",
+      "Excavate-pd_ee_delta_pose_align-gpu/result.json": "984c245516cfbe8b6cc74755c0b4d283f7b0d8f30e2b3a38e22ee3e320a3ed29"
+    },
+    "snapshot": "Excavate-pd_ee_delta_pose_align-gpu/initial.npz",
+    "checkpoint": "Excavate-pd_ee_delta_pose_align-gpu/checkpoint.npz",
+    "new_case": "Excavate-single-101"
+  },
+  "initial_comparisons": [],
+  "native_actor_extension": {
+    "build": "native-bridge-v2",
+    "sha256": "2c7ab84cdc9c6421be985164cf569f1630bbfea936dfab9d8e312c28e3b27feb",
+    "cpp_sha256": "d530564be7765406bb175540be22bcef98b9748621990542b20e4e73f4d28c9f"
+  }
+}

@@ -188,9 +188,9 @@ class MPMBaseEnv(BaseEnv):
         if self._mpm_batch is not None:
             return self._mpm_batch.update_visuals()
         if self._particle_entities:
-            positions = self._particle_visuals.update(self.mpm_coupler)
-            if self._particle_render_poses is not None:
-                self._particle_render_poses[:len(positions), :3] = torch.as_tensor(positions, device=self.device)
+            self._particle_visuals.update(
+                self.mpm_coupler, self._particle_render_poses,
+                update_entities=(self._particle_render_poses is None or self.scene.parallel_in_single_scene))
 
     def _after_control_step(self):
         self._update_particle_rendering()

@@ -1,0 +1,38 @@
+{
+  "failure_kind": "mixed-task diagnostic configuration",
+  "runtime_change": false,
+  "archive_sha256": "a748e86a50404368c7e2d857aec4d88ae0989d88ee75b0e98ec21a0c9f107ac9",
+  "cases": {
+    "Fill-reset-regression-ee": {
+      "complete": false,
+      "error": "ValueError: Pour visibility diagnostics require the Pour task",
+      "exit_code": 1
+    },
+    "Write-single-101": {
+      "complete": false,
+      "error": "ValueError: Pour visibility diagnostics require the Pour task",
+      "exit_code": 1
+    },
+    "Write-batch-joint": {
+      "complete": false,
+      "error": "ValueError: Pour visibility diagnostics require the Pour task",
+      "exit_code": 1
+    },
+    "Pour-single-101": {
+      "complete": true,
+      "error": null,
+      "exit_code": 0
+    },
+    "Pour-batch-absolute": {
+      "complete": true,
+      "error": null,
+      "exit_code": 0
+    },
+    "Pour-batch-align": {
+      "complete": true,
+      "error": null,
+      "exit_code": 0
+    }
+  },
+  "remedy": "Retain the failed suite. Run Fill/Write and Pour separately with valid diagnostic options; preserve source, actions and thresholds."
+}

@@ -1,0 +1,749 @@
+{
+  "passed": false,
+  "failures": [
+    "Write-single-101: original model changed: robot_com",
+    "Write-single-101: original model changed: joint_parent_pose",
+    "Write-single-101: original model changed: joint_child_pose",
+    "Write-batch-joint: original model changed: robot_com",
+    "Write-batch-joint: original model changed: joint_parent_pose",
+    "Write-batch-joint: original model changed: joint_child_pose"
+  ],
+  "reports": {
+    "Write-single-101": {
+      "task_snapshots": 6,
+      "measurements": {
+        "initial": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12398852069355837
+          }
+        ],
+        "warmup-1": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 1
+            },
+            "reward": 0.12386808667848286
+          }
+        ],
+        "warmup-2": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 1
+            },
+            "reward": 0.12383564557714054
+          }
+        ],
+        "expected": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12388841132718298
+          }
+        ],
+        "continued": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12379820693975058
+          }
+        ],
+        "reconfigured": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12398852069355837
+          }
+        ]
+      }
+    },
+    "Write-batch-joint": {
+      "task_snapshots": 12,
+      "measurements": {
+        "initial": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12398853932000986
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 310,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 1,
+              "current_height_mm": 0
+            },
+            "reward": 0.12256975358660682
+          }
+        ],
+        "warmup-1": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12386809785435375
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 310,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 1,
+              "current_height_mm": 0
+            },
+            "reward": 0.1224573599023184
+          }
+        ],
+        "warmup-2": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12383565675301143
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 310,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 1,
+              "current_height_mm": 0
+            },
+            "reward": 0.12243393769959558
+          }
+        ],
+        "expected": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12388841132718298
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 310,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 1,
+              "current_height_mm": 0
+            },
+            "reward": 0.12251272779129835
+          }
+        ],
+        "partial-restored": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12383565675301143
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 310,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 1,
+              "current_height_mm": 0
+            },
+            "reward": 0.122512711027492
+          }
+        ],
+        "partial-stepped": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12388841691511843
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 310,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 1,
+              "current_height_mm": 0
+            },
+            "reward": 0.12243441216188765
+          }
+        ],
+        "partial-fresh": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12388841132718298
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 356,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 3,
+              "current_height_mm": 0
+            },
+            "reward": 0.12256975358660682
+          }
+        ],
+        "partial-count": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.1237796824036319
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 356,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 3,
+              "current_height_mm": 0
+            },
+            "reward": 0.12256975358660682
+          }
+        ],
+        "count-stepped": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12387228827077124
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 356,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 3,
+              "current_height_mm": 0
+            },
+            "reward": 0.1224573599023184
+          }
+        ],
+        "flat-restored": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12383565675301143
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 310,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 1,
+              "current_height_mm": 0
+            },
+            "reward": 0.12243401569058682
+          }
+        ],
+        "flat-stepped": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12388841691511843
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 310,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 1,
+              "current_height_mm": 0
+            },
+            "reward": 0.12251272779129835
+          }
+        ],
+        "reconfigured": [
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 129,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": true,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 0,
+              "current_height_mm": 0
+            },
+            "reward": 0.12398853932000986
+          },
+          {
+            "success": false,
+            "iou": 0.0,
+            "intersection_pixels": 0,
+            "union_pixels": 310,
+            "iou_bounds": [
+              0.0,
+              0.0
+            ],
+            "rasterization_verified": true,
+            "rasterization_verification": "PTX arithmetic interval inclusion; success must be unambiguous",
+            "rasterization_exact": false,
+            "uncertain_height_pixels": {
+              "goal_height_mm": 1,
+              "current_height_mm": 0
+            },
+            "reward": 0.12256975358660682
+          }
+        ]
+      }
+    }
+  },
+  "controller_lifecycle": {
+    "passed": true,
+    "failures": [],
+    "reports": {
+      "Write-single-101": {
+        "ik_requests": 0,
+        "replay_errors": {}
+      },
+      "Write-batch-joint": {
+        "ik_requests": 0,
+        "replay_errors": {
+          "partial-stepped/env0": {
+            "x": 8.940696716308594e-08,
+            "v": 1.1722731869667768e-06,
+            "F": 1.430511474609375e-06,
+            "C": 0.0002743309596553445,
+            "vc": 0.0,
+            "qpos": 0.0,
+            "qvel": 1.5832483768463135e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat-stepped/env0": {
+            "x": 8.940696716308594e-08,
+            "v": 1.226784661412239e-06,
+            "F": 1.4901161193847656e-06,
+            "C": 0.00040744664147496223,
+            "vc": 0.0,
+            "qpos": 0.0,
+            "qvel": 1.5832483768463135e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          },
+          "flat-stepped/env1": {
+            "x": 8.940696716308594e-08,
+            "v": 1.332256942987442e-06,
+            "F": 1.430511474609375e-06,
+            "C": 0.0002765282988548279,
+            "vc": 0.0,
+            "qpos": 7.450580596923828e-09,
+            "qvel": 3.3760443329811096e-08,
+            "drive_position": 0.0,
+            "drive_velocity": 0.0
+          }
+        }
+      }
+    },
+    "lifecycle_and_rendering": {
+      "passed": true,
+      "failures": [],
+      "reports": {
+        "Write-single-101": {
+          "exact_checkpoints": {},
+          "cameras": {
+            "camera-initial-env0": {
+              "rigid_pixels": 61730,
+              "max_rigid_bound_violation_m": 0.0015289502255528067,
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            },
+            "camera-reconfigured-env0": {
+              "rigid_pixels": 61730,
+              "max_rigid_bound_violation_m": 0.0015289502255528067,
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            }
+          }
+        },
+        "Write-batch-joint": {
+          "exact_checkpoints": {
+            "partial-unchosen": [],
+            "fresh-unchosen": [],
+            "count-unchosen": [],
+            "partial-selected": [],
+            "count-selected": [],
+            "flat-env0": [],
+            "flat-env1": []
+          },
+          "cameras": {
+            "camera-initial-env0": {
+              "rigid_pixels": 61731,
+              "max_rigid_bound_violation_m": 0.001528533737991257,
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            },
+            "camera-initial-env1": {
+              "rigid_pixels": 66318,
+              "max_rigid_bound_violation_m": 0.0014359940148957681,
+              "particle_pixels": 37615,
+              "visible_particles": 1492,
+              "max_surface_error_m": 0.0016333168398777395,
+              "median_surface_error_m": 0.0006121747099088384,
+              "failures": []
+            },
+            "camera-partial-count-env0": {
+              "rigid_pixels": 61592,
+              "max_rigid_bound_violation_m": 0.0015020625369353974,
+              "particle_pixels": 37324,
+              "visible_particles": 1155,
+              "max_surface_error_m": 0.0015969767899940354,
+              "median_surface_error_m": 0.0005811289673919658,
+              "failures": []
+            },
+            "camera-partial-count-env1": {
+              "rigid_pixels": 66318,
+              "max_rigid_bound_violation_m": 0.0014359940148957681,
+              "particle_pixels": 37615,
+              "visible_particles": 1492,
+              "max_surface_error_m": 0.0016333168398777395,
+              "median_surface_error_m": 0.0006121747099088384,
+              "failures": []
+            },
+            "camera-reconfigured-env0": {
+              "rigid_pixels": 61731,
+              "max_rigid_bound_violation_m": 0.001528533737991257,
+              "particle_pixels": 38050,
+              "visible_particles": 1529,
+              "max_surface_error_m": 0.0015973250768750056,
+              "median_surface_error_m": 0.0006123605822986261,
+              "failures": []
+            },
+            "camera-reconfigured-env1": {
+              "rigid_pixels": 66318,
+              "max_rigid_bound_violation_m": 0.0014359940148957681,
+              "particle_pixels": 37615,
+              "visible_particles": 1492,
+              "max_surface_error_m": 0.0016333168398777395,
+              "median_surface_error_m": 0.0006121747099088384,
+              "failures": []
+            }
+          }
+        }
+      },
+      "scope": "Write N1/N2 task with exact selected RNG isolation, native buffers, seeded MS2 initial inputs, distinct goals, reversed flat/partial/count checkpoints, IK and camera checks. Existing interval raster and prior failed parity gates retained. Authored diagnostics only; no official-level/full-trajectory/performance acceptance. Rendering update optimization regression, using identical controls, reset sequence and numeric limits. Timing observer inserted; no acceptance limits relaxed.",
+      "full_port_complete": false
+    },
+    "scope": "Write N1/N2 task with exact selected RNG isolation, native buffers, seeded MS2 initial inputs, distinct goals, reversed flat/partial/count checkpoints, IK and camera checks. Existing interval raster and prior failed parity gates retained. Authored diagnostics only; no official-level/full-trajectory/performance acceptance. Rendering update optimization regression, using identical controls, reset sequence and numeric limits. Timing observer inserted; no acceptance limits relaxed.",
+    "full_port_complete": false
+  },
+  "scope": "Write N1/N2 task with exact selected RNG isolation, native buffers, seeded MS2 initial inputs, distinct goals, reversed flat/partial/count checkpoints, IK and camera checks. Existing interval raster and prior failed parity gates retained. Authored diagnostics only; no official-level/full-trajectory/performance acceptance. Rendering update optimization regression, using identical controls, reset sequence and numeric limits. Timing observer inserted; no acceptance limits relaxed.",
+  "full_port_complete": false
+}

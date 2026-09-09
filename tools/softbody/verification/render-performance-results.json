@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-09-09T00:12:41.648815+00:00",
+  "candidate_parent_commit": "0d45e18fe8c140e044beabba8918a185ae7391b1",
+  "runtime_files": {
+    "particle_visuals.py": "003543fd8003ec06057b0cf453faec8db35fc0e3757c1814b9e9aa2e6e3ed94e",
+    "base_env.py": "0539dba7c4e130326a1276285b5118b2935db7885e7b8fac95c845d47170db0b",
+    "batch.py": "f9a4791490bc6b7610ced07e2bdea081679818b9c60d2ba93b065e3916900289"
+  },
+  "measured_models": 56,
+  "measurements_passed": true,
+  "speedup_range": [
+    7.133080184985447,
+    276.8805428637498
+  ],
+  "candidate_update_ms_range": [
+    0.079477,
+    0.0902327
+  ],
+  "instrumented_run": {
+    "unit": "MainPID=0\nExecMainStatus=0\nActiveState=inactive\nSubState=dead\n",
+    "containers": [],
+    "execution": {
+      "exit_code": 0,
+      "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+      "input_sha256": "0b1cebd262a8bde9353b4e1a66df57e200d84898378af556dc1a8dd24a160bee"
+    },
+    "archive_sha256": "d30f6bb16eab59bf7d84c9c56673ca088a7795a1314d5149eca9f50f86543d66",
+    "bytes": 170708772
+  },
+  "regression_comparison": {
+    "12": {
+      "passed": true,
+      "failures": 0,
+      "same_failure_list": true,
+      "new_failures": [],
+      "missing_failures": []
+    },
+    "16": {
+      "passed": false,
+      "failures": 6,
+      "same_failure_list": true,
+      "new_failures": [],
+      "missing_failures": []
+    },
+    "20": {
+      "passed": false,
+      "failures": 22,
+      "same_failure_list": true,
+      "new_failures": [],
+      "missing_failures": []
+    }
+  },
+  "verifier_tamper_checks": {
+    "changed_pose": {
+      "rejected": true,
+      "failures": [
+        "Fill-reset-regression-ee/0: actual_render_positions differ from actual particles"
+      ]
+    },
+    "changed_particle_state": {
+      "rejected": true,
+      "failures": [
+        "Fill-reset-regression-ee/0: visual updates changed physical particle state"
+      ]
+    },
+    "wrong_stream_order": {
+      "rejected": true,
+      "failures": [
+        "Fill-reset-regression-ee/0: incorrect nondefault stream ordering"
+      ]
+    },
+    "vacuous_negative_control": {
+      "rejected": true,
+      "failures": [
+        "Fill-reset-regression-ee/0: unsynchronized negative control did not expose the ordering bug"
+      ]
+    }
+  },
+  "fallback_checks": {
+    "tests": 1,
+    "configurations": 3,
+    "passed": true,
+    "scope": "Real SAPIEN entity fallback with CPU array source and CPU/no pose buffer; no rendering or simulation."
+  },
+  "clean_replay": {
+    "status": "completed, collected and independently evaluated",
+    "instrumentation": false,
+    "v23": {
+      "observed_at_epoch": 1788912374.6723356,
+      "unit": "MainPID=0\nExecMainStatus=0\nActiveState=inactive\nSubState=dead\n",
+      "containers": [],
+      "cases": {
+        "Fill-reset-regression-ee": {
+          "complete": true,
+          "exit_code": 0
+        },
+        "Write-batch-joint": {
+          "complete": true,
+          "exit_code": 0
+        },
+        "Write-single-101": {
+          "complete": true,
+          "exit_code": 0
+        }
+      },
+      "execution": {
+        "exit_code": 0,
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "input_sha256": "16e39f9ae98f57761d949c21836cc107818521806d7cc0b1324f7e426b73f93b"
+      },
+      "archive_sha256": "d7f2b47f10117509e6052268ecf4eb6453d764f8eeab3ca1078525f06ecaa131",
+      "bytes": 103006054
+    },
+    "v24": {
+      "observed_at_epoch": 1788912558.9135923,
+      "unit": "MainPID=0\nExecMainStatus=0\nActiveState=inactive\nSubState=dead\n",
+      "containers": [],
+      "cases": {
+        "Pour-batch-absolute": {
+          "complete": true,
+          "exit_code": 0
+        },
+        "Pour-batch-align": {
+          "complete": true,
+          "exit_code": 0
+        },
+        "Pour-single-101": {
+          "complete": true,
+          "exit_code": 0
+        }
+      },
+      "execution": {
+        "exit_code": 0,
+        "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+        "input_sha256": "446ed19fcb0cf016018e59a8d671d685defbaab54597e75a160fa55f3d4605c4"
+      },
+      "archive_sha256": "d8f4a00d5c409703faae5c2829b41998809fa6a64108909e3a3e90400863310d",
+      "bytes": 48948787
+    },
+    "regression_comparison": {
+      "12": {
+        "passed": true,
+        "failures": 0,
+        "same_failure_list": true,
+        "new_failures": [],
+        "missing_failures": []
+      },
+      "16": {
+        "passed": false,
+        "failures": 6,
+        "same_failure_list": true,
+        "new_failures": [],
+        "missing_failures": []
+      },
+      "20": {
+        "passed": false,
+        "failures": 22,
+        "same_failure_list": true,
+        "new_failures": [],
+        "missing_failures": []
+      }
+    },
+    "visibility": {
+      "passed": true,
+      "comparisons": 10,
+      "verdict": "render-performance-clean-v24-visibility-verdict.json"
+    },
+    "retained_failed_attempt": {
+      "label": "v22",
+      "record": "render-performance-clean-v22-failure.json",
+      "reason": "Pour-only diagnostic flag was invalid for Fill/Write. Corrected by splitting cases into v23 and v24; runtime code and numeric gates unchanged."
+    }
+  },
+  "full_port_complete": false,
+  "limitations": [
+    "Visual pose-update microbenchmark, not total simulation/render FPS",
+    "Prior exact physics/model/visibility failures remain failures",
+    "CPU renderer/full single-view GUI not rerun",
+    "Original Pinch/Write benchmark levels unavailable; authored Write diagnostics used",
+    "Pinned SAPIEN 3.0 / PyTorch 2.5.1 single-GPU runtime only; no CUDA graph capture or multi-GPU validation",
+    "GPU runs execute the source checkout; previously verified wheel predates this render change"
+  ],
+  "runtime_source_audit": {
+    "input_files": 543,
+    "matched_checkout_files": 542,
+    "exceptions": {
+      "warp_maniskill/warp/bin/warp.so": "Empty Linux bind-mount target in input archive; actual existing Warp library is pinned separately in the request. No binary added to the source checkout."
+    },
+    "all_four_requests_have_identical_source_inventories": true
+  },
+  "evidence_files": {
+    "render-performance-clean-v22-failure.json": "0cdf08298ce64c3119f89ebebd20099df624d66d9de4b8f1052147882ae7e337",
+    "render-performance-clean-v23-regression-v12-protocol.json": "904b6c85a12b50256992208f3329fe13c1f06f74b0019ceca9f9f484a7fe08af",
+    "render-performance-clean-v23-regression-v12-verdict.json": "1264b7b85c02896aed32a080f5f218ff43a0df3f64dbbeea640080434af2c089",
+    "render-performance-clean-v23-regression-v16-protocol.json": "783e9e8cdb450461a70e5442b9af413b1a05c135f19d79b41dd32c78b06ac2a7",
+    "render-performance-clean-v23-regression-v16-verdict.json": "12e55b7f4faab13d8d8a66d8955ab3372cc41db5e96a4763ac7faf494024b7dd",
+    "render-performance-clean-v24-regression-v20-protocol.json": "cfede5e130f775c5f733761a842f8aaabb059e732e37091cf4b708644c0ef2f2",
+    "render-performance-clean-v24-regression-v20-verdict.json": "9931f3f4a460af2f514b15cd7e60cd395ba32f09870607fc1eee9624c3f166b7",
+    "render-performance-clean-v24-visibility-verdict.json": "51dbed2de6da70d4aa9b9d2c901c8992cca497d7df0f98d8678db83eb7ad8bcf",
+    "render-performance-protocol.json": "4592f410bb261bbe74ea33db282774608ff401ae8b8e9ccbf2ac011168876d08",
+    "render-performance-request.json": "5a6beba6006b2b19e7a8e7d560f93cabe3b7cd235ac0f4c29c0181d96e12bd1f",
+    "render-performance-v21-regression-v12-protocol.json": "126d22215de555681f0ec107b2838d0e92e02738d5bde8c729aee2c96c55a193",
+    "render-performance-v21-regression-v12-verdict.json": "88549f36c8333b7331ccd393a14b36a461f9431b95a89e8eb89c7f63df944ac8",
+    "render-performance-v21-regression-v16-protocol.json": "eb4bc7c997bcd7ee84d9782e65de7c4780efc28d2217933fcd9e0f1c37ca6fa0",
+    "render-performance-v21-regression-v16-verdict.json": "bc00616d59748144f1f79db9f5be3f3fb73221f41c7eef74fb5ac85adacf2145",
+    "render-performance-v21-regression-v20-protocol.json": "629965bc0e4fb31091f6d9a920eb077c3d37677fb2519b35f47e639182c1fe93",
+    "render-performance-v21-regression-v20-verdict.json": "a42f81f162685532f03e1ff936d06a2729b01a3859b04dabd719dbaf73b4ef51",
+    "render-performance-verdict.json": "69bbb545c5366cf5f0fd4b7862da753b0d9fa5c6c5bb01eb476ae70fb509b338",
+    "render-performance-verifier-files.json": "4dc225c39d2f9e78b09efdff8b9c27ba20a5733c14b4748f7039ddeee85fa700",
+    "render-performance-verifier-source-audit.json": "06f2b082a361db62c3b0dd943d24d6f86b11b6b078d51a6eeeeb0062f51108ff"
+  },
+  "verifier_source_audit": "render-performance-verifier-source-audit.json"
+}

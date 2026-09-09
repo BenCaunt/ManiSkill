@@ -1,0 +1,36 @@
+{
+  "separate_pre_run_inventory_sha256": "4dc225c39d2f9e78b09efdff8b9c27ba20a5733c14b4748f7039ddeee85fa700",
+  "protocol_mismatches_retained": {
+    "clean-regression-v20-protocol.json": {
+      "cooked_extensions.py": {
+        "copied_protocol_sha256": "3ed7c0435b08945f24ef93b50b28e32654f92b5c61de53cff4a508952a78248b",
+        "actual_frozen_sha256": "06a6e33e1c8f06c53b79a77281ba91be243576523c2d66bfa26e8baa49ab5434",
+        "matches_separate_pre_run_inventory": true
+      }
+    },
+    "clean-v24-regression-v20-protocol.json": {
+      "cooked_extensions.py": {
+        "copied_protocol_sha256": "3ed7c0435b08945f24ef93b50b28e32654f92b5c61de53cff4a508952a78248b",
+        "actual_frozen_sha256": "06a6e33e1c8f06c53b79a77281ba91be243576523c2d66bfa26e8baa49ab5434",
+        "matches_separate_pre_run_inventory": true
+      }
+    },
+    "regression-v20-protocol.json": {
+      "cooked_extensions.py": {
+        "copied_protocol_sha256": "3ed7c0435b08945f24ef93b50b28e32654f92b5c61de53cff4a508952a78248b",
+        "actual_frozen_sha256": "06a6e33e1c8f06c53b79a77281ba91be243576523c2d66bfa26e8baa49ab5434",
+        "matches_separate_pre_run_inventory": true
+      }
+    }
+  },
+  "explanation": "Copied Pour protocol retained the older cooked_extensions.py checksum. The separate pre-run verifier inventory pins the actual file. The only addition is pack_path for worker mounting; all previous functions, including source_digest and validate_build imported by the numeric evaluator, are unchanged. Original protocols and verdicts are retained.",
+  "unchanged_existing_functions": [
+    "digest",
+    "source_digest",
+    "stage",
+    "validate_build",
+    "validate_spec"
+  ],
+  "added_function": "pack_path",
+  "public_verifier_matches_actual_frozen_verifier": true
+}

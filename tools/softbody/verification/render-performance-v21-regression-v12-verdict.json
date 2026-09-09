@@ -1,0 +1,121 @@
+{
+  "passed": true,
+  "failures": [],
+  "reports": {
+    "Fill-reset-regression-ee": {
+      "ik_requests": 12,
+      "replay_errors": {
+        "partial-stepped/env0": {
+          "x": 8.046627044677734e-07,
+          "v": 4.143267869949341e-05,
+          "F": 0.0004501268267631531,
+          "C": 0.012844428420066833,
+          "vc": 2.395734190940857e-05,
+          "qpos": 0.0,
+          "qvel": 3.166496753692627e-08,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0
+        },
+        "flat-stepped/env0": {
+          "x": 1.1026859283447266e-06,
+          "v": 0.00017743511125445366,
+          "F": 0.0006319284439086914,
+          "C": 0.05878901481628418,
+          "vc": 5.175173282623291e-05,
+          "qpos": 0.0,
+          "qvel": 1.1920928955078125e-07,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0
+        },
+        "flat-stepped/env1": {
+          "x": 2.086162567138672e-07,
+          "v": 1.1045485734939575e-05,
+          "F": 4.0665268898010254e-05,
+          "C": 0.0016797184944152832,
+          "vc": 2.9727816581726074e-05,
+          "qpos": 0.0,
+          "qvel": 2.2351741790771484e-08,
+          "drive_position": 0.0,
+          "drive_velocity": 0.0
+        }
+      }
+    }
+  },
+  "lifecycle_and_rendering": {
+    "passed": true,
+    "failures": [],
+    "reports": {
+      "Fill-reset-regression-ee": {
+        "exact_checkpoints": {
+          "partial-unchosen": [],
+          "fresh-unchosen": [],
+          "count-unchosen": [],
+          "partial-selected": [],
+          "count-selected": [],
+          "flat-env0": [],
+          "flat-env1": []
+        },
+        "cameras": {
+          "camera-initial-env0": {
+            "rigid_pixels": 35410,
+            "max_rigid_bound_violation_m": 0.0014656652884353916,
+            "particle_pixels": 1262,
+            "visible_particles": 226,
+            "max_surface_error_m": 0.0015480025122622735,
+            "median_surface_error_m": 0.0004848182231410921,
+            "failures": []
+          },
+          "camera-initial-env1": {
+            "rigid_pixels": 35398,
+            "max_rigid_bound_violation_m": 0.001347999887893983,
+            "particle_pixels": 1280,
+            "visible_particles": 234,
+            "max_surface_error_m": 0.0015049038963031564,
+            "median_surface_error_m": 0.0005229196131294495,
+            "failures": []
+          },
+          "camera-partial-count-env0": {
+            "rigid_pixels": 36121,
+            "max_rigid_bound_violation_m": 0.0014048820837600715,
+            "particle_pixels": 927,
+            "visible_particles": 155,
+            "max_surface_error_m": 0.0015485714138683848,
+            "median_surface_error_m": 0.0005210254969059296,
+            "failures": []
+          },
+          "camera-partial-count-env1": {
+            "rigid_pixels": 35398,
+            "max_rigid_bound_violation_m": 0.001347999887893983,
+            "particle_pixels": 1280,
+            "visible_particles": 234,
+            "max_surface_error_m": 0.0015049038963031564,
+            "median_surface_error_m": 0.0005229196131294495,
+            "failures": []
+          },
+          "camera-reconfigured-env0": {
+            "rigid_pixels": 35410,
+            "max_rigid_bound_violation_m": 0.0014656652884353916,
+            "particle_pixels": 1262,
+            "visible_particles": 226,
+            "max_surface_error_m": 0.0015480025122622735,
+            "median_surface_error_m": 0.0004848182231410921,
+            "failures": []
+          },
+          "camera-reconfigured-env1": {
+            "rigid_pixels": 35398,
+            "max_rigid_bound_violation_m": 0.001347999887893983,
+            "particle_pixels": 1280,
+            "visible_particles": 234,
+            "max_surface_error_m": 0.0015049038963031564,
+            "median_surface_error_m": 0.0005229196131294495,
+            "failures": []
+          }
+        }
+      }
+    },
+    "scope": "N2 Fill, Excavate and Hang regression for native selected-actor adapter. Runtime bytes identical to Pourv11. Existing actor-inclusive exact checkpoint, IK, task reward/outcome and camera gates retained. No reference trajectory/full task acceptance claim. Rendering update optimization regression, using identical controls, reset sequence and numeric limits. Timing observer inserted; no acceptance limits relaxed.",
+    "full_port_complete": false
+  },
+  "scope": "N2 Fill, Excavate and Hang regression for native selected-actor adapter. Runtime bytes identical to Pourv11. Existing actor-inclusive exact checkpoint, IK, task reward/outcome and camera gates retained. No reference trajectory/full task acceptance claim. Rendering update optimization regression, using identical controls, reset sequence and numeric limits. Timing observer inserted; no acceptance limits relaxed.",
+  "full_port_complete": false
+}

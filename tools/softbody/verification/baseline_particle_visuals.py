@@ -1,7 +1,6 @@
 """Scene-local sphere visuals with stable particle identities across resets."""
 import numpy as np
 import sapien
-import torch
 
 
 class ParticleVisualPool:
@@ -48,39 +47,8 @@ class ParticleVisualPool:
             component.visibility = 0.
         self.active = self.entities[:len(specs)]
 
-    def update(self, coupler, render_poses=None, *, update_entities=True):
-        """Update visual poses without changing any simulation state.
-
-        The batched renderer consumes CUDA poses directly; native entity poses
-        are needed only by the CPU/single-view renderer. Keep the default path
-        for callers that use those native visuals.
-        """
-        if render_poses is not None and not update_entities:
-            particles = coupler.states[0].struct.particle_q
-            if particles.device == 'cuda':
-                from .mpm import wp
-
-                # This preserved Warp predates stream_from_torch. Borrow its
-                # actual CUDA stream, on which simulation and copies are ordered.
-                # Wait for earlier Torch writes to the destination, and make
-                # later Torch rendering wait for this copy (also on nondefault
-                # streams). The coupler owns the borrowed particle allocation.
-                with torch.cuda.device(render_poses.device):
-                    positions = wp.to_torch(particles)[:len(self.active)]
-                    if positions.device != render_poses.device:
-                        raise ValueError('Particle and render poses must share a CUDA device')
-                    current = torch.cuda.current_stream(render_poses.device)
-                    solver = torch.cuda.ExternalStream(wp.context.runtime.cuda_stream,
-                                                       device=render_poses.device)
-                    solver.wait_stream(current)
-                    with torch.cuda.stream(solver):
-                        render_poses[:len(positions), :3].copy_(positions)
-                    current.wait_stream(solver)
-                return positions
+    def update(self, coupler):
         positions = coupler.states[0].struct.particle_q.numpy()[:len(self.active)]
-        if update_entities:
-            for entity, position in zip(self.active, positions):
-                entity.pose = sapien.Pose(position)
-        if render_poses is not None:
-            render_poses[:len(positions), :3].copy_(torch.as_tensor(positions, device=render_poses.device))
+        for entity, position in zip(self.active, positions):
+            entity.pose = sapien.Pose(position)
         return positions
