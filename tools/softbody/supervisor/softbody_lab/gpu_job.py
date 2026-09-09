@@ -18,10 +18,12 @@ import time
 
 # The deployment copies this helper beside the manager, outside all containers.
 if __package__:
+    from .scaling_contract import validate_case as validate_scaling_case
     from .job_archive import atomic_json, file_hash, inventory, safe_extract
     from .native_extensions import stage_actor, stage_physx_gpu
     from .cooked_extensions import stage as stage_cooked, pack_path as cooked_pack_path
 else:
+    from scaling_contract import validate_case as validate_scaling_case
     from job_archive import atomic_json, file_hash, inventory, safe_extract
     from native_extensions import stage_actor, stage_physx_gpu
     from cooked_extensions import stage as stage_cooked, pack_path as cooked_pack_path
@@ -203,7 +205,7 @@ def execute(job):
             subprocess.run(command, cwd=source, env=environment, check=True, capture_output=True, timeout=60)
         for directory in ('cache', 'output', 'binary'):
             (job/directory).mkdir()
-        fixture_kwargs = read(job/'inputs/fixture/fixture.json')['fixture'].get('env_kwargs', {})
+        fixture_kwargs = {} if request.get('role') == 'scaling' else read(job/'inputs/fixture/fixture.json')['fixture'].get('env_kwargs', {})
         backend = request.get('candidate_sim_backend') or fixture_kwargs.get('sim_backend') or 'physx_cpu'
         physx_gpu = None
         if backend.split(':')[0] in ('gpu', 'cuda', 'physx_cuda'):
@@ -241,7 +243,7 @@ def execute(job):
         publish(job, 'running', container=name, binary_sha256=file_hash(job/'binary/warp.so'))
         command = container_base(job, request, name)+[
             '-v', f'{source}:/source:ro', '-v', f'{job}/inputs/harness:/harness:ro',
-            '-v', f'{job}/inputs/fixture:/fixture:ro', '-v', f'{job}/output:/output',
+            '-v', f'{job}/output:/output',
             '-v', f'{job}/binary/warp.so:/source/warp_maniskill/warp/bin/warp.so:ro',
             '-v', f'{ASSETS}:/legacy-assets:ro', '-e', 'MANISKILL_LEGACY_ASSET_DIR=/legacy-assets',
             '-e', 'PYTHONPATH='+('/native-extension:' if extension else '')+('/cooked-extension:' if cooked else '')+'/harness:/source:/source/warp_maniskill',
@@ -259,11 +261,18 @@ def execute(job):
                         '-e','MANISKILL_BOTTLE_COLLISION_DIR=/cooked-pack']
         if env_id in LEVELS:
             command += ['-v', f'{LEVELS[env_id]}:/levels:ro']
-        command += [request['image'], 'timeout', '--kill-after=10s', str(max(1, int(deadline-time.time()))),
-                    'python', '-m', 'softbody_lab', 'capture', '--source=/source', '--role=candidate',
-                    '--replay=/fixture', '--output=/output/trace']
-        if request.get('candidate_sim_backend') is not None:
-            command += ['--candidate-sim-backend', request['candidate_sim_backend']]
+        if request.get('role') == 'scaling':
+            command += ['-v', f'{job}/inputs/job.json:/request.json:ro', request['image'],
+                'timeout', '--kill-after=10s', str(max(1, int(deadline-time.time()))),
+                'python', '-m', 'softbody_lab.scaling_probe', '--source=/source',
+                '--request=/request.json', '--output=/output']
+        else:
+            command += ['-v', f'{job}/inputs/fixture:/fixture:ro', request['image'],
+                'timeout', '--kill-after=10s', str(max(1, int(deadline-time.time()))),
+                'python', '-m', 'softbody_lab', 'capture', '--source=/source', '--role=candidate',
+                '--replay=/fixture', '--output=/output/trace']
+            if request.get('candidate_sim_backend') is not None:
+                command += ['--candidate-sim-backend', request['candidate_sim_backend']]
         bounded_container(job, command, name, 'capture.log', deadline)
         phase = 'complete'
     except InterruptedError as exc:
@@ -293,7 +302,7 @@ def start(job):
                 or not time.time() < request['deadline_epoch'] <= time.time()+86400):
             raise ValueError('Invalid or expired job request')
         role = request.get('role', 'candidate')
-        if role not in ('candidate', 'reference'):
+        if role not in ('candidate', 'reference', 'scaling'):
             raise ValueError('Unknown capture role')
         if role == 'reference':
             if (request.get('reference_commit') != REFERENCE_COMMIT or request['env_id'] not in REFERENCE_SDFS
@@ -304,13 +313,18 @@ def start(job):
                 not isinstance(v, str) or not re.fullmatch('[a-f0-9]{64}', v) for v in dependencies.values()
             ):
                 raise ValueError('Invalid reference dependency checksums')
-        groups = ('reference_input', 'harness') if role == 'reference' else ('source', 'harness', 'fixture')
+        if role == 'scaling':
+            case = validate_scaling_case(request.get('scaling_case'))
+            if case['env_id'] != request['env_id'] or request.get('candidate_sim_backend') != 'physx_cuda':
+                raise ValueError('Scaling requires the declared task and GPU backend')
+        groups = (('reference_input', 'harness') if role == 'reference' else
+                  ('source', 'harness') if role == 'scaling' else ('source', 'harness', 'fixture'))
         if set(request['file_sha256']) != set(groups):
             raise ValueError('Wrong input groups for capture role')
         for name in groups:
             if inventory(job/'inputs'/name) != request['file_sha256'][name]:
                 raise ValueError(f'Changed {name} inputs')
-        metadata = read(job/'inputs/reference_input/input.json') if role == 'reference' else read(job/'inputs/fixture/fixture.json')['fixture']
+        metadata = (request['scaling_case'] if role == 'scaling' else read(job/'inputs/reference_input/input.json') if role == 'reference' else read(job/'inputs/fixture/fixture.json')['fixture'])
         if metadata['env_id'] != request['env_id']:
             raise ValueError('Task differs from requested asset mounts')
         # Set state before spawning. A crash here is an explicit lost job,

@@ -1,0 +1,504 @@
+{
+  "schema_version": 1,
+  "private_path_fields_omitted": [
+    "candidate",
+    "harness",
+    "lease"
+  ],
+  "versions": {
+    "v1": {
+      "candidate_commit": "452c4098b51d6d86cc7d58415bf41010d4f2bf88",
+      "cases": [
+        {
+          "env_id": "Fill-v0",
+          "num_envs": 2,
+          "seeds": [
+            101,
+            102
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Fill-v0",
+          "num_envs": 8,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Fill-v0",
+          "num_envs": 32,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127,
+            128,
+            129,
+            130,
+            131,
+            132
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Excavate-v0",
+          "num_envs": 2,
+          "seeds": [
+            101,
+            102
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Excavate-v0",
+          "num_envs": 8,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Excavate-v0",
+          "num_envs": 32,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127,
+            128,
+            129,
+            130,
+            131,
+            132
+          ],
+          "timed_controls": 5
+        }
+      ],
+      "checks": [
+        "finite complete numeric snapshots",
+        "real model/count/scene ownership and original timesteps",
+        "actual solver state matches exposed padded checkpoint",
+        "all selected and unselected checkpoint/native rows checked exactly; failures retained",
+        "all RNG streams and elapsed counters",
+        "constant mass/count during each rollout",
+        "native model inputs survive resets/reconstruction"
+      ],
+      "created_at_epoch": 1788917380.841642,
+      "image": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+      "job_timeout_s": 2400,
+      "native_actor_extension": {
+        "build": "native-bridge-v2",
+        "cpp_sha256": "d530564be7765406bb175540be22bcef98b9748621990542b20e4e73f4d28c9f",
+        "sha256": "2c7ab84cdc9c6421be985164cf569f1630bbfea936dfab9d8e312c28e3b27feb"
+      },
+      "prior_strict_gates_unchanged": true,
+      "schema_version": 1,
+      "scope": "All-row GPU batch scaling, native/exposed state and RNG isolation, reverse-order selected/full checkpoint reset, reconfiguration, synchronized short-step timing and observed memory. Fixed original tasks and particle recipes; no rendering, task success or reference parity claim.",
+      "tests": {
+        "scaling_fault_tests": 46,
+        "selected_suite": 138
+      },
+      "protocol_sha256": "3db0e2140d69e7126df9f544731831fe0e5c3cf036c0f1323714441255d76c20",
+      "runtime_files": 546,
+      "harness_files": 73,
+      "inventory_file": "gpu-scaling-source-inputs.json"
+    },
+    "v2": {
+      "candidate_commit": "452c4098b51d6d86cc7d58415bf41010d4f2bf88",
+      "cases": [
+        {
+          "env_id": "Fill-v0",
+          "num_envs": 2,
+          "seeds": [
+            101,
+            102
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Fill-v0",
+          "num_envs": 8,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Fill-v0",
+          "num_envs": 32,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127,
+            128,
+            129,
+            130,
+            131,
+            132
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Excavate-v0",
+          "num_envs": 2,
+          "seeds": [
+            101,
+            102
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Excavate-v0",
+          "num_envs": 8,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Excavate-v0",
+          "num_envs": 32,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127,
+            128,
+            129,
+            130,
+            131,
+            132
+          ],
+          "timed_controls": 5
+        }
+      ],
+      "checks": [
+        "finite complete numeric snapshots",
+        "real model/count/scene ownership and original timesteps",
+        "actual solver state matches exposed padded checkpoint",
+        "all selected and unselected checkpoint/native rows checked exactly; failures retained",
+        "all RNG streams and elapsed counters",
+        "constant mass/count during each rollout",
+        "native model inputs survive resets/reconstruction"
+      ],
+      "created_at_epoch": 1788917603.5699909,
+      "image": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+      "job_timeout_s": 2400,
+      "native_actor_extension": {
+        "build": "native-bridge-v2",
+        "cpp_sha256": "d530564be7765406bb175540be22bcef98b9748621990542b20e4e73f4d28c9f",
+        "sha256": "2c7ab84cdc9c6421be985164cf569f1630bbfea936dfab9d8e312c28e3b27feb"
+      },
+      "prior_strict_gates_unchanged": true,
+      "retry": {
+        "change": "Capture the union of every native robot link and MPM coupling body, with explicit source-index arrays. Add an omission fault test. Physical runtime, cases and strict gates unchanged.",
+        "previous_protocol_sha256": "3db0e2140d69e7126df9f544731831fe0e5c3cf036c0f1323714441255d76c20",
+        "previous_result_sha256": "c716a29c45ab6265fb3c5219fd62a7b2c94b03ee3d8dd2e60fdeec200c2b8dc0"
+      },
+      "schema_version": 1,
+      "scope": "All-row GPU batch scaling, native/exposed state and RNG isolation, reverse-order selected/full checkpoint reset, reconfiguration, synchronized short-step timing and observed memory. Fixed original tasks and particle recipes; no rendering, task success or reference parity claim.",
+      "tests": {
+        "prior_standalone_suite": 213,
+        "scaling_fault_tests": 47
+      },
+      "protocol_sha256": "39f6500f57e52f6d838fdd18bbcd0081e9ef1a357cf626aebd6fbbaf9eb3dde3",
+      "runtime_files": 546,
+      "harness_files": 73,
+      "inventory_file": "gpu-scaling-source-inputs.json"
+    },
+    "v3": {
+      "candidate_commit": "452c4098b51d6d86cc7d58415bf41010d4f2bf88",
+      "cases": [
+        {
+          "env_id": "Fill-v0",
+          "num_envs": 2,
+          "seeds": [
+            101,
+            102
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Fill-v0",
+          "num_envs": 8,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Fill-v0",
+          "num_envs": 32,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127,
+            128,
+            129,
+            130,
+            131,
+            132
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Excavate-v0",
+          "num_envs": 2,
+          "seeds": [
+            101,
+            102
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Excavate-v0",
+          "num_envs": 8,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108
+          ],
+          "timed_controls": 5
+        },
+        {
+          "env_id": "Excavate-v0",
+          "num_envs": 32,
+          "seeds": [
+            101,
+            102,
+            103,
+            104,
+            105,
+            106,
+            107,
+            108,
+            109,
+            110,
+            111,
+            112,
+            113,
+            114,
+            115,
+            116,
+            117,
+            118,
+            119,
+            120,
+            121,
+            122,
+            123,
+            124,
+            125,
+            126,
+            127,
+            128,
+            129,
+            130,
+            131,
+            132
+          ],
+          "timed_controls": 5
+        }
+      ],
+      "checks": [
+        "finite complete numeric snapshots",
+        "real model/count/scene ownership and original timesteps",
+        "actual solver state matches exposed padded checkpoint",
+        "all selected and unselected checkpoint/native rows checked exactly; failures retained",
+        "all RNG streams and elapsed counters",
+        "constant mass/count during each rollout",
+        "native model inputs survive resets/reconstruction"
+      ],
+      "created_at_epoch": 1788918517.191103,
+      "image": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+      "job_timeout_s": 2400,
+      "native_actor_extension": {
+        "build": "native-articulation-v1",
+        "cpp_sha256": "4539666b6dfbac24fb963fd10eeb3eddbc816e52f6a30a32154b257ee6d9ef74",
+        "sha256": "bbb89761a8f3188f6bfc004a5caf48f704eebff9b2b3422bfc4cca42ad67a015"
+      },
+      "prior_strict_gates_unchanged": true,
+      "retry": {
+        "baseline_protocol_sha256": "39f6500f57e52f6d838fdd18bbcd0081e9ef1a357cf626aebd6fbbaf9eb3dde3",
+        "change": "Apply only selected native joint positions, velocities, forces and drive targets during partial resets; untouched articulations should not be marked for kinematic recomputation.",
+        "changed_runtime_files": [
+          "mani_skill/envs/scene.py",
+          "mani_skill/utils/sapien303.py",
+          "tools/softbody/native/actor_bridge.cpp"
+        ],
+        "unchanged_cases": true,
+        "unchanged_harness": true,
+        "unchanged_strict_gates": true
+      },
+      "schema_version": 1,
+      "scope": "All-row GPU batch scaling, native/exposed state and RNG isolation, reverse-order selected/full checkpoint reset, reconfiguration, synchronized short-step timing and observed memory. Fixed original tasks and particle recipes; no rendering, task success or reference parity claim.",
+      "tests": {
+        "reset_selection_api": 14,
+        "standalone_supervisor": 214
+      },
+      "protocol_sha256": "98f48bb2b3c3b5195a7b8f97c47a16a2826ade5a8c47ec4aa135e12a5322014e",
+      "runtime_files": 546,
+      "harness_files": 73,
+      "inventory_file": "gpu-scaling-source-inputs.json"
+    }
+  }
+}

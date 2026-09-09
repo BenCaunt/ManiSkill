@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "standalone_supervisor_tests": 214,
+  "reset_api_tests": 14,
+  "aggregation_tests": 7,
+  "total_local_tests": 235,
+  "python_version": "3.12.10 (main, Apr  9 2025, 03:49:38) [Clang 20.1.0 ]",
+  "local_test_log_sha256": "753a92cf030115bdbbd912c74203bd5624be3574e9c3a3c592a3329b4b8c0263",
+  "source_audit": {
+    "schema_version": 1,
+    "baseline_commit": "452c4098b51d6d86cc7d58415bf41010d4f2bf88",
+    "runtime_files_checked": 546,
+    "baseline_commit_mismatches": [],
+    "runtime_changes": {
+      "mani_skill/envs/scene.py": {
+        "before": "8a536203e61bd0ee9452f7e275fefe8b05e21925d969a31cc630eb6c011b896a",
+        "after": "6725e41aa7d6161ef976ef73c1c6c5aa02f64135300268b547357aa49699e567"
+      },
+      "mani_skill/utils/sapien303.py": {
+        "before": "f9f2dec9fa0d884521d6c2b1b98dd6166f9b6283d87088bd2e68e04eb622391b",
+        "after": "964cdf20b989ee6afa3ca232e346e1fa470566cc1cbec81d9c1d0bbd924378af"
+      },
+      "tools/softbody/native/actor_bridge.cpp": {
+        "before": "d530564be7765406bb175540be22bcef98b9748621990542b20e4e73f4d28c9f",
+        "after": "4539666b6dfbac24fb963fd10eeb3eddbc816e52f6a30a32154b257ee6d9ef74"
+      }
+    },
+    "post_capture_documentation": {
+      "tools/softbody/native/README.md": {
+        "captured": "9dd64cf57fce3fee0e818d314f2570501b403e65233eee641bef91d4dcf92e2e",
+        "published": "5bc9b30eca391f31efe3ced4569111d1f1ecbebcc13c85abdf0d8f635eac6ec0"
+      }
+    },
+    "initial_audit_note": "First current-source equality check flagged the native README edited after submission; explicitly verified and recorded that documentation difference."
+  },
+  "numeric_source_audit": {
+    "numerical_function_ast_identical": true,
+    "byte_identical_support_modules": [
+      "scaling_probe.py",
+      "scaling_contract.py",
+      "gpu_batch_checks.py",
+      "gpu_rendering_checks.py",
+      "gpu_rng_checks.py"
+    ],
+    "published_cli_change": "Revalidates original collected archive before invoking the unchanged evaluator"
+  },
+  "supervisor_manifest_sha256": "87c164930d554f46898d5520429501179999ab74d6775f30f319fc40410e46a6",
+  "supervisor_manifest_files": 32,
+  "supervisor_manifest_mismatches": [],
+  "public_evidence_sha256": {
+    "analyze_gpu_scaling.py": "46ca1ab88e0fc34342668f19b7e3678c33edd633c6c88b009446822be6fe0d71",
+    "plot_gpu_scaling.py": "d13ac2f1b29bc2f14ad5bbcb68dcb013cc46993f7758e2d2976ba21b4b7a511e",
+    "test_analyze_gpu_scaling.py": "d8e95575c011305bf494a1347064245a68a812528f21ac055b64c5d4ed1f5018",
+    "gpu-scaling-before.json": "f089015b6c225d0cf6b0b81ed2978d9e77705e9a8c8b31ce92e6c48d09e64f34",
+    "gpu-scaling-after.json": "0aada8927971bdc02a865b8774b1b33e5654f4fb9c9690d4235d84919c860c87",
+    "gpu-scaling-protocols.json": "7f1864d2bbcc68ab824ccd1e2a910caa1ead9abaf2d5f7cf4f82f2f1aefac52f",
+    "gpu-scaling-source-inputs.json": "ee27ea6f5cff937749fffa4a264ed96eabff3cb71e0925163e4a4e83711f18e2",
+    "gpu-scaling-initial-capture-failure.json": "e477ad325e03d79f20a117a132e60cd3eeda2cf584f62052a3c4b46bb842ee62",
+    "gpu-scaling-native-build.json": "b504a00213c77f05e093f9a74e4a7a486ca717f439d433f87e01183b92ae462e",
+    "gpu-scaling.png": "076a3c38d1c4b0946b6445af7b94e5013b571437ab47cf02378d2aa8bafb2244"
+  },
+  "plot_visually_inspected": true,
+  "live_baseline_jobs": 6,
+  "live_repeated_jobs": 6,
+  "rejected_initial_capture_jobs": 1,
+  "untouched_changed_rows_before": 148,
+  "untouched_changed_rows_after": 0,
+  "remaining_selected_state_failures": 94,
+  "calibrated_physics_parity": false,
+  "full_port_complete": false,
+  "commands": [
+    "PYTHONPATH=/trusted/supervisor:/candidate:/verification PYTHONDONTWRITEBYTECODE=1 /venv/bin/python -P -m pytest -c /dev/null -q -p no:cacheprovider /trusted/supervisor/tests /candidate/tools/softbody/test_gpu_reset_selection.py /verification/test_analyze_gpu_scaling.py",
+    "PYTHONPATH=/trusted/frozen/harness /venv/bin/python -P /verification/analyze_gpu_scaling.py /study --protocol-sha256 ORIGINAL_PROTOCOL_SHA256"
+  ],
+  "notes": [
+    "Post-capture aggregation leaves frozen numerical gates unchanged.",
+    "After local tests, only aggregation timing-scope wording and plot input/label handling changed; plot was generated and visually inspected.",
+    "The current native wheel has not been rebuilt or revalidated with this patch."
+  ]
+}

@@ -1,4 +1,4 @@
-# SAPIEN 3.0.3 selected actor adapter
+# SAPIEN 3.0.3 selected reset adapter
 
 The pinned SAPIEN indexed actor update compacts its data but retains the full
 buffer's `PxGpuActorPair.srcIndex`. A selected actor can receive the wrong state.
@@ -8,7 +8,17 @@ actors with a nonidentity center of mass. This adapter uses the public native
 types through pybind11's documented C++ conduit; it does not guess pointers or
 access private object layouts.
 
-Soft-body scenes opt into this extension for partial actor resets on SAPIEN
+The indexed joint position, velocity, force and drive-target methods also ignore
+the supplied indices in SAPIEN 3.0.3. Resending all joint rows avoids a wrong-row
+write but marks untouched articulations for kinematic recomputation. The native
+link poses and velocities can then change during another environment's reset.
+`apply_articulation_data` keeps the full native joint buffers and submits only
+the selected global articulation indices to `PxScene::applyArticulationData`.
+It rejects duplicate or out-of-range indices and synchronizes CUDA before the
+temporary index buffer is released. The [scaling study](../gpu-scaling.md)
+records the original failures and the repeated all-row checks.
+
+Soft-body scenes opt into this extension for partial actor and joint resets on SAPIEN
 3.0.3, including after scene reconfiguration. Ordinary rigid-body scenes retain
 their previous dependency requirements and native apply path. Full resets retain
 the original native API. Selected global-pose read/apply still has native
@@ -29,6 +39,9 @@ python tools/softbody/native/build.py --eigen /path/to/eigen-3.4.0 --output /pat
 export PYTHONPATH="/path/to/new-build:$PYTHONPATH"
 python -c 'import sapien; import sapien303_actor_bridge as b; print(b.abi())'
 ```
+
+Rebuild older versions of the extension before using the selected-joint path;
+an older binary without `apply_articulation_data` is rejected explicitly.
 
 The adapter synchronizes a CPU staging copy during reset. It is not used for
 simulation stepping. The GPU actor diagnostic uses the actual two-environment

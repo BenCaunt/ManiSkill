@@ -175,13 +175,48 @@ def package_job(output, payload, request, lease, deadline):
         for name in inventory(payload):
             archive.add(payload/name, arcname=name, recursive=False)
     (output/'controller').mkdir()
-    for name in ('gpu_job.py', 'job_archive.py', 'native_extensions.py','cooked_extensions.py'):
+    for name in ('gpu_job.py', 'job_archive.py', 'native_extensions.py','cooked_extensions.py','scaling_contract.py'):
         shutil.copyfile(Path(__file__).parent/name, output/'controller'/name)
     handle = dict(schema_version=1, job_id=uuid.uuid4().hex, lease=str(Path(lease).resolve()),
         payload_sha256=file_hash(output/'input.tgz'), request_sha256=digest_json(request),
         deadline_epoch=deadline, phase='prepared', output=str(output), controller_sha256=inventory(output/'controller'))
     atomic_json(output/'remote-job.json', handle)
     return handle
+
+
+def prepare_scaling(candidate, output, lease, image, case, *, timeout_s=2400, harness=None, native_actor_extension=None):
+    """Run a fixed all-row scaling diagnostic under the existing lease and queue."""
+    from .scaling_contract import validate_case
+    validate_case(case)
+    validate_actor_spec(native_actor_extension)
+    output = Path(output).resolve()
+    if output.exists():
+        raise ValueError('Use resume for an existing job directory')
+    if type(timeout_s) not in (int, float) or not math.isfinite(timeout_s) or not 0 < timeout_s <= 86400:
+        raise ValueError('Invalid worker time budget')
+    if not isinstance(image, str) or not re.fullmatch(r'sha256:[0-9a-f]{64}', image):
+        raise ValueError('Worker image must be an immutable ID')
+    deadline = min(time.time()+timeout_s, json.loads(Path(lease).read_text())['terminate_at_epoch']-120)
+    if deadline <= time.time():
+        raise ValueError('Lease has no remaining safe job time')
+    output.mkdir(parents=True)
+    payload = output/'payload'; payload.mkdir()
+    source_commit = copy_source(candidate, payload/'source')
+    if native_actor_extension is not None:
+        cpp = payload/'source/tools/softbody/native/actor_bridge.cpp'
+        if not cpp.is_file() or file_hash(cpp) != native_actor_extension['cpp_sha256']:
+            raise ValueError('Frozen actor binary does not match candidate C++ source')
+    (payload/'harness/softbody_lab').mkdir(parents=True)
+    harness_package = Path(harness)/'softbody_lab' if harness is not None else Path(__file__).parent
+    for path in harness_package.glob('*.py'):
+        shutil.copyfile(path, payload/'harness/softbody_lab'/path.name)
+    request = dict(schema_version=1, role='scaling', env_id=case['env_id'], scaling_case=case,
+        image=image, candidate_sim_backend='physx_cuda', deadline_epoch=deadline, timeout_s=timeout_s,
+        source_checkout_commit=source_commit, source_commit_kind='worker creates separate commit of actual submitted files',
+        file_sha256={name:inventory(payload/name) for name in ('source','harness')})
+    if native_actor_extension is not None:
+        request['native_actor_extension'] = native_actor_extension
+    return package_job(output, payload, request, lease, deadline)
 
 
 def prepare_reference_demo(inputs, output, lease, image, *, dependencies, timeout_s=900, harness=None):
@@ -246,6 +281,8 @@ def submit_or_resume(output):
         helper_names.append('native_extensions.py')
     if (helper/'cooked_extensions.py').is_file():
         helper_names.append('cooked_extensions.py')
+    if (helper/'scaling_contract.py').is_file():
+        helper_names.append('scaling_contract.py')
     identity['manager_sha256'] = {name: file_hash(helper/name) for name in helper_names}
     bootstrap = '''import json, pathlib, sys
 root=pathlib.Path(sys.argv[1]); identity=json.loads(sys.argv[2])
@@ -339,7 +376,10 @@ def recover_collected(output):
         raise ValueError('Collected execution differs from the receipt')
     if handle.get('phase') == 'collected' and handle.get('execution') != actual:
         raise ValueError('Previously collected execution record changed')
-    if actual['phase'] == 'complete':
+    if actual['phase'] == 'complete' and request.get('role') == 'scaling':
+        from .scaling_contract import validate_output
+        validate_output(destination/'output', request, handle['payload_sha256'])
+    elif actual['phase'] == 'complete':
         manifest = validate_trace(destination/'output/trace')
         if request.get('role') == 'reference':
             provenance = manifest['provenance']

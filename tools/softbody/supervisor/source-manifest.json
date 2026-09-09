@@ -39,11 +39,12 @@
       "identical_to_live_run": true
     },
     "softbody_lab/gpu_job.py": {
-      "sha256": "eb61f3b2c73dc124e4f43b728725918d51803bdcd2a31198776cd7b0a2a16a89",
+      "sha256": "9fe8bc0daab3002cbbac45f325bb3516698647edf2418a81e6ebc50b1fe8b372",
       "live_run_sha256": "18ed814f57cf75a5b6fb947b283374219d34a0f7057712b9776e3b6f920b3867",
       "identical_to_live_run": false,
-      "change": "Durable native reference-demo jobs, portable fixture export, provenance validation and per-case backend selection; separate multi-episode Excavate study supplies live evidence. Earlier live_run_sha256 fields retain their original recovery-run meaning.",
-      "reference_demo_run_sha256": "eb61f3b2c73dc124e4f43b728725918d51803bdcd2a31198776cd7b0a2a16a89"
+      "change": "All-row scaling diagnostic and fixed scaling-job role; prior experiment hash fields retain their original meanings.",
+      "reference_demo_run_sha256": "eb61f3b2c73dc124e4f43b728725918d51803bdcd2a31198776cd7b0a2a16a89",
+      "scaling_run_sha256": "9fe8bc0daab3002cbbac45f325bb3516698647edf2418a81e6ebc50b1fe8b372"
     },
     "softbody_lab/job_archive.py": {
       "sha256": "b389bd820e89ff127d85f02852fed2c0a88e48870627d4abb2a0e448a89690b0",
@@ -69,11 +70,12 @@
       "identical_to_live_run": true
     },
     "softbody_lab/remote_replay.py": {
-      "sha256": "727ed9a6f6c0571c9dd1d62fa7c626b25b4fd60c082de5f163946d324a51efb7",
+      "sha256": "427552281326f06682f6af73112d4e99c01e1bdebd81a3612b138f52230cdfce",
       "live_run_sha256": "fa5459e2ce20d4cf63b05fd1fbf4572661f5e6ad68c9be0d563da1a7c1e82f98",
       "identical_to_live_run": false,
-      "change": "Durable native reference-demo jobs, portable fixture export, provenance validation and per-case backend selection; separate multi-episode Excavate study supplies live evidence. Earlier live_run_sha256 fields retain their original recovery-run meaning.",
-      "reference_demo_run_sha256": "727ed9a6f6c0571c9dd1d62fa7c626b25b4fd60c082de5f163946d324a51efb7"
+      "change": "All-row scaling diagnostic and fixed scaling-job role; prior experiment hash fields retain their original meanings.",
+      "reference_demo_run_sha256": "727ed9a6f6c0571c9dd1d62fa7c626b25b4fd60c082de5f163946d324a51efb7",
+      "scaling_run_sha256": "427552281326f06682f6af73112d4e99c01e1bdebd81a3612b138f52230cdfce"
     },
     "softbody_lab/runner.py": {
       "sha256": "5cf81be7f3d1a442b16211b9cde080dc77340a7caa7f511b7d8c065ae63e0702",
@@ -132,7 +134,49 @@
     "tests/test_demo_inputs.py": {
       "sha256": "1c2e1e2829a0dd311b32d7bd332491de9998ab834b18adb849ba9f6641386c8f",
       "source": "sim-infra/softbody_lab/tests/test_demo_inputs.py"
+    },
+    "softbody_lab/scaling_contract.py": {
+      "source": "sim-infra/softbody_lab/scaling_contract.py",
+      "sha256": "b34922fd465a5c3c13b7bc1d2db6a5c0071899d136588f59d150bae0ec624b30",
+      "scaling_run_sha256": "b34922fd465a5c3c13b7bc1d2db6a5c0071899d136588f59d150bae0ec624b30",
+      "change": "All-row scaling diagnostic and fixed scaling-job role; prior experiment hash fields retain their original meanings."
+    },
+    "softbody_lab/scaling_probe.py": {
+      "source": "sim-infra/softbody_lab/scaling_probe.py",
+      "sha256": "931a22df882eab0c941b856a7d9abf91524aca5446f7e714c8f6ae76990c1a44",
+      "scaling_run_sha256": "2d9311d67ac2fa3a897d0c14597354e052c7eac9f45929754bfffcddf58190dd",
+      "change": "Scaling v2 captures the union of all native robot links and MPM coupling bodies; v1 omitted robot links and failed the independent coverage check. Strict gates and physical runtime unchanged.",
+      "scaling_retry_run_sha256": "931a22df882eab0c941b856a7d9abf91524aca5446f7e714c8f6ae76990c1a44"
+    },
+    "softbody_lab/scaling_checks.py": {
+      "source": "sim-infra/softbody_lab/scaling_checks.py",
+      "sha256": "7284bde6248d5ebfd2c598d2e70f8a2625414725125fe550aed9a844af85c778",
+      "scaling_run_sha256": "3bbeeac2c83772b44809e5a811db3c16e2914261c6949b91fea60b1be3016f63",
+      "change": "All-row scaling v2 checker. The published CLI additionally revalidates the original result archive before auditing; numeric checks and the frozen capture are unchanged.",
+      "scaling_retry_run_sha256": "a504a567d407f73be8eb428f65c6366368954d75b3ecd8d9b05f422b0de916c8"
+    },
+    "softbody_lab/gpu_batch_checks.py": {
+      "source": "sim-infra/softbody_lab/gpu_batch_checks.py",
+      "sha256": "4231f99df9568e6198423442ae09cda02790002b5df3aa3fd2a162b66e368e73",
+      "scaling_run_sha256": "4231f99df9568e6198423442ae09cda02790002b5df3aa3fd2a162b66e368e73",
+      "change": "All-row scaling diagnostic and fixed scaling-job role; prior experiment hash fields retain their original meanings."
+    },
+    "softbody_lab/gpu_rendering_checks.py": {
+      "source": "sim-infra/softbody_lab/gpu_rendering_checks.py",
+      "sha256": "832f642fab91d5d267b6138eff4746f63a8756fedd07e582db4d8c0a3f591342",
+      "scaling_run_sha256": "832f642fab91d5d267b6138eff4746f63a8756fedd07e582db4d8c0a3f591342",
+      "change": "All-row scaling diagnostic and fixed scaling-job role; prior experiment hash fields retain their original meanings."
+    },
+    "softbody_lab/gpu_rng_checks.py": {
+      "source": "sim-infra/softbody_lab/gpu_rng_checks.py",
+      "sha256": "41eb5b714899d121c35147fe03361483ecd557e0bf19d20af0cf223aa5f37787",
+      "scaling_run_sha256": "41eb5b714899d121c35147fe03361483ecd557e0bf19d20af0cf223aa5f37787",
+      "change": "All-row scaling diagnostic and fixed scaling-job role; prior experiment hash fields retain their original meanings."
+    },
+    "tests/test_scaling_checks.py": {
+      "source": "sim-infra/softbody_lab/tests/test_scaling_checks.py",
+      "sha256": "d61025dceba090cb087c6e8c0ef72dcd9aeb432beb4ac455fd441d9acb84918f"
     }
   },
-  "scope": "Current standalone controller and capture/evaluator modules. live_run_sha256 retains the original supervisor recovery experiment; reference_demo_run_sha256 identifies the first native reference job in the multi-episode study. Subsequent changes are labelled. Original outcomes, credentials, private configuration and external assets are excluded."
+  "scope": "Current standalone controller and capture/evaluator modules. live_run_sha256 retains the original supervisor recovery experiment; reference_demo_run_sha256 identifies the first native reference job in the multi-episode study. Subsequent changes are labelled. Original outcomes, credentials, private configuration and external assets are excluded. scaling_run_sha256 identifies the first bounded GPU scaling diagnostic."
 }

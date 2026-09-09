@@ -15,7 +15,7 @@ from mani_skill.render import SAPIEN_RENDER_SYSTEM
 from mani_skill.sensors.base_sensor import BaseSensor
 from mani_skill.sensors.camera import Camera
 from mani_skill.utils import common, sapien_utils
-from mani_skill.utils.sapien303 import apply_selected_actor_data
+from mani_skill.utils.sapien303 import apply_selected_actor_data, apply_selected_articulation_data
 from mani_skill.utils.structs.actor import Actor
 from mani_skill.utils.structs.articulation import Articulation
 from mani_skill.utils.structs.drive import Drive
@@ -1011,9 +1011,10 @@ class ManiSkillScene:
         Soft-body scenes opt into SAPIEN 3.0.3's native actor compatibility
         module; ordinary scenes retain their existing dependency requirements.
         The module keeps compact data and
-        source indices aligned without resending untouched actor poses. Joint
-        buffers keep the full apply path because its indexed methods ignore
-        indices. Native global-pose roundoff still applies to selected actors.
+        source indices aligned without resending untouched actor poses. Selected
+        joint updates also bypass the broken indexed API, so untouched
+        articulations are not marked for kinematic recomputation. Native
+        global-pose roundoff still applies to selected bodies.
         """
         assert (
             not self._needs_fetch
@@ -1046,9 +1047,14 @@ class ManiSkillScene:
                     self.px.gpu_apply_rigid_dynamic_data()
         else:
             self.px.gpu_apply_rigid_dynamic_data()
-        self.px.gpu_apply_articulation_qpos()
-        self.px.gpu_apply_articulation_qvel()
-        self.px.gpu_apply_articulation_qf()
+        native_selected_joints = selected and getattr(self, '_use_native_actor_reset', False)
+        if native_selected_joints:
+            if articulation.numel():
+                apply_selected_articulation_data(self.px, articulation)
+        else:
+            self.px.gpu_apply_articulation_qpos()
+            self.px.gpu_apply_articulation_qvel()
+            self.px.gpu_apply_articulation_qf()
         if selected:
             if articulation.numel():
                 handle = sapien.CudaArray(articulation)
@@ -1057,8 +1063,12 @@ class ManiSkillScene:
         else:
             self.px.gpu_apply_articulation_root_pose()
             self.px.gpu_apply_articulation_root_velocity()
-        self.px.gpu_apply_articulation_target_position()
-        self.px.gpu_apply_articulation_target_velocity()
+        if native_selected_joints:
+            if articulation.numel():
+                apply_selected_articulation_data(self.px, articulation, targets=True)
+        else:
+            self.px.gpu_apply_articulation_target_position()
+            self.px.gpu_apply_articulation_target_velocity()
         self._needs_fetch = True
 
     def _gpu_fetch_all(self):

@@ -1,0 +1,9 @@
+{
+  "execution": "complete",
+  "job_id": "d4dbccc442ae409790735a6f207a32f1",
+  "protocol_sha256": "3db0e2140d69e7126df9f544731831fe0e5c3cf036c0f1323714441255d76c20",
+  "reason": "Native body readback includes only two MPM coupling bodies per environment and omits most robot links. Frozen checker rejects fewer than seven native body rows.",
+  "remaining_cases": "Not submitted after this capture-coverage failure; replaced by the same six cases in scaling-v2.",
+  "result_sha256": "c716a29c45ab6265fb3c5219fd62a7b2c94b03ee3d8dd2e60fdeec200c2b8dc0",
+  "verification": "failed"
+}

@@ -24,6 +24,9 @@ def scene(monkeypatch):
     def apply_selected(system, indices):
         system.calls['native_selected_actors'] = (indices,)
     monkeypatch.setattr(scene_module, 'apply_selected_actor_data', apply_selected)
+    def apply_articulations(system, indices, *, targets=False):
+        system.calls['native_selected_targets' if targets else 'native_selected_joints'] = (indices,)
+    monkeypatch.setattr(scene_module, 'apply_selected_articulation_data', apply_articulations)
     value = ManiSkillScene.__new__(ManiSkillScene)
     value.px = NativeRecorder(); value.device = torch.device('cpu')
     value._needs_fetch = False
@@ -46,9 +49,11 @@ def test_partial_reset_selects_native_actors_and_roots(scene):
         handle, = scene.px.calls['gpu_apply_' + name]
         assert handle.dtype == torch.int32 and handle.is_contiguous() and handle.tolist() == expected
         assert any(handle is buffer for buffer in scene._gpu_reset_index_buffers)
-    # Indexed joint calls in the pinned SAPIEN version would update the wrong rows.
+    # Neither broken indexed calls nor full writes may dirty untouched links.
     for name in ('qpos', 'qvel', 'qf', 'target_position', 'target_velocity'):
-        assert scene.px.calls['gpu_apply_articulation_' + name] == ()
+        assert 'gpu_apply_articulation_' + name not in scene.px.calls
+    assert scene.px.calls['native_selected_joints'][0].tolist() == [3]
+    assert scene.px.calls['native_selected_targets'][0].tolist() == [3]
     assert scene._needs_fetch
 
 
@@ -93,6 +98,7 @@ def test_empty_selected_object_groups_do_not_fall_back_to_all(scene):
     assert 'native_selected_actors' not in scene.px.calls
     assert 'gpu_apply_articulation_root_pose' not in scene.px.calls
     assert 'gpu_apply_articulation_root_velocity' not in scene.px.calls
+    assert not scene.px.calls
 
 
 @pytest.mark.parametrize('indices', [[], [1, 1], [-1], [3], [0.5], [[1]], [True]])

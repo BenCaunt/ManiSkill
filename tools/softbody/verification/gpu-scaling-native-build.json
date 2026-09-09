@@ -1,0 +1,35 @@
+{
+  "sapien": "3.0.3",
+  "torch": "2.5.1+cu118",
+  "python": "3.10.12 (main, Jul 15 2026, 23:40:17) [GCC 11.4.0]",
+  "command": [
+    "c++",
+    "-std=c++20",
+    "-shared",
+    "-fPIC",
+    "-O2",
+    "-DNDEBUG",
+    "-DSAPIEN_CUDA",
+    "-D_GLIBCXX_USE_CXX11_ABI=1",
+    "-I/usr/local/lib/python3.10/dist-packages/sapien/include",
+    "-I/usr/local/lib/python3.10/dist-packages/sapien/include/physx/include",
+    "-I/input/eigen",
+    "-I/usr/local/lib/python3.10/dist-packages/torch/include",
+    "-I/usr/include/python3.10",
+    "-I/usr/local/cuda/include",
+    "/input/actor_bridge.cpp",
+    "/usr/local/lib/python3.10/dist-packages/sapien.libs/libsapien.so",
+    "-L/usr/local/cuda/lib64",
+    "-lcudart",
+    "-Wl,-rpath,$ORIGIN/sapien.libs",
+    "-o",
+    "/output/build/sapien303_actor_bridge.cpython-310-x86_64-linux-gnu.so"
+  ],
+  "eigen": "3.4.0",
+  "scope": "Native actor adapter only; run GPU verification before use",
+  "files": {
+    "/output/build/sapien303_actor_bridge.cpython-310-x86_64-linux-gnu.so": "bbb89761a8f3188f6bfc004a5caf48f704eebff9b2b3422bfc4cca42ad67a015",
+    "/usr/local/lib/python3.10/dist-packages/sapien.libs/libsapien.so": "57b9dbf776bd216a2a71c86c34fadeab12469cc9067f6bf2338234499d80f097",
+    "/input/actor_bridge.cpp": "4539666b6dfbac24fb963fd10eeb3eddbc816e52f6a30a32154b257ee6d9ef74"
+  }
+}

@@ -32,6 +32,12 @@ retains camera visibility and selected-pose failures. Broader
 original Pinch/Write benchmark validation and calibrated reference parity
 remain under development.
 
+The [2/8/32-environment Fill and Excavate study](gpu-scaling.md) extends native
+reset checks to every robot link and records short-control timing and observed
+memory. It documents a selected-joint reset fix, the original untouched-link
+failures, the repeated checks and the remaining exact selected-state failures.
+Its native adapter must be rebuilt; earlier wheel validation predates this fix.
+
 The copied runtime has separate terms in
 [`warp_maniskill/LICENSE.md`](../../warp_maniskill/LICENSE.md). Those terms
 include a non-commercial research/evaluation restriction; the repository's

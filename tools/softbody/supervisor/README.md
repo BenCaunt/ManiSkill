@@ -11,9 +11,11 @@ SIGKILL while the existing Lambda worker was replaying Fill. The recovery snapsh
 passed 130 local tests and reproduced that run's saved comparison exactly,
 including both physics failures. The [source manifest](source-manifest.json)
 identifies the bytes used during the live test and the subsequent transport fix.
-The current package passes 167 tests and adds durable reference-demo jobs;
+The current package passes 214 tests and adds durable reference-demo and scaling jobs;
 the [multi-episode Excavate record](../excavate-diversity.md) supplies the live
 reference and CPU/GPU replay evidence for those additions.
+The [GPU scaling study](../gpu-scaling.md) records all-row reset isolation,
+short synchronized timing and observed memory at 2, 8 and 32 environments.
 
 ## Requirements and separation
 
@@ -24,6 +26,8 @@ The Linux worker already has Docker, the NVIDIA container runtime, a pinned
 candidate image and the external reference assets. `gpu_job.py` records the
 tested `/home/ubuntu/softbody` layout. This code uses an existing lease; it does
 not provision a machine or install the independent provider termination timer.
+The scaling verifier also imports SciPy and Pillow through its shared numeric
+check modules. Local test execution requires h5py and pytest.
 
 Copy this entire directory to a trusted location **outside** the candidate Git
 checkout. Keep the reference traces, reset/action fixtures, calibrated protocols,
@@ -141,9 +145,47 @@ initialization, material values and controls. Keep the full reference trace in
 the trusted verification directory. Reference task failure is valid evidence
 and must not be filtered out of a predeclared study.
 
+## Capture scaling and reset isolation
+
+`remote_replay.prepare_scaling(candidate, output, lease, image, case,
+timeout_s=2400, harness=trusted_copy, native_actor_extension=native_spec)`
+prepares a candidate-only GPU diagnostic. Use the existing submit, observe,
+resume and collect APIs on its durable output directory. It does not run the
+coding loop or select an acceptance tolerance. The case has exactly four fields:
+`env_id` (`Fill-v0` or `Excavate-v0`), `num_envs` (2, 8 or 32), a list of distinct
+integer `seeds` of that length, and `timed_controls` (1–20). The native spec pins
+an already built adapter's build directory, library checksum and C++ checksum.
+
+Freeze the case, runtime inventory and trusted harness before submission.
+The container receives source and trusted capture code; it receives no reference
+trajectory or future outcomes. Capture uses the original task particle recipes,
+CUDA MPM, GPU PhysX, real joint drive controls and reset APIs. Ten snapshots
+cover initial state, stepping, reversed partial checkpoint restoration, fresh
+partial reset, reversed full flat-state restoration and scene reconstruction.
+Every environment's actual particles, complete exposed state, robot/coupling
+native body rows, model inputs, random streams and elapsed counters are checked.
+Native row capture must include all robot links as well as coupling bodies.
+
+After collection, run the independent verifier from the trusted copy:
+
+```sh
+PYTHONPATH=/absolute/trusted/supervisor PYTHONDONTWRITEBYTECODE=1 \
+  /absolute/python -P -m softbody_lab.scaling_checks \
+  /absolute/existing/job /absolute/new-verdict.json
+```
+
+The CLI revalidates the checksummed result archive before evaluating snapshots.
+It exits nonzero on any strict difference; a completed GPU process is not a
+physics pass. Keep failed verdicts and original job handles. Step timing includes
+observations, excludes rendering and snapshot I/O, and synchronizes both GPU
+runtimes. Device usage is sampled at snapshot boundaries, so the reported maximum
+is an observed value, not a continuously measured peak. Torch allocator peaks
+and process high-water RSS have separate meanings. These short controls do not
+establish full-task success, reference parity or large-scale training throughput.
+
 ## Local verification
 
-From the trusted copy, with NumPy, h5py and pytest installed:
+From the trusted copy, with NumPy, SciPy, Pillow, h5py and pytest installed:
 
 ```sh
 PYTHONPATH=/absolute/trusted/supervisor PYTHONDONTWRITEBYTECODE=1 \

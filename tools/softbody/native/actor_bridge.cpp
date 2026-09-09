@@ -128,6 +128,41 @@ void apply_actors(py::object system, py::list actors, Rows rows) {
   cuda_check(cudaDeviceSynchronize());
 }
 
+// Joint buffers use global articulation-index rows. SAPIEN 3.0.3's indexed
+// joint methods submit the prefix of its internal index buffer by mistake.
+// Keep the full native data buffer and submit only the actual selection.
+void apply_articulation_data(py::object py_system, std::vector<int> const &selected,
+                             bool targets) {
+  auto *system = native<sp::PhysxSystemGpu>(py_system);
+  system->checkGpuInitialized();
+  int count = system->getArticulationCount();
+  std::set<int> seen;
+  std::vector<px::PxU32> host_indices;
+  for (int index : selected) {
+    if (index < 0 || index >= count || !seen.insert(index).second)
+      throw py::value_error("Expected unique in-range initialized articulation indices");
+    host_indices.push_back(static_cast<px::PxU32>(index));
+  }
+  if (host_indices.empty()) return;
+  DeviceScope device(system->getDevice()->cudaId);
+  DeviceArray<px::PxU32> indices(host_indices.size());
+  cuda_check(cudaMemcpy(indices.ptr, host_indices.data(), host_indices.size()*sizeof(px::PxU32),
+                        cudaMemcpyHostToDevice));
+  auto apply = [&](void *data, px::PxArticulationGpuDataType::Enum field) {
+    system->getPxScene()->applyArticulationData(data, indices.ptr, field,
+                                               static_cast<px::PxU32>(host_indices.size()));
+  };
+  if (targets) {
+    apply(system->gpuGetArticulationQTargetPosCudaHandle().ptr, px::PxArticulationGpuDataType::eJOINT_TARGET_POSITION);
+    apply(system->gpuGetArticulationQTargetVelCudaHandle().ptr, px::PxArticulationGpuDataType::eJOINT_TARGET_VELOCITY);
+  } else {
+    apply(system->gpuGetArticulationQposCudaHandle().ptr, px::PxArticulationGpuDataType::eJOINT_POSITION);
+    apply(system->gpuGetArticulationQvelCudaHandle().ptr, px::PxArticulationGpuDataType::eJOINT_VELOCITY);
+    apply(system->gpuGetArticulationQfCudaHandle().ptr, px::PxArticulationGpuDataType::eJOINT_FORCE);
+  }
+  cuda_check(cudaDeviceSynchronize());
+}
+
 py::dict describe(py::object system, py::list actors) {
   Selection s(system,actors);
   py::list records;
@@ -152,6 +187,7 @@ py::dict describe(py::object system, py::list actors) {
 PYBIND11_MODULE(sapien303_actor_bridge,m) {
   m.def("read_actors", &read_actors);
   m.def("apply_actors", &apply_actors,py::arg("system"),py::arg("actors"),py::arg("states").noconvert());
+  m.def("apply_articulation_data", &apply_articulation_data, py::arg("system"), py::arg("indices"), py::arg("targets"));
   m.def("describe", &describe);
   m.def("abi", [](){ return PYBIND11_PLATFORM_ABI_ID; });
 }

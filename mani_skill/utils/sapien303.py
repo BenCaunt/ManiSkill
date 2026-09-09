@@ -35,3 +35,26 @@ def apply_selected_actor_data(system, indices):
     data = torch.as_tensor(system.cuda_rigid_dynamic_data, device=indices.device)
     rows = data[indices.long()].detach().cpu().numpy().copy()
     bridge.apply_actors(system, actors, rows)
+
+
+def apply_selected_articulation_data(system, indices, *, targets=False):
+    """Apply selected native joint rows without dirtying neighbouring link state.
+
+    Called only by the reset/checkpoint path. PhysX updates link kinematics for
+    articulations marked dirty, so resending unchanged joint positions still
+    recomputes untouched link transforms and velocities.
+    """
+    selected = indices.detach().cpu().tolist()
+    if not selected:
+        return
+    if version('sapien') != '3.0.3':
+        raise RuntimeError('Selected articulation reset is verified only for SAPIEN 3.0.3')
+    try:
+        bridge = import_module('sapien303_actor_bridge')
+    except ModuleNotFoundError as exc:
+        if exc.name != 'sapien303_actor_bridge':
+            raise
+        raise RuntimeError('Selected articulation reset requires the native compatibility module') from exc
+    if not hasattr(bridge, 'apply_articulation_data'):
+        raise RuntimeError('Rebuild the native compatibility module with selected articulation support')
+    bridge.apply_articulation_data(system, selected, targets)
