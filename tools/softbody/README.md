@@ -8,6 +8,9 @@ this experimental integration.
 The [local coding and remote verification supervisor](supervisor/README.md)
 has [live crash/resume evidence](supervisor-recovery.md) that retains the
 independent physics verdict and original resource limits.
+The [full Excavate backend replay](excavate-backends.md) now completes the same
+231 recorded controls on CPU and GPU PhysX, with both task-success outcomes
+independently verified and the remaining trajectory differences reported.
 `Fill-v0`, `Excavate-v0`, `Hang-v0`, `Pour-v0`, `Write-v0`, and `Pinch-v0` now run with their legacy robot, material initialization, SDF contacts,
 success/reward equations, and particle sphere visuals. Full reference parity is
 still unverified. The [GPU task suite](gpu-tasks.md) records short rollouts for
@@ -130,7 +133,8 @@ equations. Its seed-101 initialization has 11,056 particles, 4.146 kg total mass
 and a target of 1,113 lifted particles. These are benchmark simulation inputs.
 The current mesh extraction needs a SAPIEN renderer even for state-only Fill
 rollouts. The full reference task demonstrations use Linux, CUDA MPM, and CPU
-PhysX; the GPU task suite is a separate short-run experiment. Cameras use
+PhysX. Excavate also has a full GPU PhysX replay; the GPU task suite remains a
+separate short-run experiment. Cameras use
 visual-only sphere entities at actual particle positions, with no physics or
 state-registry component. This supports color/depth/segmentation. Batched GPU
 rendering [copies particle positions directly on the solver's CUDA stream](render-performance.md);
@@ -222,7 +226,7 @@ or proof that the robot can scoop material successfully.
 The official seed-1, 231-control Excavate demonstration was subsequently replayed
 in both engines with identical portable input hashes (12,115 particles,
 4.543125 kg, target 772). The reference succeeds at step 230 and finishes with
-791 lifted particles and one spilled. The port lifts 763 but spills 31, failing
+791 lifted particles and one spilled. That earlier port snapshot lifts 763 but spills 31, failing
 the unchanged requirement of fewer than 20 spilled particles; the amount and
 settling checks pass. Independent NumPy recomputation agrees with every recorded
 success label. Maximum joint error is 0.000452 rad and COM separation 0.001628 m,
@@ -230,12 +234,17 @@ while particle-identity separation reaches 0.268717 m. This unsuccessful transfe
 is retained for diagnosis; full-episode aggregate parity is not established.
 Three subsequent independent reference processes replaying the exact portable
 fixture finish with 892, 1,017 and 781 lifted particles; two succeed and one fails
-the amount criterion. All three spill zero particles. The port's spill failure
+the amount criterion. All three spill zero particles. The earlier port's spill failure
 therefore remains outside the observed reference range. These three repeats are
 descriptive evidence, not statistical confidence or calibrated acceptance bounds.
 The source demonstration is episode 0 at dataset
 revision `0c367447d26e4e2de13fbf5e5d2ab09a258187da`, with HDF5 SHA-256
 `4a6baa93d40d82cedf54ee7ae28add84d84aa90373f1f5fdb622fe3f54387b8b`.
+
+Fresh [CPU and GPU PhysX replays of the current runtime](excavate-backends.md)
+both succeed at step 230, lifting 816 and 854 particles with zero spills.
+Independent outcome audits match every label. Their successful task completion
+does not erase the earlier failure or establish calibrated trajectory parity.
 
 Excavate reward membership uses the first actual rigid collision hull, as in the
 legacy evaluator, separately from the open visual SDF used for particle contacts.

@@ -10,6 +10,63 @@ from softbody_lab.job_archive import archive_inventory, atomic_json, file_hash, 
 from softbody_lab import remote_replay
 
 
+@pytest.mark.parametrize('fault', [None, 'checksum', 'symlink'])
+def test_offline_physx_gpu_staging_requires_exact_ordinary_library(monkeypatch, tmp_path, fault):
+    from softbody_lab import native_extensions as native
+    source = tmp_path/'provenance/physx-gpu'/native.PHYSX_GPU_VERSION/'files'/native.PHYSX_GPU_FILENAME
+    source.parent.mkdir(parents=True)
+    source.write_bytes(b'Synthetic ELF stand-in, never loaded')
+    monkeypatch.setattr(native, 'PHYSX_GPU_SHA256', file_hash(source))
+    if fault == 'checksum': source.write_bytes(b'Changed binary')
+    if fault == 'symlink':
+        target = tmp_path/'elsewhere'; source.rename(target); source.symlink_to(target)
+    destination = tmp_path/'staged'
+    if fault:
+        with pytest.raises(ValueError): native.stage_physx_gpu(tmp_path, destination)
+        assert not destination.exists()
+    else:
+        record = native.stage_physx_gpu(tmp_path, destination)
+        assert file_hash(destination/native.PHYSX_GPU_FILENAME) == record['sha256'] == native.PHYSX_GPU_SHA256
+        assert (destination/'record.json').exists()
+
+
+@pytest.mark.parametrize('backend', ['auto', 'cuda', '', 1])
+def test_invalid_backend_cannot_prepare_or_upload(tmp_path, backend):
+    with pytest.raises(ValueError, match='Candidate backend'):
+        remote_replay.prepare(None, None, tmp_path/'job', None, None, candidate_sim_backend=backend)
+    assert not (tmp_path/'job').exists()
+
+
+@pytest.mark.parametrize('conflict', [False, True])
+def test_backend_is_pinned_separately_from_fixture(monkeypatch, tmp_path, conflict):
+    fixture = tmp_path/'fixture'; fixture.mkdir()
+    record = dict(fixture=dict(env_id='Excavate-v0', env_kwargs={}), fixture_sha256='e'*64)
+    if conflict:
+        record['fixture']['env_kwargs']['sim_backend'] = 'physx_cpu'
+    for name in ('fixture.json', 'initial.npz', 'actions.npy'):
+        (fixture/name).write_text('Synthetic package fixture, no physics claim')
+    original = inventory(fixture)
+    monkeypatch.setattr(remote_replay, 'load_fixture', lambda _: (record, None, None, None))
+    def copy_source(_candidate, destination):
+        destination.mkdir(); (destination/'setup.py').write_text('# synthetic input\n')
+        return 'a'*40
+    monkeypatch.setattr(remote_replay, 'copy_source', copy_source)
+    lease = tmp_path/'lease.json'
+    lease.write_text(json.dumps({'terminate_at_epoch': remote_replay.time.time()+2000}))
+    output = tmp_path/'job'
+    args = (None, fixture, output, lease, 'sha256:'+'b'*64)
+    if conflict:
+        with pytest.raises(ValueError, match='conflicts'):
+            remote_replay.prepare(*args, candidate_sim_backend='physx_cuda')
+        assert not output.exists()
+    else:
+        handle = remote_replay.prepare(*args, candidate_sim_backend='physx_cuda')
+        request = json.loads((output/'payload/job.json').read_text())
+        assert request['candidate_sim_backend'] == 'physx_cuda'
+        assert request['file_sha256']['fixture'] == original == inventory(fixture)
+        assert handle['request_sha256'] == remote_replay.digest_json(request)
+
+
 @pytest.mark.parametrize('names', [['../escape'], ['/absolute'], ['a/../escape'],
                                 ['a', 'a'], ['a//b'], ['a', 'a/b'], ['a\\b']])
 def test_archive_rejects_unsafe_names_before_writing(tmp_path, names):

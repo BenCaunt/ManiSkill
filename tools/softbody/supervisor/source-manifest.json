@@ -8,9 +8,10 @@
       "change": "Removed an extra blank line at EOF; SCHEMA_VERSION is unchanged."
     },
     "softbody_lab/__main__.py": {
-      "sha256": "682b38e8681824b69f75b7fd05f66b3689f64c48d6c7060675507100144cc06b",
+      "sha256": "e067936a74af0e9cfd3abb84843e45dbeec12d958a6d1926c75ce59c12e16288",
       "live_run_sha256": "682b38e8681824b69f75b7fd05f66b3689f64c48d6c7060675507100144cc06b",
-      "identical_to_live_run": true
+      "identical_to_live_run": false,
+      "change": "Explicit candidate CPU/GPU backend selection and provenance, verified by the full Excavate backend replay record; live_run_sha256 still identifies the earlier supervisor recovery experiment."
     },
     "softbody_lab/artifacts.py": {
       "sha256": "59b96ab16a51870ce51467d2980db1a502d572d6ed31833d8497098bf2558339",
@@ -38,9 +39,10 @@
       "identical_to_live_run": true
     },
     "softbody_lab/gpu_job.py": {
-      "sha256": "18ed814f57cf75a5b6fb947b283374219d34a0f7057712b9776e3b6f920b3867",
+      "sha256": "f50a9a31a2521e35a726e2de945984271d041616e4d09d838e7b6847dc1c0853",
       "live_run_sha256": "18ed814f57cf75a5b6fb947b283374219d34a0f7057712b9776e3b6f920b3867",
-      "identical_to_live_run": true
+      "identical_to_live_run": false,
+      "change": "Offline staging of the checksum-pinned PhysX GPU library for explicit GPU replays; gpu_job.py also forwards candidate backend selection. Separate Excavate replay evidence records the initial missing-mount failure and corrected retry."
     },
     "softbody_lab/job_archive.py": {
       "sha256": "b389bd820e89ff127d85f02852fed2c0a88e48870627d4abb2a0e448a89690b0",
@@ -53,9 +55,10 @@
       "identical_to_live_run": true
     },
     "softbody_lab/native_extensions.py": {
-      "sha256": "a8aff1c5b3d689142892a6fb9cdde15bd8e8b7f05204f07f495cb2bc5203fc85",
+      "sha256": "2c5c47f47a5538a4938750044610cd88e6db21c9e43ae612102313bc36aa7f9a",
       "live_run_sha256": "a8aff1c5b3d689142892a6fb9cdde15bd8e8b7f05204f07f495cb2bc5203fc85",
-      "identical_to_live_run": true
+      "identical_to_live_run": false,
+      "change": "Offline staging of the checksum-pinned PhysX GPU library for explicit GPU replays; gpu_job.py also forwards candidate backend selection. Separate Excavate replay evidence records the initial missing-mount failure and corrected retry."
     },
     "softbody_lab/remote.py": {
       "sha256": "145d2439aef820f6096f165838ef6d9dbb885144c8ed41e9a9fb254443567aa9",
@@ -63,14 +66,16 @@
       "identical_to_live_run": true
     },
     "softbody_lab/remote_replay.py": {
-      "sha256": "a2904ee4d1321692b68b9ba99468f1831702d25172a550477a0c0d590bcaa8ee",
+      "sha256": "fb220fb3d1c4c53d4b0f67ae187dd9435b0947eef7e93456f0db5018feb11ce9",
       "live_run_sha256": "fa5459e2ce20d4cf63b05fd1fbf4572661f5e6ad68c9be0d563da1a7c1e82f98",
-      "identical_to_live_run": false
+      "identical_to_live_run": false,
+      "change": "Explicit candidate CPU/GPU backend selection and provenance, verified by the full Excavate backend replay record; live_run_sha256 still identifies the earlier supervisor recovery experiment."
     },
     "softbody_lab/runner.py": {
-      "sha256": "19eb8063f93cbb628e179051020a9acd90cb31778a7dc6ccb621937e709839cf",
+      "sha256": "5cf81be7f3d1a442b16211b9cde080dc77340a7caa7f511b7d8c065ae63e0702",
       "live_run_sha256": "19eb8063f93cbb628e179051020a9acd90cb31778a7dc6ccb621937e709839cf",
-      "identical_to_live_run": true
+      "identical_to_live_run": false,
+      "change": "Explicit candidate CPU/GPU backend selection and provenance, verified by the full Excavate backend replay record; live_run_sha256 still identifies the earlier supervisor recovery experiment."
     },
     "softbody_lab/telemetry.py": {
       "sha256": "cd8a02fb3923f7f5d4e39a335718a74b32a01368d1bddb54ea78201cc35fe326",
@@ -82,11 +87,11 @@
       "source": "sim-infra/softbody_lab/tests/test_loop.py"
     },
     "tests/test_remote_jobs.py": {
-      "sha256": "d3a8afd14782364f65394ffd9384f62529d0a057be2669afa26e24d48b0ddb46",
+      "sha256": "dd56c0a48d95f2a8fc37c8cf7114884d1b88710aa8568e5fae8b899d4fccf485",
       "source": "sim-infra/softbody_lab/tests/test_remote_jobs.py"
     },
     "tests/test_evaluator.py": {
-      "sha256": "886e9fe1bf648bb396781ccc3c47312d594f9c8fe09240bc8b2e0ca752f4ef01",
+      "sha256": "c244c122e5ac41b6dc84f3ffeee41fe8272df1cf312aa07cf4657743483e5055",
       "source": "sim-infra/softbody_lab/tests/test_evaluator.py"
     },
     "tests/test_telemetry.py": {
@@ -109,5 +114,5 @@
       "identical_to_live_run": true
     }
   },
-  "scope": "Snapshot of the standalone controller and required capture/evaluator modules. remote_replay.py has the post-run malformed-status-response correction tested locally; __init__.py only loses trailing whitespace. All other modules match the live run. Original reference outcomes, private configuration, credentials and external assets are not included."
+  "scope": "Snapshot of the standalone controller and required capture/evaluator modules. live_run_sha256 identifies the original supervisor recovery run; subsequent changes are labelled per file. Backend selection additions have separate Excavate replay evidence. Original reference outcomes, private configuration, credentials and external assets are not included."
 }

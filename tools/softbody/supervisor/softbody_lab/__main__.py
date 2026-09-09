@@ -26,6 +26,8 @@ def main(argv=None):
     record.add_argument("--env-kwargs", type=json.loads, default={})
     record.add_argument("--reset-kwargs", type=json.loads, default={})
     record.add_argument("--replay", type=Path, help="Exported initial-state/action fixture directory")
+    record.add_argument("--candidate-sim-backend", choices=['physx_cpu', 'physx_cuda'],
+                        help="Explicit candidate execution backend; preserves frozen fixture metadata")
     record.add_argument("--actions-path", type=Path, help="Numeric .npy actions, no pickle")
     record.add_argument("--reference-initial-state-path", type=Path,
                         help="Reference-only numeric .npy demonstration initialization")

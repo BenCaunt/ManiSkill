@@ -73,6 +73,78 @@ def state(offset=0.0):
             "rigid_velocity": np.zeros((1, 6))}
 
 
+@pytest.mark.parametrize('backend', ['physx_cpu', 'physx_cuda'])
+@pytest.mark.parametrize('fault', [None, 'wrong_actual_backend', 'conflicting_fixture'])
+def test_backend_replay_keeps_fixture_and_actions_and_records_actual_backend(monkeypatch, tmp_path, backend, fault):
+    from types import SimpleNamespace
+    from softbody_lab import runner
+    snapshot = state()
+    material = {'synthetic_material': np.array([1., 2.])}
+    description = dict(control_mode='pd_joint_pos', control_dt=.05,
+                       material_sha256=digest_arrays(material))
+    fixture = dict(env_id='Excavate-v0', seed=7, env_kwargs={'reward_mode': 'dense'},
+                   reset_kwargs={'options': {}}, **description)
+    other_backend = 'physx_cpu' if backend == 'physx_cuda' else 'physx_cuda'
+    if fault == 'conflicting_fixture':
+        fixture['env_kwargs']['sim_backend'] = other_backend
+    fixture['initial_numeric_sha256'] = digest_arrays(initial_numeric_state(snapshot, fixture))
+    baseline = dict(fixture=fixture, fixture_sha256=digest_json(fixture), steps=1)
+    actions = np.array([[.2, -.3]], dtype=np.float32)
+    calls = []
+    closed = []
+    class Adapter:
+        def __init__(self, env_id, *, control_mode, env_kwargs):
+            calls.append(env_kwargs)
+            self.env_id = env_id
+            actual = other_backend if fault == 'wrong_actual_backend' else backend
+            self.env = SimpleNamespace(backend=SimpleNamespace(sim_backend=actual, sim_device='synthetic'),
+                                       gpu_sim_enabled=backend == 'physx_cuda', mpm_device='cuda')
+        def reset(self, **kwargs):
+            assert kwargs['replay'][1] is fixture
+            return snapshot
+        def snapshot(self): return snapshot
+        def description(self): return description.copy(), material
+        def metrics(self): return {'success': False}
+        def step(self, action):
+            np.testing.assert_array_equal(action, actions[0])
+            return {'success': False}
+        def close(self): closed.append(True)
+    module = SimpleNamespace(__file__=tmp_path/'mani_skill/envs/softbody/capture.py', CaptureAdapter=Adapter)
+    monkeypatch.setattr(runner.importlib, 'import_module', lambda _: module)
+    monkeypatch.setattr(runner, 'doctor', lambda: {'cuda_reference_ready': True})
+    monkeypatch.setattr(runner, 'provenance', lambda *a: {'role': 'candidate', 'kind': 'synthetic test'})
+    monkeypatch.setattr(runner, 'load_fixture', lambda _: (baseline, snapshot, actions, material))
+    output = tmp_path/'trace'
+    if fault is not None:
+        error, message = (RuntimeError, 'did not use') if fault == 'wrong_actual_backend' else (ValueError, 'conflicts')
+        with pytest.raises(error, match=message):
+            runner.capture(source=tmp_path, output=output, role='candidate', env_id='Fill-v0', seed=99, steps=5,
+                           replay=tmp_path/'unused', candidate_sim_backend=backend)
+        assert not output.exists()
+        assert closed == ([True] if fault == 'wrong_actual_backend' else [])
+        return
+    runner.capture(source=tmp_path, output=output, role='candidate', env_id='Fill-v0', seed=99, steps=5,
+                   replay=tmp_path/'unused', candidate_sim_backend=backend)
+    recorded = read_json(output/'manifest.json')
+    assert recorded['status'] == 'complete'
+    assert recorded['fixture'] == fixture
+    assert recorded['fixture_sha256'] == baseline['fixture_sha256']
+    assert recorded['actions'] == actions.tolist()
+    assert calls == [{'reward_mode': 'dense', 'sim_backend': backend}]
+    assert fixture['env_kwargs'] == {'reward_mode': 'dense'}
+    assert recorded['provenance']['candidate_execution']['actual_sim_backend'] == backend
+    assert closed == [True]
+
+
+@pytest.mark.parametrize('role,backend', [('reference', 'physx_cuda'), ('candidate', 'auto'), ('candidate', 'cuda')])
+def test_invalid_candidate_backend_rejected_before_hardware_access(monkeypatch, tmp_path, role, backend):
+    from softbody_lab import runner
+    monkeypatch.setattr(runner, 'doctor', lambda: pytest.fail('Must reject before GPU access'))
+    with pytest.raises(ValueError, match='candidate-only'):
+        runner.capture(source=tmp_path, output=tmp_path/'out', role=role, env_id='Excavate-v0',
+                       seed=1, steps=1, candidate_sim_backend=backend)
+
+
 def trace(root: Path, offset=0.0, role="reference", steps=2):
     writer = TraceWriter(root, fixture={"env_id": "synthetic-evaluator-test", "seed": 1},
                          provenance={"role": role, "run_id": root.name,

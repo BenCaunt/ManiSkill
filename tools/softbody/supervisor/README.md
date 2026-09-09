@@ -89,6 +89,22 @@ Never replace a job merely because an SSH observation failed. Successful SSH
 with malformed or empty JSON is also an observation failure and retries the
 same handle.
 
+Individual `remote_replay submit` and `capture` commands accept
+`--candidate-sim-backend physx_cpu` or `physx_cuda`. This chooses the candidate's
+PhysX execution backend without changing the MPM device. The Excavate backend
+diagnostic uses CUDA MPM in both cases. The frozen physical
+fixture and controls remain identical. The immutable worker request pins this
+choice, and capture checks and records the actual backend after reset. A
+conflicting backend already declared in a fixture is rejected. Omitting the
+flag retains the previous default. This option is candidate-only and does not
+change the reference simulator or define an acceptance tolerance.
+
+For a GPU replay, the manager copies the existing PhysX GPU library from
+`provenance/physx-gpu/105.1-physx-5.3.1.patch0/files/libPhysXGpu_64.so` under the
+worker root. It verifies the pinned SHA-256 before and after copying, then
+mounts that copy read-only in SAPIEN's cache. Missing or changed binaries fail
+before building or running the candidate. No runtime download is required.
+
 ## Local verification
 
 From the trusted copy, with NumPy and pytest installed:

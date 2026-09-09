@@ -12,6 +12,9 @@ import shutil
 
 ACTOR_FILENAME = 'sapien303_actor_bridge.cpython-310-x86_64-linux-gnu.so'
 SAPIEN_LIBRARY_SHA256 = '57b9dbf776bd216a2a71c86c34fadeab12469cc9067f6bf2338234499d80f097'
+PHYSX_GPU_VERSION = '105.1-physx-5.3.1.patch0'
+PHYSX_GPU_SHA256 = '4c582a16509a71faf5592fe9708586dfcc7ab61ae932eabc1ddd81f290818706'
+PHYSX_GPU_FILENAME = 'libPhysXGpu_64.so'
 
 
 def digest(path):
@@ -38,6 +41,29 @@ def _ordinary_file(path, root, limit):
         raise ValueError('Native extension paths cannot follow symlinks')
     if not path.is_file() or not 0 < path.stat().st_size <= limit:
         raise ValueError('Native extension file is missing or exceeds its size limit')
+
+
+def stage_physx_gpu(worker_root, destination):
+    """Copy the already acquired, pinned SAPIEN 3.0.3 GPU library offline.
+
+    The trusted job controller pins these constants. No candidate path or URL
+    can choose a different binary, and the host Python never loads the ELF.
+    """
+    root = Path(worker_root).absolute()
+    source = root/'provenance/physx-gpu'/PHYSX_GPU_VERSION/'files'/PHYSX_GPU_FILENAME
+    _ordinary_file(source, root, 256*1024**2)
+    if digest(source) != PHYSX_GPU_SHA256:
+        raise ValueError('PhysX GPU library checksum mismatch')
+    destination = Path(destination)
+    destination.mkdir(parents=True, exist_ok=False)
+    library = destination/PHYSX_GPU_FILENAME
+    shutil.copyfile(source, library)
+    if digest(library) != PHYSX_GPU_SHA256:
+        raise ValueError('PhysX GPU library changed while staging')
+    record = dict(version=PHYSX_GPU_VERSION, filename=PHYSX_GPU_FILENAME,
+                  sha256=PHYSX_GPU_SHA256, source='existing worker provenance cache')
+    (destination/'record.json').write_text(json.dumps(record, indent=2)+'\n')
+    return record
 
 
 def stage_actor(spec, worker_root, destination):

@@ -19,11 +19,11 @@ import time
 # The deployment copies this helper beside the manager, outside all containers.
 if __package__:
     from .job_archive import atomic_json, file_hash, inventory, safe_extract
-    from .native_extensions import stage_actor
+    from .native_extensions import stage_actor, stage_physx_gpu
     from .cooked_extensions import stage as stage_cooked, pack_path as cooked_pack_path
 else:
     from job_archive import atomic_json, file_hash, inventory, safe_extract
-    from native_extensions import stage_actor
+    from native_extensions import stage_actor, stage_physx_gpu
     from cooked_extensions import stage as stage_cooked, pack_path as cooked_pack_path
 
 ROOT = Path('/home/ubuntu/softbody/supervisor-jobs')
@@ -152,6 +152,12 @@ def execute(job):
             subprocess.run(command, cwd=source, env=environment, check=True, capture_output=True, timeout=60)
         for directory in ('cache', 'output', 'binary'):
             (job/directory).mkdir()
+        fixture_kwargs = read(job/'inputs/fixture/fixture.json')['fixture'].get('env_kwargs', {})
+        backend = request.get('candidate_sim_backend') or fixture_kwargs.get('sim_backend') or 'physx_cpu'
+        physx_gpu = None
+        if backend.split(':')[0] in ('gpu', 'cuda', 'physx_cuda'):
+            physx_gpu = stage_physx_gpu(ROOT.parent, job/'physx-gpu')
+            publish(job, 'preparing', physx_gpu_library=physx_gpu)
         extension = stage_actor(request.get('native_actor_extension'), ROOT.parent, job/'native-extension')
         if extension is not None:
             publish(job, 'preparing', native_actor_extension=extension)
@@ -191,6 +197,9 @@ def execute(job):
             '-e', f'SOFTBODY_SOURCE_ARCHIVE_SHA256={read(job/"identity.json")["payload_sha256"]}']
         if extension is not None:
             command += ['-v', f'{job}/native-extension:/native-extension:ro']
+        if physx_gpu is not None:
+            filename, version = physx_gpu['filename'], physx_gpu['version']
+            command += ['-v', f'{job}/physx-gpu/{filename}:/tmp/.sapien/physx/{version}/{filename}:ro']
         if env_id in PACKS:
             command += ['-v', f'{PACKS[env_id]}:/legacy-data:ro', '-e', 'MANISKILL_LEGACY_MPM_DATA=/legacy-data']
         if cooked is not None:
@@ -202,6 +211,8 @@ def execute(job):
         command += [request['image'], 'timeout', '--kill-after=10s', str(max(1, int(deadline-time.time()))),
                     'python', '-m', 'softbody_lab', 'capture', '--source=/source', '--role=candidate',
                     '--replay=/fixture', '--output=/output/trace']
+        if request.get('candidate_sim_backend') is not None:
+            command += ['--candidate-sim-backend', request['candidate_sim_backend']]
         bounded_container(job, command, name, 'capture.log', deadline)
         phase = 'complete'
     except InterruptedError as exc:
@@ -226,6 +237,7 @@ def start(job):
         safe_extract(job/'input.tgz', job/'inputs', max_bytes=1024**3)
         request = read(job/'inputs/job.json')
         if (request['schema_version'] != 1 or not re.fullmatch(r'sha256:[0-9a-f]{64}', request['image'])
+                or request.get('candidate_sim_backend') not in (None, 'physx_cpu', 'physx_cuda')
                 or request['env_id'] not in {'Fill-v0', 'Excavate-v0', *PACKS}
                 or not time.time() < request['deadline_epoch'] <= time.time()+86400):
             raise ValueError('Invalid or expired job request')

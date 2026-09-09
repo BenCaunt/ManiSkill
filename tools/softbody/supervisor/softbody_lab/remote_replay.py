@@ -105,7 +105,9 @@ def copy_source(candidate, destination):
 
 
 def prepare(candidate, fixture, output, lease, image, *, timeout_s=900, harness=None, native_actor_extension=None,
-            native_cooked_extension=None,cooked_pack_sha256=None):
+            native_cooked_extension=None,cooked_pack_sha256=None,candidate_sim_backend=None):
+    if candidate_sim_backend not in (None, 'physx_cpu', 'physx_cuda'):
+        raise ValueError('Candidate backend must be physx_cpu or physx_cuda')
     validate_actor_spec(native_actor_extension)
     if native_cooked_extension is not None:
         validate_cooked_spec(native_cooked_extension)
@@ -123,6 +125,9 @@ def prepare(candidate, fixture, output, lease, image, *, timeout_s=900, harness=
     if deadline <= time.time():
         raise ValueError('Lease has no remaining safe job time')
     record, _, _, _ = load_fixture(fixture)
+    declared_kwargs = record['fixture'].get('env_kwargs', {})
+    if candidate_sim_backend is not None and 'sim_backend' in declared_kwargs and declared_kwargs['sim_backend'] != candidate_sim_backend:
+        raise ValueError('Candidate backend conflicts with the frozen fixture')
     output.mkdir(parents=True)
     payload = output/'payload'
     payload.mkdir()
@@ -156,6 +161,8 @@ def prepare(candidate, fixture, output, lease, image, *, timeout_s=900, harness=
         file_sha256={name: inventory(payload/name) for name in ('source', 'harness', 'fixture')})
     if native_actor_extension is not None:
         request['native_actor_extension'] = native_actor_extension
+    if candidate_sim_backend is not None:
+        request['candidate_sim_backend'] = candidate_sim_backend
     if native_cooked_extension is not None:
         request.update(native_cooked_extension=native_cooked_extension,cooked_pack_sha256=cooked_pack_sha256)
     atomic_json(payload/'job.json', request)
@@ -345,9 +352,11 @@ def main():
     parser.add_argument('--lease', type=Path, default=Path('artifacts/softbody/lambda/lease.json'))
     parser.add_argument('--image')
     parser.add_argument('--timeout', type=int, default=900)
+    parser.add_argument('--candidate-sim-backend', choices=['physx_cpu', 'physx_cuda'])
     args = parser.parse_args()
     if args.operation == 'submit':
-        prepare(args.candidate, args.fixture, args.output, args.lease, args.image, timeout_s=args.timeout)
+        prepare(args.candidate, args.fixture, args.output, args.lease, args.image, timeout_s=args.timeout,
+                candidate_sim_backend=args.candidate_sim_backend)
         result = submit_or_resume(args.output)
     elif args.operation == 'resume':
         result = submit_or_resume(args.output)

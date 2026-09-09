@@ -308,7 +308,11 @@ class LegacyAdapter:
 def capture(*, source: Path, output: Path, role: str, env_id: str, seed: int,
             steps: int, control_mode="pd_joint_delta_pos", env_kwargs=None,
             reset_kwargs=None, replay: Path | None = None, actions_path: Path | None = None,
-            reference_initial_state_path: Path | None = None, record_mpm_wrenches=False):
+            reference_initial_state_path: Path | None = None, record_mpm_wrenches=False,
+            candidate_sim_backend=None):
+    if candidate_sim_backend is not None:
+        if role != 'candidate' or candidate_sim_backend not in ('physx_cpu', 'physx_cuda'):
+            raise ValueError('Candidate backend must be physx_cpu or physx_cuda and is candidate-only')
     if reference_initial_state_path is not None and (role != 'reference' or replay is not None):
         raise ValueError('Native demonstration initialization is reference-only and cannot replace fixture replay')
     if env_id not in ENVIRONMENTS:
@@ -342,7 +346,14 @@ def capture(*, source: Path, output: Path, role: str, env_id: str, seed: int,
         if actual_source != source.resolve():
             raise RuntimeError("Imported candidate does not match the selected checkout")
         adapter_cls = module.CaptureAdapter
-    adapter = adapter_cls(env_id, control_mode=control_mode, env_kwargs=env_kwargs)
+    # Execution backend is provenance, not part of the frozen physical fixture.
+    # Never mutate or silently replace a backend already declared by the fixture.
+    execution_kwargs = dict(env_kwargs)
+    if candidate_sim_backend is not None:
+        if 'sim_backend' in execution_kwargs and execution_kwargs['sim_backend'] != candidate_sim_backend:
+            raise ValueError('Candidate backend conflicts with the frozen fixture')
+        execution_kwargs['sim_backend'] = candidate_sim_backend
+    adapter = adapter_cls(env_id, control_mode=control_mode, env_kwargs=execution_kwargs)
     writer = None
     started = time.monotonic()
     try:
@@ -354,6 +365,17 @@ def capture(*, source: Path, output: Path, role: str, env_id: str, seed: int,
             extra_reset['native_initial_state'] = load_native_demo_initialization(reference_initial_state_path)
             record_provenance['reference_initial_state_sha256'] = sha256(reference_initial_state_path)
         state = adapter.reset(seed=seed, reset_kwargs=reset_kwargs, replay=initial, **extra_reset)
+        if candidate_sim_backend is not None:
+            actual_backend = adapter.env.backend.sim_backend
+            if actual_backend != candidate_sim_backend:
+                raise RuntimeError('Candidate did not use the requested simulation backend')
+            record_provenance['candidate_execution'] = {
+                'requested_sim_backend': candidate_sim_backend,
+                'actual_sim_backend': actual_backend,
+                'sim_device': str(adapter.env.backend.sim_device),
+                'gpu_sim_enabled': bool(adapter.env.gpu_sim_enabled),
+                'mpm_device': adapter.env.mpm_device,
+            }
         state = snapshot_with_telemetry(state, adapter, role, telemetry_fields)
         description, material = adapter.description()
         description['material_sha256'] = digest_arrays(material)
