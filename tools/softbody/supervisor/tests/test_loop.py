@@ -73,6 +73,23 @@ def test_agent_success_cannot_override_independent_failure(monkeypatch, tmp_path
     assert not result['iterations'][0]['cases'][0]['verdict']['passed']
 
 
+@pytest.mark.parametrize('backend', ['physx_cpu', 'physx_cuda'])
+def test_each_loop_case_pins_backend_without_overriding_failed_verdict(monkeypatch, tmp_path, backend):
+    config = setup_run(monkeypatch, tmp_path)
+    config['cases'][0]['candidate_sim_backend'] = backend
+    selected = []
+    def prepare(*args, **kwargs):
+        selected.append(kwargs['candidate_sim_backend'])
+        fake_prepare(*args, **kwargs)
+    monkeypatch.setattr(loop.remote_replay, 'prepare', prepare)
+    monkeypatch.setattr(loop.remote_replay, 'submit_or_resume', lambda _: None)
+    monkeypatch.setattr(loop.remote_replay, 'wait', lambda _: {'phase': 'complete', 'wall_time_s': .1})
+    monkeypatch.setattr(loop, 'compare', lambda *a: {'passed': False, 'failures': [{'metric': 'physics mismatch'}]})
+    result = loop.run(config)
+    assert selected == [backend]
+    assert not result['iterations'][0]['cases'][0]['verdict']['passed']
+
+
 def test_trusted_input_change_stops_before_paid_worker(monkeypatch, tmp_path):
     config = setup_run(monkeypatch, tmp_path)
     snapshots = iter([{'immutable': 1}, {'immutable': 1}, {'immutable': 2}])

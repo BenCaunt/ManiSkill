@@ -97,6 +97,12 @@ def config_validate(config, *, require_live_lease=True):
         for key in ('reference', 'protocol', 'fixture'):
             separate(candidate, case[key])
         f, _, _, _ = load_fixture(Path(case['fixture']))
+        backend = case.get('candidate_sim_backend')
+        if backend not in (None, 'physx_cpu', 'physx_cuda'):
+            raise ValueError('Case candidate backend must be physx_cpu or physx_cuda')
+        declared = f['fixture'].get('env_kwargs', {})
+        if backend is not None and 'sim_backend' in declared and declared['sim_backend'] != backend:
+            raise ValueError('Case candidate backend conflicts with the frozen fixture')
         p = read_json(Path(case['protocol']))
         reference = validate_trace(Path(case['reference']))
         if (p.get('calibrated') is not True or p['fixture_sha256'] != f['fixture_sha256']
@@ -303,7 +309,8 @@ def _run_locked(config, candidate, root, resume):
                             native_cooked_extension=(config.get('native_cooked_extension')
                                 if config.get('native_cooked_extension') is not None
                                 and load_fixture(Path(case['fixture']))[0]['fixture']['env_id']=='Pour-v0' else None),
-                            cooked_pack_sha256=config.get('cooked_pack_sha256'))
+                            cooked_pack_sha256=config.get('cooked_pack_sha256'),
+                            candidate_sim_backend=case.get('candidate_sim_backend'))
                     handle = read_json(output/'remote-job.json')
                     if 'job_id' in pending and pending['job_id'] != handle['job_id']:
                         raise RuntimeError('Prepared remote job identity changed')

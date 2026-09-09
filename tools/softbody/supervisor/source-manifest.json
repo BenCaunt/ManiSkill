@@ -39,10 +39,11 @@
       "identical_to_live_run": true
     },
     "softbody_lab/gpu_job.py": {
-      "sha256": "f50a9a31a2521e35a726e2de945984271d041616e4d09d838e7b6847dc1c0853",
+      "sha256": "eb61f3b2c73dc124e4f43b728725918d51803bdcd2a31198776cd7b0a2a16a89",
       "live_run_sha256": "18ed814f57cf75a5b6fb947b283374219d34a0f7057712b9776e3b6f920b3867",
       "identical_to_live_run": false,
-      "change": "Offline staging of the checksum-pinned PhysX GPU library for explicit GPU replays; gpu_job.py also forwards candidate backend selection. Separate Excavate replay evidence records the initial missing-mount failure and corrected retry."
+      "change": "Durable native reference-demo jobs, portable fixture export, provenance validation and per-case backend selection; separate multi-episode Excavate study supplies live evidence. Earlier live_run_sha256 fields retain their original recovery-run meaning.",
+      "reference_demo_run_sha256": "eb61f3b2c73dc124e4f43b728725918d51803bdcd2a31198776cd7b0a2a16a89"
     },
     "softbody_lab/job_archive.py": {
       "sha256": "b389bd820e89ff127d85f02852fed2c0a88e48870627d4abb2a0e448a89690b0",
@@ -50,9 +51,11 @@
       "identical_to_live_run": true
     },
     "softbody_lab/loop.py": {
-      "sha256": "84fe0f5f8dae871bc5d026f208e47e2689e12263d42a37c4debee13638d57ae4",
+      "sha256": "ce5a12f511a7a9d6a3b71e1c963e17c943ab80be368ad20c37941f5aa5ae5f0f",
       "live_run_sha256": "84fe0f5f8dae871bc5d026f208e47e2689e12263d42a37c4debee13638d57ae4",
-      "identical_to_live_run": true
+      "identical_to_live_run": false,
+      "change": "Durable native reference-demo jobs, portable fixture export, provenance validation and per-case backend selection; separate multi-episode Excavate study supplies live evidence. Earlier live_run_sha256 fields retain their original recovery-run meaning.",
+      "reference_demo_run_sha256": "84fe0f5f8dae871bc5d026f208e47e2689e12263d42a37c4debee13638d57ae4"
     },
     "softbody_lab/native_extensions.py": {
       "sha256": "2c5c47f47a5538a4938750044610cd88e6db21c9e43ae612102313bc36aa7f9a",
@@ -66,10 +69,11 @@
       "identical_to_live_run": true
     },
     "softbody_lab/remote_replay.py": {
-      "sha256": "fb220fb3d1c4c53d4b0f67ae187dd9435b0947eef7e93456f0db5018feb11ce9",
+      "sha256": "727ed9a6f6c0571c9dd1d62fa7c626b25b4fd60c082de5f163946d324a51efb7",
       "live_run_sha256": "fa5459e2ce20d4cf63b05fd1fbf4572661f5e6ad68c9be0d563da1a7c1e82f98",
       "identical_to_live_run": false,
-      "change": "Explicit candidate CPU/GPU backend selection and provenance, verified by the full Excavate backend replay record; live_run_sha256 still identifies the earlier supervisor recovery experiment."
+      "change": "Durable native reference-demo jobs, portable fixture export, provenance validation and per-case backend selection; separate multi-episode Excavate study supplies live evidence. Earlier live_run_sha256 fields retain their original recovery-run meaning.",
+      "reference_demo_run_sha256": "727ed9a6f6c0571c9dd1d62fa7c626b25b4fd60c082de5f163946d324a51efb7"
     },
     "softbody_lab/runner.py": {
       "sha256": "5cf81be7f3d1a442b16211b9cde080dc77340a7caa7f511b7d8c065ae63e0702",
@@ -83,11 +87,11 @@
       "identical_to_live_run": true
     },
     "tests/test_loop.py": {
-      "sha256": "a64e79f8e2ab603788df1f42f39dc7dc624a960a5b38850a4e62d9b96a9dc914",
+      "sha256": "afb5830a7ebbc021b8a937d73a9cc2c2482d6105ffe9b1aee68d4230c13a36e1",
       "source": "sim-infra/softbody_lab/tests/test_loop.py"
     },
     "tests/test_remote_jobs.py": {
-      "sha256": "dd56c0a48d95f2a8fc37c8cf7114884d1b88710aa8568e5fae8b899d4fccf485",
+      "sha256": "491748ae81edf1e67c2749af37e81c3c9dabfdced449c706d7852f8c07157215",
       "source": "sim-infra/softbody_lab/tests/test_remote_jobs.py"
     },
     "tests/test_evaluator.py": {
@@ -112,7 +116,23 @@
       "sha256": "617357f1f989f66a40d2104bfae6f7ba8d0111ff3431f8b62b80b765f887b3e8",
       "live_run_sha256": "617357f1f989f66a40d2104bfae6f7ba8d0111ff3431f8b62b80b765f887b3e8",
       "identical_to_live_run": true
+    },
+    "softbody_lab/demo_inputs.py": {
+      "source": "sim-infra/softbody_lab/demo_inputs.py",
+      "sha256": "ee12a4d2417de4f0d89ffca538ad01639a1c7ba78520beb6e33705a381f80a62",
+      "change": "Durable native reference-demo jobs, portable fixture export, provenance validation and per-case backend selection; separate multi-episode Excavate study supplies live evidence. Earlier live_run_sha256 fields retain their original recovery-run meaning.",
+      "reference_demo_run_sha256": "ee12a4d2417de4f0d89ffca538ad01639a1c7ba78520beb6e33705a381f80a62"
+    },
+    "softbody_lab/replay_demo.py": {
+      "source": "sim-infra/softbody_lab/replay_demo.py",
+      "sha256": "09c35135c895c411b58113c6f64698399c383ec36554da4627def4de03f27121",
+      "change": "Durable native reference-demo jobs, portable fixture export, provenance validation and per-case backend selection; separate multi-episode Excavate study supplies live evidence. Earlier live_run_sha256 fields retain their original recovery-run meaning.",
+      "reference_demo_run_sha256": "09c35135c895c411b58113c6f64698399c383ec36554da4627def4de03f27121"
+    },
+    "tests/test_demo_inputs.py": {
+      "sha256": "1c2e1e2829a0dd311b32d7bd332491de9998ab834b18adb849ba9f6641386c8f",
+      "source": "sim-infra/softbody_lab/tests/test_demo_inputs.py"
     }
   },
-  "scope": "Snapshot of the standalone controller and required capture/evaluator modules. live_run_sha256 identifies the original supervisor recovery run; subsequent changes are labelled per file. Backend selection additions have separate Excavate replay evidence. Original reference outcomes, private configuration, credentials and external assets are not included."
+  "scope": "Current standalone controller and capture/evaluator modules. live_run_sha256 retains the original supervisor recovery experiment; reference_demo_run_sha256 identifies the first native reference job in the multi-episode study. Subsequent changes are labelled. Original outcomes, credentials, private configuration and external assets are excluded."
 }

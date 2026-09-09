@@ -165,6 +165,11 @@ def prepare(candidate, fixture, output, lease, image, *, timeout_s=900, harness=
         request['candidate_sim_backend'] = candidate_sim_backend
     if native_cooked_extension is not None:
         request.update(native_cooked_extension=native_cooked_extension,cooked_pack_sha256=cooked_pack_sha256)
+    return package_job(output, payload, request, lease, deadline)
+
+
+def package_job(output, payload, request, lease, deadline):
+    """Freeze one immutable request and its trusted worker controller."""
     atomic_json(payload/'job.json', request)
     with tarfile.open(output/'input.tgz', 'w:gz') as archive:
         for name in inventory(payload):
@@ -177,6 +182,52 @@ def prepare(candidate, fixture, output, lease, image, *, timeout_s=900, harness=
         deadline_epoch=deadline, phase='prepared', output=str(output), controller_sha256=inventory(output/'controller'))
     atomic_json(output/'remote-job.json', handle)
     return handle
+
+
+def prepare_reference_demo(inputs, output, lease, image, *, dependencies, timeout_s=900, harness=None):
+    """Generate a portable fixture in the existing clean, pinned reference checkout.
+
+    Only the native reset vector and recorded controls are uploaded, never the
+    demonstration's future states. Candidates cannot select the reference code.
+    """
+    from .replay_demo import capture_arguments
+    from .runner import REFERENCE_COMMIT
+    inputs, output = Path(inputs).resolve(), Path(output).resolve()
+    if output.exists():
+        raise ValueError('Use resume for an existing job directory')
+    if type(timeout_s) not in (int, float) or not math.isfinite(timeout_s) or not 0 < timeout_s <= 86400:
+        raise ValueError('Invalid worker time budget')
+    if not isinstance(image, str) or not re.fullmatch(r'sha256:[0-9a-f]{64}', image):
+        raise ValueError('Worker image must be an immutable ID')
+    if not isinstance(dependencies, dict) or set(dependencies) != {'warp', 'sdf'} or any(
+        not isinstance(v, str) or not re.fullmatch('[a-f0-9]{64}', v) for v in dependencies.values()
+    ):
+        raise ValueError('Reference requires pinned Warp and SDF checksums')
+    for name in ('input.json', 'initial.npy', 'actions.npy'):
+        p = inputs/name
+        if p.is_symlink() or not p.is_file() or not 0 < p.stat().st_size <= 64*1024**2:
+            raise ValueError('Invalid native reference input')
+    arguments = capture_arguments(inputs)
+    if arguments['env_id'] not in ('Fill-v0', 'Excavate-v0', 'Hang-v0', 'Pour-v0'):
+        raise ValueError('Reference demo job requires an available pinned SDF')
+    lease_data = json.loads(Path(lease).read_text())
+    deadline = min(time.time()+timeout_s, lease_data['terminate_at_epoch']-120)
+    if deadline <= time.time():
+        raise ValueError('Lease has no remaining safe job time')
+    output.mkdir(parents=True)
+    payload = output/'payload'
+    (payload/'reference_input').mkdir(parents=True)
+    (payload/'harness/softbody_lab').mkdir(parents=True)
+    for name in ('input.json', 'initial.npy', 'actions.npy'):
+        shutil.copyfile(inputs/name, payload/'reference_input'/name)
+    harness_package = Path(harness)/'softbody_lab' if harness is not None else Path(__file__).parent
+    for path in harness_package.glob('*.py'):
+        shutil.copyfile(path, payload/'harness/softbody_lab'/path.name)
+    request = dict(schema_version=1, role='reference', env_id=arguments['env_id'], image=image,
+        deadline_epoch=deadline, timeout_s=timeout_s, reference_commit=REFERENCE_COMMIT,
+        reference_dependencies=dependencies, native_input_sha256=file_hash(inputs/'input.json'),
+        file_sha256={name: inventory(payload/name) for name in ('reference_input', 'harness')})
+    return package_job(output, payload, request, lease, deadline)
 
 
 def submit_or_resume(output):
@@ -289,7 +340,18 @@ def recover_collected(output):
     if handle.get('phase') == 'collected' and handle.get('execution') != actual:
         raise ValueError('Previously collected execution record changed')
     if actual['phase'] == 'complete':
-        validate_trace(destination/'output/trace')
+        manifest = validate_trace(destination/'output/trace')
+        if request.get('role') == 'reference':
+            provenance = manifest['provenance']
+            if (provenance.get('role') != 'reference' or provenance.get('source_dirty') is not False
+                    or provenance.get('source_commit') != request['reference_commit']
+                    or provenance.get('runtime', {}).get('image_id') != request['image']
+                    or provenance.get('source_archive_sha256') != handle['payload_sha256']
+                    or provenance.get('reference_initial_state_sha256') != request['file_sha256']['reference_input']['initial.npy']):
+                raise ValueError('Reference capture provenance differs from the immutable request')
+            fixture, _, _, _ = load_fixture(destination/'output/fixture')
+            if fixture['fixture_sha256'] != manifest['fixture_sha256']:
+                raise ValueError('Exported reference fixture differs from captured initial state')
     handle.update(phase='collected', execution=actual, result_sha256=digest)
     atomic_json(output/'remote-job.json', handle)
     return actual

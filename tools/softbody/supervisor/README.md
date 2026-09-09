@@ -7,10 +7,13 @@ process interruption, `--resume` recovers the same job and the original budget.
 An implementation agent's successful exit cannot override a failing comparison.
 
 The [live recovery record](../supervisor-recovery.md) documents a real local
-SIGKILL while the existing Lambda worker was replaying Fill. The packaged code
-passes 130 local tests and reproduces that run's saved comparison exactly,
+SIGKILL while the existing Lambda worker was replaying Fill. The recovery snapshot
+passed 130 local tests and reproduced that run's saved comparison exactly,
 including both physics failures. The [source manifest](source-manifest.json)
 identifies the bytes used during the live test and the subsequent transport fix.
+The current package passes 167 tests and adds durable reference-demo jobs;
+the [multi-episode Excavate record](../excavate-diversity.md) supplies the live
+reference and CPU/GPU replay evidence for those additions.
 
 ## Requirements and separation
 
@@ -62,6 +65,13 @@ Reference self-comparison must pass before coding starts. The lease supplies
 records live in `lambda-known-hosts` beside the private key. Credentials and
 machine-specific configuration are intentionally outside this source snapshot.
 
+An optional `candidate_sim_backend` on each case selects `physx_cpu` or
+`physx_cuda`. The loop freezes this choice in its configuration and forwards it
+to the immutable replay job. Give CPU and GPU cases distinct IDs when comparing
+both against the same fixture. A choice conflicting with fixture metadata is
+rejected before coding starts. Backend selection cannot override a failed
+independent comparison.
+
 ```sh
 PYTHONPATH=/absolute/trusted/supervisor PYTHONDONTWRITEBYTECODE=1 \
   /absolute/python -P -m softbody_lab.loop /absolute/config.json
@@ -105,9 +115,35 @@ worker root. It verifies the pinned SHA-256 before and after copying, then
 mounts that copy read-only in SAPIEN's cache. Missing or changed binaries fail
 before building or running the candidate. No runtime download is required.
 
+## Generate additional reference fixtures
+
+`remote_replay.prepare_reference_demo(inputs, output, lease, image,
+dependencies={"warp": WARP_SHA256, "sdf": SDF_SHA256})` uses the existing clean
+ManiSkill 2 checkout pinned at `493be36121a9dd06071a57172274babe617b789f`.
+Submit, observe, resume and collect the returned job exactly like a candidate
+job. The shared GPU lock, timeout, container isolation and interruption handling
+apply to both roles. The reference image must also be an immutable image ID.
+
+The input directory contains `input.json`, `initial.npy` and `actions.npy`, as
+exported by `demo_inputs.export_episode` from a checksummed official dataset.
+Only those three files are uploaded; later demonstration states and outcomes
+are excluded. Exporting from HDF5 additionally requires h5py. The supported
+worker cache layouts currently cover Fill, Excavate, Hang and Pour, with explicit
+Warp-library and task-SDF checksums. The manager copies and verifies both
+dependencies before mounting them read-only. It cannot modify the reference
+checkout or choose candidate code as the reference implementation.
+
+On success, collection verifies the reference role, clean source commit, image,
+submitted input archive and native initial-state checksum. The generated
+`collected/output/fixture` must match `collected/output/trace` before candidate
+use. Reference and candidate run separately; the port receives the portable
+initialization, material values and controls. Keep the full reference trace in
+the trusted verification directory. Reference task failure is valid evidence
+and must not be filtered out of a predeclared study.
+
 ## Local verification
 
-From the trusted copy, with NumPy and pytest installed:
+From the trusted copy, with NumPy, h5py and pytest installed:
 
 ```sh
 PYTHONPATH=/absolute/trusted/supervisor PYTHONDONTWRITEBYTECODE=1 \

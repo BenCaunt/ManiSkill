@@ -249,6 +249,38 @@ def result_archive(tmp_path, *, collected=False):
     return execution
 
 
+@pytest.mark.parametrize('fault', [None, 'role', 'dirty', 'commit', 'image', 'payload', 'initial', 'fixture'])
+def test_reference_collection_checks_provenance_and_exported_fixture(monkeypatch, tmp_path, fault):
+    request = dict(role='reference', env_id='Excavate-v0', reference_commit='a'*40,
+                   image='sha256:'+'b'*64, file_sha256={'reference_input':{'initial.npy':'c'*64}})
+    payload = 'd'*64
+    provenance = dict(role='reference', source_dirty=False, source_commit=request['reference_commit'],
+        runtime={'image_id':request['image']}, source_archive_sha256=payload, reference_initial_state_sha256='c'*64)
+    if fault == 'role': provenance['role'] = 'candidate'
+    if fault == 'dirty': provenance['source_dirty'] = True
+    if fault == 'commit': provenance['source_commit'] = '0'*40
+    if fault == 'image': provenance['runtime']['image_id'] = 'sha256:'+'0'*64
+    if fault == 'payload': provenance['source_archive_sha256'] = '0'*64
+    if fault == 'initial': provenance['reference_initial_state_sha256'] = '0'*64
+    manifest = dict(provenance=provenance, fixture_sha256='e'*64)
+    monkeypatch.setattr(remote_replay, 'validate_trace', lambda _: manifest)
+    monkeypatch.setattr(remote_replay, 'load_fixture', lambda _: (
+        dict(fixture_sha256=('0' if fault=='fixture' else 'e')*64),None,None,None))
+    archive = tmp_path/'results.tgz'
+    with tarfile.open(archive, 'w:gz') as target:
+        for name, value in {'inputs/job.json':request, 'state.json':{'phase':'complete'}}.items():
+            data=json.dumps(value).encode();item=tarfile.TarInfo(name);item.size=len(data)
+            target.addfile(item,io.BytesIO(data))
+    atomic_json(tmp_path/'remote-job.json',dict(job_id='f'*32, lease='/unused', phase='running',
+        payload_sha256=payload, request_sha256=remote_replay.digest_json(request), result_sha256=file_hash(archive)))
+    if fault:
+        with pytest.raises(ValueError): remote_replay.recover_collected(tmp_path)
+        assert json.loads((tmp_path/'remote-job.json').read_text())['phase'] == 'running'
+    else:
+        assert remote_replay.recover_collected(tmp_path)['phase'] == 'complete'
+        assert json.loads((tmp_path/'remote-job.json').read_text())['phase'] == 'collected'
+
+
 @pytest.mark.parametrize('operation',['collect','wait','submit_or_resume'])
 def test_downloaded_receipt_recovers_offline_without_lease(monkeypatch,tmp_path,operation):
     expected=result_archive(tmp_path)

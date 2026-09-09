@@ -11,6 +11,9 @@ independent physics verdict and original resource limits.
 The [full Excavate backend replay](excavate-backends.md) now completes the same
 231 recorded controls on CPU and GPU PhysX, with both task-success outcomes
 independently verified and the remaining trajectory differences reported.
+The [three additional Excavate episodes](excavate-diversity.md) extend that
+comparison to three more seeds and both backends using durable reference-demo
+jobs. Their scalar outcomes and physical differences are independently audited.
 `Fill-v0`, `Excavate-v0`, `Hang-v0`, `Pour-v0`, `Write-v0`, and `Pinch-v0` now run with their legacy robot, material initialization, SDF contacts,
 success/reward equations, and particle sphere visuals. Full reference parity is
 still unverified. The [GPU task suite](gpu-tasks.md) records short rollouts for

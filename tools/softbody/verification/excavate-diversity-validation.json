@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "standalone_supervisor_tests": 167,
+  "independent_checker_tests": 6,
+  "python_version": "3.12.10 (main, Apr  9 2025, 03:49:38) [Clang 20.1.0 ]",
+  "source_verification": {
+    "runtime_files_checked": 546,
+    "runtime_commit_mismatches": [],
+    "supervisor_manifest_files": 25,
+    "supervisor_manifest_mismatches": []
+  },
+  "source_manifest_sha256": "ca3125093871d39ba769af8f45218b4f34d11af0b9efecace974821bf916a45d",
+  "plot_visually_inspected": true,
+  "live_reference_jobs": 3,
+  "live_candidate_jobs": 6,
+  "calibrated_physics_parity": false,
+  "commands": [
+    "PYTHONPATH=/absolute/trusted/supervisor PYTHONDONTWRITEBYTECODE=1 /absolute/python -P -m pytest -c /dev/null -q -p no:cacheprovider tests",
+    "PYTHONPATH=/absolute/trusted/supervisor:/absolute/verification PYTHONDONTWRITEBYTECODE=1 /absolute/python -P -m pytest -c /dev/null -q -p no:cacheprovider /absolute/verification/test_compare_backend_replays.py"
+  ],
+  "verifier_files_sha256": {
+    "compare_backend_replays.py": "03c144e7670c16719faaf798915fad88a3ac0978ab70890347fb450bb5ebe7ca",
+    "test_compare_backend_replays.py": "2142cbaaa4cdd37c00f23a8f63baa9d34580aeb3dc6b8d4f03689010c8333cac",
+    "analyze_excavate_diversity.py": "370d71a6934389223bdeda7452900c230bcfac2d8093e3ab3551c2a34cfb56aa",
+    "plot_excavate_diversity.py": "cb44f17e012ce1a3766f856d2fecfbfed25262c72626460a64c0d21138cf04fb"
+  }
+}

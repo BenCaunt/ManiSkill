@@ -39,6 +39,13 @@ LEVELS = {
     'Pinch-v0': PACKS['Pinch-v0']/'levels',
 }
 TERMINAL = {'complete', 'failed', 'cancelled', 'lost'}
+REFERENCE_COMMIT = '493be36121a9dd06071a57172274babe617b789f'
+REFERENCE_SDFS = {
+    'Fill-v0': 'checkouts/ManiSkill2/mani_skill2/envs/mpm/FillEnv.sdf',
+    'Excavate-v0': 'checkouts/ManiSkill2/mani_skill2/envs/mpm/ExcavateEnv.sdf',
+    'Hang-v0': 'records/hang-reference-export-v2/HangEnv.sdf',
+    'Pour-v0': 'records/pour-asset-pack-v1/PourEnv.sdf',
+}
 
 
 def job_path(identifier):
@@ -111,6 +118,46 @@ def bounded_container(job, command, name, log, deadline):
                            stderr=subprocess.DEVNULL, timeout=20)
 
 
+def execute_reference_demo(job, request, deadline):
+    source = ROOT.parent/'checkouts/ManiSkill2'
+    commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=source, text=True,
+                            capture_output=True, check=True, timeout=30).stdout.strip()
+    dirty = subprocess.run(['git', 'status', '--porcelain'], cwd=source, text=True,
+                           capture_output=True, check=True, timeout=30).stdout.strip()
+    if commit != REFERENCE_COMMIT or request['reference_commit'] != commit or dirty:
+        raise ValueError('Reference requires the clean pinned ManiSkill 2 checkout')
+    for name in ('cache', 'output', 'reference-dependencies'):
+        (job/name).mkdir()
+    paths = {'warp': source/'warp_maniskill/warp/bin/warp.so',
+             'sdf': ROOT.parent/REFERENCE_SDFS[request['env_id']]}
+    for name, path in paths.items():
+        if path.is_symlink() or any(p.is_symlink() for p in path.parents if p != ROOT.parent.parent):
+            raise ValueError('Reference dependency cannot be a symlink')
+        if not path.is_file() or not 0 < path.stat().st_size <= 128*1024**2:
+            raise ValueError('Reference dependency missing or exceeds size limit')
+        if file_hash(path) != request['reference_dependencies'][name]:
+            raise ValueError('Reference dependency checksum mismatch: '+name)
+        target = job/'reference-dependencies'/path.name
+        shutil.copyfile(path, target)
+        if file_hash(target) != request['reference_dependencies'][name]:
+            raise ValueError('Reference dependency changed while staging')
+    name = f'softbody-replay-{job.name}'
+    publish(job, 'running', container=name, reference_commit=commit,
+            reference_dependencies=request['reference_dependencies'])
+    sdf_name = paths['sdf'].name
+    command = container_base(job, request, name)+[
+        '-v', f'{source}:/source:ro', '-v', f'{job}/inputs/harness:/harness:ro',
+        '-v', f'{job}/inputs/reference_input:/reference-input:ro', '-v', f'{job}/output:/output',
+        '-v', f'{job}/reference-dependencies/warp.so:/source/warp_maniskill/warp/bin/warp.so:ro',
+        '-v', f'{job}/reference-dependencies/{sdf_name}:/source/mani_skill2/envs/mpm/{sdf_name}:ro',
+        '-e', 'PYTHONPATH=/harness:/source:/source/warp_maniskill',
+        '-e', f'SOFTBODY_SOURCE_ARCHIVE_SHA256={read(job/"identity.json")["payload_sha256"]}',
+        request['image'], 'timeout', '--kill-after=10s', str(max(1, int(deadline-time.time()))),
+        'python', '-m', 'softbody_lab.replay_demo', '--source=/source', '--input=/reference-input',
+        '--output=/output/trace', '--fixture-output=/output/fixture']
+    bounded_container(job, command, name, 'capture.log', deadline)
+
+
 def execute(job):
     with (job/'launch.lock').open('a') as launch_lock:
         fcntl.flock(launch_lock, fcntl.LOCK_EX)
@@ -139,6 +186,10 @@ def execute(job):
                 if time.time() >= deadline:
                     raise TimeoutError('Budget exhausted waiting for GPU')
                 time.sleep(1)
+        if request.get('role') == 'reference':
+            execute_reference_demo(job, request, deadline)
+            phase = 'complete'
+            return
         source = job/'inputs/source'
         # Use an honest, separately labelled snapshot commit; no local .git,
         # credentials, hooks, or remote configuration are transmitted.
@@ -241,11 +292,26 @@ def start(job):
                 or request['env_id'] not in {'Fill-v0', 'Excavate-v0', *PACKS}
                 or not time.time() < request['deadline_epoch'] <= time.time()+86400):
             raise ValueError('Invalid or expired job request')
-        for name in ('source', 'harness', 'fixture'):
+        role = request.get('role', 'candidate')
+        if role not in ('candidate', 'reference'):
+            raise ValueError('Unknown capture role')
+        if role == 'reference':
+            if (request.get('reference_commit') != REFERENCE_COMMIT or request['env_id'] not in REFERENCE_SDFS
+                    or request.get('candidate_sim_backend') is not None):
+                raise ValueError('Invalid reference job configuration')
+            dependencies = request.get('reference_dependencies')
+            if not isinstance(dependencies, dict) or set(dependencies) != {'warp', 'sdf'} or any(
+                not isinstance(v, str) or not re.fullmatch('[a-f0-9]{64}', v) for v in dependencies.values()
+            ):
+                raise ValueError('Invalid reference dependency checksums')
+        groups = ('reference_input', 'harness') if role == 'reference' else ('source', 'harness', 'fixture')
+        if set(request['file_sha256']) != set(groups):
+            raise ValueError('Wrong input groups for capture role')
+        for name in groups:
             if inventory(job/'inputs'/name) != request['file_sha256'][name]:
                 raise ValueError(f'Changed {name} inputs')
-        fixture = read(job/'inputs/fixture/fixture.json')
-        if fixture['fixture']['env_id'] != request['env_id']:
+        metadata = read(job/'inputs/reference_input/input.json') if role == 'reference' else read(job/'inputs/fixture/fixture.json')['fixture']
+        if metadata['env_id'] != request['env_id']:
             raise ValueError('Task differs from requested asset mounts')
         # Set state before spawning. A crash here is an explicit lost job,
         # never permission to submit a second simulation under the same ID.
