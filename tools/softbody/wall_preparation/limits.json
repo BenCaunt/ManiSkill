@@ -1,0 +1,18 @@
+{
+  "scope": "Convex representation of original visual walls; differs from original closed rigid hull; native geometry only, not physics acceptance",
+  "solid_union_hausdorff_limit_m": 1e-06,
+  "native_plane_hull_hausdorff_limit_m": 1e-06,
+  "total_volume_relative_limit": 1e-05,
+  "profile_symmetric_difference_area_limit_m2": 1e-16,
+  "profile_overlap_area_limit_m2": 1e-16,
+  "require_all_gpu_compatible": true,
+  "cavity_radius_m": 0.006,
+  "cavity_z_range_m": [
+    0.012,
+    0.17
+  ],
+  "cases": [
+    "cpu",
+    "gpu-data"
+  ]
+}

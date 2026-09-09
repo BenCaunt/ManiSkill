@@ -345,8 +345,9 @@ particles, 0.245670289 kg); fresh IK joint positions differ by up to 1.92e-5 rad
 Portable replay restores the explicitly recorded independent robot inputs.
 
 The trusted SAPIEN 2.2.2 reference exporter produces restricted external model
-data. The cooked wall pack is also an explicit external input; its preparation
-pipeline is currently retained with the host evidence. Build the pinned
+data. The cooked wall pack is also an explicit external input;
+[reproduce it with the offline preparation command](wall-preparation.md), then
+pass its path and generated checksum to `PourEnv`. Build the pinned
 [native cooked loader](native/cooked/README.md) before running Pour:
 
 ```sh
@@ -362,7 +363,7 @@ python tools/softbody/probe_pour.py --output /tmp/pour-native-001
 
 The model manifest SHA256 is
 `54d4c40bdfe3184788d5e1f1841c8806611cff1249f0aad8b5c9a150ab982710`;
-the cooked bottle pack manifest SHA256 is
+the earlier default cooked bottle pack manifest SHA256 is
 `57ca9d867a663651257e8318df3ef70aca1fae40127ef29d25944461b3db43bc`.
 Candidate runs receive only `export.json`, the two `body-*.npz` files, the
 collision pack and original notices/provenance, plus original mesh assets.

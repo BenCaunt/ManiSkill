@@ -41,7 +41,8 @@ class PourEnv(LegacyMPMEnv):
     # this capacity. Only observations are padded; physics/checkpoints contain
     # exactly the live particles, and observations expose the live count.
     observation_particle_capacity = 16384
-    def __init__(self, *args, legacy_mpm_data_dir=None, bottle_collision_dir=None, **kwargs):
+    def __init__(self, *args, legacy_mpm_data_dir=None, bottle_collision_dir=None,
+                 bottle_collision_sha256=BOTTLE_COOKED_PACK_SHA256, **kwargs):
         directory = legacy_mpm_data_dir or os.environ.get('MANISKILL_LEGACY_MPM_DATA')
         if not directory:
             raise ValueError('Provide the pinned numeric Pour model pack')
@@ -55,7 +56,7 @@ class PourEnv(LegacyMPMEnv):
         self.bottle_collision = CookedConvexPack.load(
             bottle_collision_dir or os.environ.get('MANISKILL_BOTTLE_COLLISION_DIR')
             or self.legacy_mpm_data_dir/'collision-cooked',
-            BOTTLE_COOKED_PACK_SHA256,384)
+            bottle_collision_sha256,384)
         original=self.reference_pack['geometry'][0]
         if any(not np.array_equal(self.bottle_collision.physical[field],original[field])
                for field in ('mass','inertia','com')):

@@ -1,0 +1,62 @@
+{
+  "declared_at_utc": "2026-09-09T00:25:21.571416+00:00",
+  "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+  "source_files": {
+    "tools/softbody/native/polyhedron/PHYSX-NOTICE.txt": "54ba88a62be629c4cc918cd5bb1b326a5126ec5d65c65d11348fbf8400d606f8",
+    "tools/softbody/native/polyhedron/bridge.cpp": "75d5da690bc79ccf709d9904f5f9d2e5326e52bfb744b53d2142d96fd1826674",
+    "tools/softbody/native/polyhedron/build.py": "8ec07e966de3123a9880e2f1d90fa2a786c07ca99443b4f4267023a13e0ba78d",
+    "tools/softbody/native/polyhedron/source.json": "13b61b6a0ab144bdc936b2a3b5037cce24795cbac5edec2504c2c9b934ef5cb6",
+    "tools/softbody/native/vendor/LICENSE": "83965b843b98f670d3a85bd041ed4b372c8ec50d7b4a5995a83ac697ba675dcb",
+    "tools/softbody/native/vendor/provenance.json": "7aeac63e69bf47c9221bed2de837d99bd43921d2356fdd7bb4444fa93ddd8f4a",
+    "tools/softbody/native/vendor/pybind11_conduit_v1.h": "19af7d983107690a0250e53de0257ab2f394c99d2b2046cbf0cdb84643ffdcfc",
+    "tools/softbody/native/vendor/pybind11_platform_abi_id.h": "554656e07ee2cbdbd553380b749d7df76c25e0d9cdeac30259db599f563177f6",
+    "tools/softbody/native/vendor/wrap_include_python_h.h": "b86c91eda51e381e8411919f6f5f5367cb3270fede6d9db0e7131a2013226d33",
+    "tools/softbody/wall_preparation/__init__.py": "3e92e4e0bc334abd0bd390578ad282fdd777235a16232c9a14e5f32722865818",
+    "tools/softbody/wall_preparation/__main__.py": "e568d9361b62b533d9f460f684e0af4ed6b708b0ce206b68e4c99219302c3427",
+    "tools/softbody/wall_preparation/cells.py": "9c256fc2ea5ca4f48d346f30421c7fa9d076caab82380d5246ca7c198d8fdbeb",
+    "tools/softbody/wall_preparation/convex_checks.py": "e496fa2d602ece46a84c8d256cead52438aa69688a07ed878579df117237570f",
+    "tools/softbody/wall_preparation/cook.py": "76c9f3794aa8d4a4cca4005bf349290c50a247bc0bd1f1ba770b7322643fdd23",
+    "tools/softbody/wall_preparation/limits.json": "f8c565450b8d1a909547fdbea037b47b4d2db3fdc74b71aec7a543fe65cd0cfc",
+    "tools/softbody/wall_preparation/partition.py": "b45905e02d7986e359b452c437ba9f51d0a3455d3b87a0b0704c94839c4fc729",
+    "tools/softbody/wall_preparation/planar.py": "1b803695b4c310b912e4540b841933f0b409a0e6e69cc003b99c8454dcb5b326",
+    "tools/softbody/wall_preparation/profile.py": "80bbae5f551978de1317636d444024128dd4352054e74b0c81328a560fc41279",
+    "tools/softbody/wall_preparation/recipe-origins.json": "a32e3e0db0fe72c8c89411b1120a806a466c26e35c6a87de405e326358ab92d2",
+    "tools/softbody/wall_preparation/structure.py": "8c43678efe6b634f55cdb7cd87c0948c0c4939218a7b876a30f63a795fc337e0",
+    "tools/softbody/wall_preparation/test_pipeline.py": "2b6a0efed3523d5d55553038b2f846983097bff5d7895803e10f2fe06364ab34",
+    "tools/softbody/wall_preparation/test_verifier.py": "7d8ebc5f8f9cdb0a0c4eb07bd8aa4b86cba5d343b63cdd9aedb2c330220c28f1",
+    "tools/softbody/wall_preparation/verify.py": "2d3afb7ae57e6a47160241dd2d6d180f556b0c1f4741fb6fbedbcfc96ffe686c"
+  },
+  "dependencies": {
+    "shapely-2.1.2-cp310-cp310-manylinux2014_x86_64.manylinux_2_17_x86_64.whl": "e38a190442aacc67ff9f75ce60aec04893041f16f97d242209106d502486a142"
+  },
+  "runner_sha256": "59807892df61376427f7b3c32ad504d4d75adb36b7715487875e5d18e3415ed9",
+  "reference_export_sha256": "54d4c40bdfe3184788d5e1f1841c8806611cff1249f0aad8b5c9a150ab982710",
+  "protocol": {
+    "scope": "Convex representation of original visual walls; differs from original closed rigid hull; native geometry only, not physics acceptance",
+    "solid_union_hausdorff_limit_m": 1e-06,
+    "native_plane_hull_hausdorff_limit_m": 1e-06,
+    "total_volume_relative_limit": 1e-05,
+    "profile_symmetric_difference_area_limit_m2": 1e-16,
+    "profile_overlap_area_limit_m2": 1e-16,
+    "require_all_gpu_compatible": true,
+    "cavity_radius_m": 0.006,
+    "cavity_z_range_m": [
+      0.012,
+      0.17
+    ],
+    "cases": [
+      "cpu",
+      "gpu-data"
+    ]
+  },
+  "old_pack_manifest_sha256": "57ca9d867a663651257e8318df3ef70aca1fae40127ef29d25944461b3db43bc",
+  "scope": "Fresh Linux cooking build and independent original-wall geometry verification; not GPU dynamics or full Pour acceptance",
+  "linux_static_dependency": {
+    "retrieved_at_utc": "2026-09-09T00:22:59.832557+00:00",
+    "url": "https://github.com/sapien-sim/physx-precompiled/releases/download/105.1-physx-5.3.1.patch0/linux-release.zip",
+    "asset_id": 163125383,
+    "sha256": "3e9f0b74bb1319700fe0d0618e664bedef0db154a42b69baf129977d65b4b2c4",
+    "publisher_md5": "020222e5441b9ae2779dc05b1f04539c",
+    "checksum_source": "SAPIEN 731622eac5b140b320076c8a1b6eb4b553c3ccd4/cmake/physx5.cmake"
+  }
+}

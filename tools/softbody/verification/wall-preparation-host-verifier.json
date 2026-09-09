@@ -1,0 +1,10 @@
+{
+  "recorded_at_utc": "2026-09-09T00:26:38.386109+00:00",
+  "files": {
+    "verify_wall_pack.py": "3b8a08333a1fc5ded6f49444c5408ec6cc5c685cde49f83081ec5d39496e47f7",
+    "wall_preparation/verify.py": "2d3afb7ae57e6a47160241dd2d6d180f556b0c1f4741fb6fbedbcfc96ffe686c",
+    "wall_preparation/convex_checks.py": "e496fa2d602ece46a84c8d256cead52438aa69688a07ed878579df117237570f",
+    "wall_preparation/limits.json": "f8c565450b8d1a909547fdbea037b47b4d2db3fdc74b71aec7a543fe65cd0cfc"
+  },
+  "scope": "Independent geometry and packed-payload evaluator fixed before reading Linux numerical records; exact original numeric limits retained"
+}

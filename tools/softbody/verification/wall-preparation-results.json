@@ -1,0 +1,149 @@
+{
+  "recorded_at_utc": "2026-09-09T00:31:33.651202+00:00",
+  "candidate_parent_commit": "7e5fb8fb97d100e5e9a0e96276af2d0970af7b23",
+  "scope": "Portable original-wall preparation with independent geometry, provenance and GPU lifecycle verification; physical parity remains incomplete",
+  "local": {
+    "final_execution": {
+      "started_at_utc": "2026-09-09T00:28:27.065700+00:00",
+      "python": "3.12.10 (main, Apr  9 2025, 03:49:38) [Clang 20.1.0 ]",
+      "dependencies": {
+        "numpy": "2.2.6",
+        "scipy": "1.18.1",
+        "shapely": "2.1.2",
+        "sapien": "3.0.3"
+      },
+      "reference_files": {
+        "export.json": "54d4c40bdfe3184788d5e1f1841c8806611cff1249f0aad8b5c9a150ab982710",
+        "body-0.npz": "b3b3c1fddeaa84784a759b0b4d4bdd6525bc9a9b65b1ef53a3dafba6aa070edf",
+        "PROVENANCE.json": "c00e6768d2e2864b04e1cb0220bf21cd4f157b02d93d00c32e34182068418b9b",
+        "UPSTREAM-README.md": "3d0e64b73bcdec663fabeaf00071af3c025bd9d1360b0a0fb4e8524e655fdcec",
+        "UPSTREAM-WARP-LICENSE.md": "d26cbb5a6241fb9516523ce9dcba9715d97002f9f1b6ab82ec8eaaab88bf1b2a"
+      },
+      "recipes": {
+        "__init__.py": "3e92e4e0bc334abd0bd390578ad282fdd777235a16232c9a14e5f32722865818",
+        "__main__.py": "e568d9361b62b533d9f460f684e0af4ed6b708b0ce206b68e4c99219302c3427",
+        "cells.py": "9c256fc2ea5ca4f48d346f30421c7fa9d076caab82380d5246ca7c198d8fdbeb",
+        "convex_checks.py": "e496fa2d602ece46a84c8d256cead52438aa69688a07ed878579df117237570f",
+        "cook.py": "76c9f3794aa8d4a4cca4005bf349290c50a247bc0bd1f1ba770b7322643fdd23",
+        "limits.json": "f8c565450b8d1a909547fdbea037b47b4d2db3fdc74b71aec7a543fe65cd0cfc",
+        "partition.py": "b45905e02d7986e359b452c437ba9f51d0a3455d3b87a0b0704c94839c4fc729",
+        "planar.py": "1b803695b4c310b912e4540b841933f0b409a0e6e69cc003b99c8454dcb5b326",
+        "profile.py": "80bbae5f551978de1317636d444024128dd4352054e74b0c81328a560fc41279",
+        "recipe-origins.json": "a32e3e0db0fe72c8c89411b1120a806a466c26e35c6a87de405e326358ab92d2",
+        "structure.py": "8c43678efe6b634f55cdb7cd87c0948c0c4939218a7b876a30f63a795fc337e0",
+        "test_pipeline.py": "2b6a0efed3523d5d55553038b2f846983097bff5d7895803e10f2fe06364ab34",
+        "test_verifier.py": "7d8ebc5f8f9cdb0a0c4eb07bd8aa4b86cba5d343b63cdd9aedb2c330220c28f1",
+        "verify.py": "2d3afb7ae57e6a47160241dd2d6d180f556b0c1f4741fb6fbedbcfc96ffe686c"
+      },
+      "complete": true,
+      "pack_sha256": "f5e69f9203307cf1aa643b0339beebfe4dc47b4f4d59bf28cb327238e36e03b8",
+      "scope": "Geometry preparation; task and GPU dynamics acceptance remain separate",
+      "finished_at_utc": "2026-09-09T00:28:32.654691+00:00"
+    },
+    "native_build": "78e53638a69ca6e2b9afc21ffeb87964826c09aac6468270d5a871e11de45914",
+    "pack_sha256": "f5e69f9203307cf1aa643b0339beebfe4dc47b4f4d59bf28cb327238e36e03b8",
+    "independent_verdict": "wall-preparation-local-verdict.json",
+    "different_working_directories_same_pack": true
+  },
+  "linux": {
+    "execution": {
+      "exit_code": 0,
+      "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+      "input_sha256": "5344b718071300447436426edeba0d945c6b84f749529062fa6ffc48a4a98f66"
+    },
+    "preparation": {
+      "started_at_utc": "2026-09-09T00:26:10.610014+00:00",
+      "python": "3.10.12 (main, Jul 15 2026, 23:40:17) [GCC 11.4.0]",
+      "dependencies": {
+        "numpy": "1.23.5",
+        "scipy": "1.10.1",
+        "shapely": "2.1.2",
+        "sapien": "3.0.3"
+      },
+      "reference_files": {
+        "export.json": "54d4c40bdfe3184788d5e1f1841c8806611cff1249f0aad8b5c9a150ab982710",
+        "body-0.npz": "b3b3c1fddeaa84784a759b0b4d4bdd6525bc9a9b65b1ef53a3dafba6aa070edf",
+        "PROVENANCE.json": "c00e6768d2e2864b04e1cb0220bf21cd4f157b02d93d00c32e34182068418b9b",
+        "UPSTREAM-README.md": "3d0e64b73bcdec663fabeaf00071af3c025bd9d1360b0a0fb4e8524e655fdcec",
+        "UPSTREAM-WARP-LICENSE.md": "d26cbb5a6241fb9516523ce9dcba9715d97002f9f1b6ab82ec8eaaab88bf1b2a"
+      },
+      "recipes": {
+        "__init__.py": "3e92e4e0bc334abd0bd390578ad282fdd777235a16232c9a14e5f32722865818",
+        "__main__.py": "e568d9361b62b533d9f460f684e0af4ed6b708b0ce206b68e4c99219302c3427",
+        "cells.py": "9c256fc2ea5ca4f48d346f30421c7fa9d076caab82380d5246ca7c198d8fdbeb",
+        "convex_checks.py": "e496fa2d602ece46a84c8d256cead52438aa69688a07ed878579df117237570f",
+        "cook.py": "76c9f3794aa8d4a4cca4005bf349290c50a247bc0bd1f1ba770b7322643fdd23",
+        "limits.json": "f8c565450b8d1a909547fdbea037b47b4d2db3fdc74b71aec7a543fe65cd0cfc",
+        "partition.py": "b45905e02d7986e359b452c437ba9f51d0a3455d3b87a0b0704c94839c4fc729",
+        "planar.py": "1b803695b4c310b912e4540b841933f0b409a0e6e69cc003b99c8454dcb5b326",
+        "profile.py": "80bbae5f551978de1317636d444024128dd4352054e74b0c81328a560fc41279",
+        "recipe-origins.json": "a32e3e0db0fe72c8c89411b1120a806a466c26e35c6a87de405e326358ab92d2",
+        "structure.py": "8c43678efe6b634f55cdb7cd87c0948c0c4939218a7b876a30f63a795fc337e0",
+        "test_pipeline.py": "2b6a0efed3523d5d55553038b2f846983097bff5d7895803e10f2fe06364ab34",
+        "test_verifier.py": "7d8ebc5f8f9cdb0a0c4eb07bd8aa4b86cba5d343b63cdd9aedb2c330220c28f1",
+        "verify.py": "2d3afb7ae57e6a47160241dd2d6d180f556b0c1f4741fb6fbedbcfc96ffe686c"
+      },
+      "complete": true,
+      "pack_sha256": "2103f4c9e2c8e67b61810cf630c85ef224f5c9db08ccbc20d39a1d0964fcf8ca",
+      "scope": "Geometry preparation; task and GPU dynamics acceptance remain separate",
+      "finished_at_utc": "2026-09-09T00:26:29.545889+00:00"
+    },
+    "result_archive_sha256": "ff224450448e9327f02941f3e93393efd5c0f08a773413dd9e73dd6f00969a26",
+    "native_build": "a591c1cf52d69cba0ad1ff2f3dca0e9824d03464cc81f3bfec0dc63a9ae1ab0f",
+    "pack_sha256": "2103f4c9e2c8e67b61810cf630c85ef224f5c9db08ccbc20d39a1d0964fcf8ca",
+    "independent_verdict": "wall-preparation-linux-verdict.json"
+  },
+  "gpu": {
+    "execution": {
+      "exit_code": 0,
+      "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+      "input_sha256": "71ef704885cc84d252d735271d985b7d93dd9882a99acd5bc5819d5259482098"
+    },
+    "result_archive_sha256": "fe6d483e19ba1af264fb3649f840fe1d76f1b2121b449ed5704f28ebb71c78e3",
+    "cases": 3,
+    "regression": {
+      "passed": false,
+      "failure_count": 22,
+      "same_failure_list": true,
+      "new_failures": [],
+      "missing_failures": []
+    },
+    "visibility_comparisons": 10,
+    "visibility_passed": true
+  },
+  "tests": {
+    "independent_geometry": 19,
+    "preparation": 10,
+    "existing_runtime": 16,
+    "real_record_tamper_checks": 4
+  },
+  "source_audit": {
+    "preparation_files_exact": 23,
+    "gpu_checkout_files_exact": 541,
+    "gpu_only_post_run_changes": [
+      "tools/softbody/native/cooked/README.md"
+    ],
+    "extra_input": "Empty Linux warp.so mount point; actual native library is pinned separately"
+  },
+  "limitations": [
+    "Raw native blobs differ across platforms; all vertices/planes exact and polygon cycles equivalent, with independent numeric geometry gates passing",
+    "No full episode rerun with the newly cooked pack",
+    "Previously verified installed wheel predates render/pack-pin runtime changes",
+    "Original Pinch/Write levels unavailable; full physics parity is not established"
+  ],
+  "full_port_complete": false,
+  "evidence_files": {
+    "wall-preparation-gpu-v25-comparison.json": "8d59bb70297e40e03fa4f92fb41a969c05a7b2fa28dbca90c7b6e5b8ad49b934",
+    "wall-preparation-gpu-v25-protocol.json": "f117bd07bf77c565d5240ab4df182d8242a676f58f10f8d5fd01b97891b3c56e",
+    "wall-preparation-gpu-v25-verdict.json": "97e5cae3ed951456a9be8c12faee715684f7c63ada264ebc5d2ccf29807a379d",
+    "wall-preparation-gpu-v25-visibility-verdict.json": "51dbed2de6da70d4aa9b9d2c901c8992cca497d7df0f98d8678db83eb7ad8bcf",
+    "wall-preparation-host-verifier.json": "2e9086ceb2279ec0e0ecbedd175cd81447d1315f6fe2d5a7688bfadd373f0776",
+    "wall-preparation-linux-input.json": "ec337999abbb53ae5f20fcff27cfd78248e39416ec13fb87bf43d912b0c9a609",
+    "wall-preparation-linux-request.json": "f3d4801c69b21923ebd8bb91beddabf2dc957fbcbefa0df5ea82ecb92bf0ebb0",
+    "wall-preparation-linux-verdict.json": "6b9853f6e5822427890b2b35ddca628f2c11e57d462202808cfce9660b7256e5",
+    "wall-preparation-local-verdict.json": "b9d0a0ffad090cc8662d69e1b2a9dfc925dcc620670d3bee9fc29e5b4291c051",
+    "wall-preparation-negative-controls.json": "5d6be2279e7712d3e0ecb5ee4e04977684b5543bd3528f890dc3f98860e065c9",
+    "wall-preparation-platform-comparison.json": "d998331fb4eac8433ce75c50ce61eccfb9effce21882de341c5c9dabcea6d195",
+    "wall-preparation-retained-failures.json": "41490b991ee00f9164da3b9a19913a3f6af911919dd36cec54970dc35e7bc19b"
+  }
+}

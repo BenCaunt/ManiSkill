@@ -1,0 +1,34 @@
+{
+  "files": {
+    "bridge.cpp": "75d5da690bc79ccf709d9904f5f9d2e5326e52bfb744b53d2142d96fd1826674",
+    "../vendor/provenance.json": "7aeac63e69bf47c9221bed2de837d99bd43921d2356fdd7bb4444fa93ddd8f4a",
+    "../vendor/LICENSE": "83965b843b98f670d3a85bd041ed4b372c8ec50d7b4a5995a83ac697ba675dcb",
+    "../vendor/pybind11_platform_abi_id.h": "554656e07ee2cbdbd553380b749d7df76c25e0d9cdeac30259db599f563177f6",
+    "../vendor/pybind11_conduit_v1.h": "19af7d983107690a0250e53de0257ab2f394c99d2b2046cbf0cdb84643ffdcfc",
+    "../vendor/wrap_include_python_h.h": "b86c91eda51e381e8411919f6f5f5367cb3270fede6d9db0e7131a2013226d33",
+    "PHYSX-NOTICE.txt": "54ba88a62be629c4cc918cd5bb1b326a5126ec5d65c65d11348fbf8400d606f8"
+  },
+  "sdk_headers": {
+    "sapien/physx/physx_system.h": "95a0653c9dd45702287a59aa9bec902a74b26d812e929340a552308ca8dd5df7",
+    "sapien/physx/physx_engine.h": "86936277849ad98edef8e54e3f158427c44b08221b5400086277c6333c7894bf",
+    "physx/include/cooking/PxCooking.h": "eac90a2e5184425ad785508cc498e1bd53caf1bc15fe653d2bcb0518f3d5db0a",
+    "physx/include/cooking/PxConvexMeshDesc.h": "bda3509ac3f412f57170e18b8cf6501decf6e509cd38e465ae1ac6ebcd14c227"
+  },
+  "native_libraries": {
+    "Darwin": "91e7133761c505c0cad2042011b3af454cd9fde84625d32ea2fc6d9643877bcb",
+    "Linux": "57b9dbf776bd216a2a71c86c34fadeab12469cc9067f6bf2338234499d80f097"
+  },
+  "linux_static_libraries": {
+    "bin/linux.clang/release/libPhysXCooking_static_64.a": "730614f158b8198b907eb10a664b84b65fd5ffc4932480ae4c4b708d31b8e636",
+    "bin/linux.clang/release/libPhysXCommon_static_64.a": "782f91b5017bb2ecdd331b78f72d0904e8e350d3692c0951f2bfc044146b3ef4",
+    "bin/linux.clang/release/libPhysXExtensions_static_64.a": "5a4ae4226eae1a2328f75e5539bca3cb85482bebcfb5128cb4e2e44ed20ac5b7"
+  },
+  "linux_static_archive": {
+    "retrieved_at_utc": "2026-09-09T00:22:59.832557+00:00",
+    "url": "https://github.com/sapien-sim/physx-precompiled/releases/download/105.1-physx-5.3.1.patch0/linux-release.zip",
+    "asset_id": 163125383,
+    "sha256": "3e9f0b74bb1319700fe0d0618e664bedef0db154a42b69baf129977d65b4b2c4",
+    "publisher_md5": "020222e5441b9ae2779dc05b1f04539c",
+    "checksum_source": "SAPIEN 731622eac5b140b320076c8a1b6eb4b553c3ccd4/cmake/physx5.cmake"
+  }
+}

@@ -107,6 +107,8 @@ Host evidence is `artifacts/softbody/pour-cooked-integration-v1/` and the compac
 [numeric summary](pour-cooked-results.json). The full replay result SHA-256 is
 `40577922c8ec6393c4075a99fc17b9a84e5e5bcc9f8d711e3c65edc6ab89889d`.
 
-The native compatibility build remains experimental. Full SAPIEN wheel and
-portable pack preparation, broader manipulation seeds/controllers, batch
-performance, and the strict pose/visibility failures remain unfinished.
+The [offline wall preparation command](wall-preparation.md) reproduces and
+independently verifies packs on macOS and Linux from the pinned external export.
+The native compatibility build remains experimental. A full SAPIEN wheel,
+broader manipulation seeds/controllers, overall batch performance, and the strict
+pose/visibility failures remain unfinished.

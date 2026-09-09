@@ -1,0 +1,46 @@
+{
+  "native_readbacks_identical": 378,
+  "blobs_identical": 47,
+  "pieces": 384,
+  "differences": {
+    "s00_c07": {
+      "polygon_indices": {
+        "shape_equal": true,
+        "max_element_error": 3.0
+      }
+    },
+    "s07_c05": {
+      "polygon_indices": {
+        "shape_equal": true,
+        "max_element_error": 4.0
+      }
+    },
+    "s15_c01": {
+      "polygon_indices": {
+        "shape_equal": true,
+        "max_element_error": 5.0
+      }
+    },
+    "s16_c04": {
+      "polygon_indices": {
+        "shape_equal": true,
+        "max_element_error": 5.0
+      }
+    },
+    "s16_c05": {
+      "polygon_indices": {
+        "shape_equal": true,
+        "max_element_error": 3.0
+      }
+    },
+    "s23_c01": {
+      "polygon_indices": {
+        "shape_equal": true,
+        "max_element_error": 5.0
+      }
+    }
+  },
+  "scope": "Compare actual vertices, planes and polygon topology to the earlier macOS cooking; serialized blobs need not be byte-identical across native builds. GPU integration is evaluated separately.",
+  "all_vertices_and_planes_exact": true,
+  "all_polygon_cycles_equal_up_to_start_vertex": true
+}

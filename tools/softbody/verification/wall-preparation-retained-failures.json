@@ -1,0 +1,32 @@
+{
+  "v1": {
+    "input": {
+      "input_sha256": "35001ee0573a9b3525d75ebcf91a5bef234d483f14669bb6da7906c3a52c3598",
+      "request_sha256": "7398e5885771af2be6a868e37d2eddb8417183b3d2c8fbbf127dd82190ae4926",
+      "runner_sha256": "3099a1672b90a82350cefea45b7c89d286c0ccec3c8343796565cba8d976f395",
+      "bytes": 3051159
+    },
+    "execution": {
+      "exit_code": 1,
+      "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+      "input_sha256": "35001ee0573a9b3525d75ebcf91a5bef234d483f14669bb6da7906c3a52c3598"
+    },
+    "archive_sha256": "1c222f718a79c949573adba24ffedd3680e7eabeb3a29f87d311e1c9452924ac",
+    "failure": "Traceback (most recent call last):\n  File \"/input/source/tools/softbody/wall_preparation/cook.py\", line 88, in <module>\n    worker(a.input, a.output, a.build, a.worker)\n  File \"/input/source/tools/softbody/wall_preparation/cook.py\", line 20, in worker\n    import sapien303_polyhedron_bridge as native\nImportError: /output/build/sapien303_polyhedron_bridge.cpython-310-x86_64-linux-gnu.so: undefined symbol: PxCookConvexMesh"
+  },
+  "v2": {
+    "input": {
+      "input_sha256": "be818b4177763cd8c4f388ae92bc6d0e159642a812267493db756c8e4e4e5f84",
+      "request_sha256": "b1516682baf51b8218fef8ef0b2d1cdf417064af09dff59f12b367d1f3ab8c9e",
+      "runner_sha256": "59807892df61376427f7b3c32ad504d4d75adb36b7715487875e5d18e3415ed9",
+      "bytes": 3052333
+    },
+    "execution": {
+      "exit_code": 1,
+      "image_id": "sha256:e6def7552fa45f90d021f4d7e7171af4ebe360b9dc4a84404e1172ba8c8ec3e3",
+      "input_sha256": "be818b4177763cd8c4f388ae92bc6d0e159642a812267493db756c8e4e4e5f84"
+    },
+    "archive_sha256": "7b221f24a0258fe84beeb45f19da90360c04be898def29ccfdd164fafed048e7",
+    "failure": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nImportError: /output/build/sapien303_polyhedron_bridge.cpython-310-x86_64-linux-gnu.so: undefined symbol: _ZN5physx27PxDefaultMemoryOutputStreamC1ERNS_19PxAllocatorCallbackE"
+  }
+}

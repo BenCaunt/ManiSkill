@@ -144,6 +144,8 @@ def run(args):
             kwargs['level_dir'] = '/levels'
         if case['task']=='Pour' and request.get('native_cooked_extension') is not None:
             kwargs['bottle_collision_dir']='/cooked-pack'
+            if 'bottle_cooked_pack_sha256' in request:
+                kwargs['bottle_collision_sha256']=request['bottle_cooked_pack_sha256']
         initial_options = dict(level_file=case['level_files']) if case['task'] in ('Write','Pinch') else {}
         fresh_options = dict(level_file=case['fresh_level_file']) if case['task'] in ('Write','Pinch') else {}
         env = DiagnosticTaskEnv(**kwargs)

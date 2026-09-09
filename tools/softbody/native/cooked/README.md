@@ -6,6 +6,11 @@ Put it at `LEGACY_MPM_DATA/collision-cooked`, set `MANISKILL_BOTTLE_COLLISION_DI
 or pass `bottle_collision_dir` (highest priority).
 The runtime verifies every blob and provenance file before native construction.
 The pack retains original restricted asset notices and is not shipped here.
+The [offline preparation command](../../wall-preparation.md) now reproduces and
+independently verifies a new pack from the pinned numeric reference export.
+Pass its generated hash with `bottle_collision_sha256`; omitting that argument
+retains the earlier default above. Original source and mass-property checks apply
+to both paths.
 
 Build the adapter with the pinned SAPIEN 3.0.3 wheel, Torch headers and Eigen 3.4.0:
 

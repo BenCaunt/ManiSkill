@@ -1,0 +1,18 @@
+{
+  "packed_blob": {
+    "rejected": true,
+    "error": "Packed blob differs from independently verified cook: s00_c00"
+  },
+  "physical_mass": {
+    "rejected": true,
+    "error": "Prepared pack changed original mass, inertia or COM"
+  },
+  "relaxed_gate": {
+    "rejected": true,
+    "error": "Preparation altered the fixed geometry acceptance gates"
+  },
+  "changed_notice": {
+    "rejected": true,
+    "error": "Original metadata or notice not retained: UPSTREAM-README.md"
+  }
+}

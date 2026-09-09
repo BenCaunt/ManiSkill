@@ -1,0 +1,14 @@
+{
+  "scope": "Existing task-authored preparation and independent verifier, extracted from prior validated diagnostics; original benchmark geometry is external.",
+  "sources": {
+    "native-lathe/inspect_source.py": "4a167eba5aef83e6912d6b57efed65fbe72210251455e5b54f448c0733b8e6f7",
+    "native-lathe/profile.py": "80bbae5f551978de1317636d444024128dd4352054e74b0c81328a560fc41279",
+    "native-lathe/prepare.py": "50cb2166029f9ce0983858aba4e47e6e605b35c59e98aa9bd2c7f9bbe3877d0b",
+    "native-planar/planar.py": "9f4fd489802b91cefc8ace5cb11a9fb24a01e6e725a49a5e1cd304a8f63568f4",
+    "native-polyhedra/partition.py": "b45905e02d7986e359b452c437ba9f51d0a3455d3b87a0b0704c94839c4fc729",
+    "native-lathe/validate_lathe.py": "4fd2613ef856e898b82f111d85241954388e594463a04be659e9bea53a1d7ad9",
+    "native-polyhedra/verify.py": "f91636d272ecb694adc842addcd96693475dc66aa6ab48f500ba571ec75b898d",
+    "native-planar/polyhedron_bridge.cpp": "181856486296daeea3201f8234c08f1466c9aae6f1da34e129f00756df9546fe"
+  },
+  "numeric_limits_source_sha256": "547aed47087db25975d77b94b00188948c9765a75adea86ff25312448ec7f09a"
+}
